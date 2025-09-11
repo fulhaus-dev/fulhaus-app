@@ -24,7 +24,7 @@ export const sendAuthOtp = mutation({
 		const headerText = `Your ${isSignUp ? 'sign up' : 'log in'} code`;
 
 		await emailService.sendEmail(ctx, {
-			from: `n8x <${process.env.AUTH_OTP_SENDER_EMAIL}>`,
+			from: `Fülhaus <${process.env.AUTH_OTP_SENDER_EMAIL}>`,
 			to: email,
 			subject: `[Action required] ${headerText}`,
 			html: otpEmail({

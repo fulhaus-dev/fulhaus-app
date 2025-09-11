@@ -28,7 +28,10 @@ class AuthJWTManager {
 		if (!process.env.AUTH_JWT_PRIVATE_KEY)
 			throw new Error('AUTH_JWT_PRIVATE_KEY environment variable is required');
 
-		this.privateKey = await importPKCS8(process.env.AUTH_JWT_PRIVATE_KEY, this.algorithm);
+		this.privateKey = await importPKCS8(
+			process.env.AUTH_JWT_PRIVATE_KEY.replace(/\\n/g, '\n'),
+			this.algorithm
+		);
 	}
 
 	async generateToken(userId: Id<'users'>) {

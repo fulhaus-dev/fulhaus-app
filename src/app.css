@@ -72,6 +72,7 @@
 	--color-color-action-background-surface: oklch(25% 0 0);
 	--color-color-action-border: oklch(15% 0 0);
 	--color-color-action-border-muted: oklch(40% 0 0);
+	--color-color-action-text: oklch(100% 0 0);
 	--color-color-action-text-muted: oklch(70% 0 0);
 
 	--color-color-avatar-background: oklch(75% 0.05 120);
@@ -124,6 +125,7 @@
 			--color-color-action-background-surface: oklch(75% 0 0);
 			--color-color-action-border: oklch(85% 0 0);
 			--color-color-action-border-muted: oklch(60% 0 0);
+			--color-color-action-text: oklch(10% 0 0);
 			--color-color-action-text-muted: oklch(30% 0 0);
 
 			--color-color-avatar-background: oklch(40% 0.05 120);
