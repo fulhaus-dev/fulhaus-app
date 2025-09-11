@@ -1,3 +1,4 @@
+/* eslint-disable svelte/no-navigation-without-resolve */
 import { api } from '../../convex/_generated/api.js';
 import { asyncTryCatch } from '$lib/utils/try-catch.js';
 import error from '$lib/utils/error.js';
@@ -28,6 +29,7 @@ export function useAuth() {
 		phone: undefined as string | undefined,
 		userId: undefined as Id<'users'> | undefined,
 		loading: false,
+		loggingOut: false,
 		serverError: undefined as string | undefined
 	});
 
@@ -137,8 +139,7 @@ export function useAuth() {
 			return;
 		}
 
-		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		await goto(redirectUrl);
+		await redirectAfterAuth(redirectUrl);
 	}
 
 	async function onSubmitNewUserProfile(
@@ -178,8 +179,25 @@ export function useAuth() {
 			return;
 		}
 
-		// eslint-disable-next-line svelte/no-navigation-without-resolve
-		await goto(redirectUrl);
+		await redirectAfterAuth(redirectUrl);
+	}
+
+	async function onLogout() {
+		state.loggingOut = true;
+
+		await Promise.all([
+			asyncFetch.post('/api/auth/cookies/clear', {
+				headers: { 'Content-Type': 'application/json' }
+			}),
+			asyncTryCatch(() => convexClient.mutation(api.v1.auth.mutation.logout, {}))
+		]);
+
+		await redirectAfterAuth('/shop-designs');
+	}
+
+	async function redirectAfterAuth(url: string) {
+		await goto(url);
+		window.location.reload();
 	}
 
 	return {
@@ -187,6 +205,7 @@ export function useAuth() {
 		getInputErrors,
 		onSubmitSendVerificationCode,
 		onSubmitSignInWithOtp,
-		onSubmitNewUserProfile
+		onSubmitNewUserProfile,
+		onLogout
 	};
 }

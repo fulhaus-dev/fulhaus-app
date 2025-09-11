@@ -60,7 +60,7 @@ function useConvexQuery<Query extends FunctionReference<'query'>>(
 	const client = useConvexClient();
 
 	const state = $state({
-		data: undefined as FunctionReturnType<Query> | undefined,
+		response: undefined as FunctionReturnType<Query> | undefined,
 		error: undefined as Error | undefined
 	});
 
@@ -73,7 +73,7 @@ function useConvexQuery<Query extends FunctionReference<'query'>>(
 			query,
 			args,
 			(data) => {
-				state.data = data;
+				state.response = data;
 				options?.onData?.(data);
 			},
 			(error) => {
@@ -87,9 +87,7 @@ function useConvexQuery<Query extends FunctionReference<'query'>>(
 		if (unsubscribe) unsubscribe();
 	});
 
-	return {
-		query: state
-	};
+	return { query: state };
 }
 
 export { useConvexClient, setupConvex, useConvexQuery };

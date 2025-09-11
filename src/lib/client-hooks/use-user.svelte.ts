@@ -1,23 +1,21 @@
 import { api } from '../../convex/_generated/api.js';
-import { asyncTryCatch } from '$lib/utils/try-catch.js';
-import { useConvexClient } from '$lib/client-hooks/convex.client.svelte.js';
-import type { Doc } from '../../convex/_generated/dataModel.js';
-import { onMount } from 'svelte';
+import { useConvexQuery } from '$lib/client-hooks/convex.client.svelte.js';
+import type { UserProfile } from '$lib/types.js';
 
 export function useUser() {
-	const convexClient = useConvexClient();
-
 	const state = $state({
-		profile: undefined as Doc<'users'> | undefined
+		profile: {} as UserProfile
 	});
 
-	onMount(async () => {
-		const { data: user } = await asyncTryCatch(() =>
-			convexClient.query(api.v1.user.query.getUser, {})
-		);
-
-		state.profile = user?.data;
-	});
+	useConvexQuery(
+		api.v1.user.query.getUser,
+		{},
+		{
+			onData: (userQuery) => {
+				state.profile = userQuery.data;
+			}
+		}
+	);
 
 	return {
 		user: state

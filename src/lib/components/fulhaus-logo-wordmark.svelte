@@ -7,7 +7,7 @@
 </script>
 
 <svg
-	class={cn('fill-color-text h-4 w-auto', className)}
+	class={cn('h-5 w-auto fill-color-text', className)}
 	viewBox="0 0 1899 512"
 	xmlns="http://www.w3.org/2000/svg"
 	{...otherSvgAttributes}

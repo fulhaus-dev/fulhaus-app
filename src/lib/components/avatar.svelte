@@ -12,12 +12,7 @@
 		fullName?: string;
 	};
 
-	const {
-		class: className = '',
-		src = '',
-		alt = 'Avatar',
-		fullName = 'N A'
-	}: AvatarProps = $props();
+	const { class: className = '', src = '', alt = 'Avatar', fullName = '' }: AvatarProps = $props();
 
 	const fallbackText = $derived(stringUtil.getFirstTwoInitials(fullName));
 </script>

@@ -11,6 +11,18 @@ import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 import { asyncTryCatch } from '$lib/utils/try-catch';
 
+const cookieOptions: {
+	path: string;
+	secure: boolean;
+	httpOnly: boolean;
+	sameSite: 'strict' | 'lax' | 'none';
+} = {
+	path: '/',
+	secure: APP_ENVIRONMENT === 'production',
+	httpOnly: true,
+	sameSite: 'strict'
+};
+
 export type SetAuthCookieData = {
 	userId: string;
 	currentWorkspaceId: string;
@@ -22,10 +34,7 @@ export type SetAuthCookieData = {
 
 function setAuthTokenCookie(cookies: Cookies, token: string, tokenCookieMaxAge: number) {
 	cookies.set(AUTH_TOKEN_COOKIE_NAME, token, {
-		path: '/',
-		secure: APP_ENVIRONMENT === 'production',
-		httpOnly: true,
-		sameSite: 'strict',
+		...cookieOptions,
 		maxAge: tokenCookieMaxAge
 	});
 }
@@ -40,28 +49,26 @@ export function setAuthCookies(cookies: Cookies, setAuthCookieData: SetAuthCooki
 	setAuthTokenCookie(cookies, token, tokenCookieMaxAge);
 
 	cookies.set(AUTH_SESSION_ID_COOKIE_NAME, sessionId, {
-		path: '/',
-		secure: APP_ENVIRONMENT === 'production',
-		httpOnly: true,
-		sameSite: 'strict',
+		...cookieOptions,
 		maxAge: sessionCookieMaxAge
 	});
 
 	cookies.set(APP_ACTIVE_WORKSPACE_ID_COOKIE_NAME, currentWorkspaceId, {
-		path: '/',
-		secure: APP_ENVIRONMENT === 'production',
-		httpOnly: true,
-		sameSite: 'strict',
+		...cookieOptions,
 		maxAge: sessionCookieMaxAge
 	});
 
 	cookies.set(APP_CURRENT_USER_ID_COOKIE_NAME, userId, {
-		path: '/',
-		secure: APP_ENVIRONMENT === 'production',
-		httpOnly: true,
-		sameSite: 'strict',
+		...cookieOptions,
 		maxAge: sessionCookieMaxAge
 	});
+}
+
+export function clearAuthCookies(cookies: Cookies) {
+	cookies.delete(AUTH_TOKEN_COOKIE_NAME, cookieOptions);
+	cookies.delete(AUTH_SESSION_ID_COOKIE_NAME, cookieOptions);
+	cookies.delete(APP_ACTIVE_WORKSPACE_ID_COOKIE_NAME, cookieOptions);
+	cookies.delete(APP_CURRENT_USER_ID_COOKIE_NAME, cookieOptions);
 }
 
 export function getAuthParams(cookies: Cookies) {

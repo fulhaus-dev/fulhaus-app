@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import Avatar from '$lib/components/avatar.svelte';
 	import FulhausLogoWordmark from '$lib/components/fulhaus-logo-wordmark.svelte';
+	import NavbarUserDropdownMenu from '$lib/components/layout/navbar-user-dropdown-menu.svelte';
 	import Link from '$lib/components/link.svelte';
 	import { cn } from '$lib/utils/cn';
 	import { CircleQuestionMarkIcon, ShoppingCartIcon, Icon } from '@lucide/svelte';
@@ -11,7 +11,7 @@
 	const workspaceId = page.data.activeWorkspaceId;
 </script>
 
-<nav class={cn('flex h-[2.4rem] items-center justify-between px-4', className)}>
+<nav class={cn('flex h-[2.8rem] items-center justify-between px-4', className)}>
 	<div class="content flex-1">
 		<Link href="/">
 			<FulhausLogoWordmark />
@@ -36,9 +36,7 @@
 		<Link href="/#">
 			{@render NavbarIcon(CircleQuestionMarkIcon)}
 		</Link>
-		<Link href="/#">
-			<Avatar />
-		</Link>
+		<NavbarUserDropdownMenu />
 	</menu>
 </nav>
 

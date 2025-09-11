@@ -8,6 +8,7 @@ import userModel from '../user/model';
 import ServerError from '../../response/error';
 import { SuccessData, SuccessMessage } from '../../response/success';
 import { Id } from '../../_generated/dataModel';
+import authorization from '../../middleware/authorization';
 
 export const sendAuthOtp = mutation({
 	args: {
@@ -98,11 +99,13 @@ export const refreshAuthSession = mutation({
 });
 
 export const logout = mutation({
-	args: {
-		sessionId: v.id('sessions')
-	},
-	handler: async (ctx, { sessionId }) => {
-		await authModel.deleteSession(ctx, sessionId);
+	handler: async (ctx) => {
+		const userId = await authorization.userIsAuthenticated(ctx);
+
+		const session = await authModel.getSessionByUserId(ctx, userId);
+		if (!session) throw ServerError.NotFound('Session not found.');
+
+		await authModel.deleteSession(ctx, session._id);
 
 		return SuccessMessage("You've been logged out.");
 	}

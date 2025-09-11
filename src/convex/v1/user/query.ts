@@ -11,6 +11,17 @@ export const getUser = query({
 		const user = await userModel.getUserById(ctx, userId);
 		if (!user) throw ServerError.NotFound('User does not exist.');
 
-		return SuccessData(user);
+		const { _id, email, firstName, lastName, fullName, imageUrl, phone, currentWorkspaceId } = user;
+
+		return SuccessData({
+			_id,
+			email,
+			firstName,
+			lastName,
+			fullName,
+			imageUrl,
+			phone,
+			currentWorkspaceId
+		});
 	}
 });
