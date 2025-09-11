@@ -1,0 +1,174 @@
+/* ------------------------------ */
+/* Custom Fonts
+/* ------------------------------ */
+@font-face {
+	font-family: 'Zodiak';
+	src: url('/fonts/Zodiak-Variable.woff2') format('woff2');
+	font-weight: 101 901;
+	font-style: normal;
+	font-display: optional;
+}
+
+@font-face {
+	font-family: 'Zodiak';
+	src: url('/fonts/Zodiak-VariableItalic.woff2') format('woff2');
+	font-weight: 101 901;
+	font-style: italic;
+	font-display: optional;
+}
+
+@font-face {
+	font-family: 'General Sans';
+	src: url('/fonts/GeneralSans-Variable.woff2') format('woff2');
+	font-weight: 200 701;
+	font-style: normal;
+	font-display: optional;
+}
+
+@font-face {
+	font-family: 'General Sans';
+	src: url('/fonts/GeneralSans-VariableItalic.woff2') format('woff2');
+	font-weight: 200 701;
+	font-style: italic;
+	font-display: optional;
+}
+
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@theme {
+	/* ------------------------------ */
+	/* Font
+    /* ------------------------------ */
+	--font-serif:
+		'Zodiak', sans-serif, ui-sans-serif, system-ui, 'Apple Color Emoji', 'Segoe UI Emoji',
+		'Segoe UI Symbol', 'Noto Color Emoji';
+
+	--font-sans:
+		'General Sans', Arial, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+		'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+	/* ------------------------------ */
+	/* Light Mode Colors
+    /* ------------------------------ */
+	--color-color-background: oklch(98% 0 0);
+	--color-color-background-surface: oklch(95% 0 0);
+	--color-color-overlay-background: oklch(0% 0 0 / 0.5);
+
+	--color-color-border: oklch(80% 0 0);
+	--color-color-border-muted: oklch(90% 0 0);
+	--color-color-focus-ring: oklch(60% 0.05 270);
+	--color-color-focus-ring-muted: oklch(70% 0.02 270);
+
+	--color-color-text: oklch(15% 0 0);
+	--color-color-text-muted: oklch(40% 0 0);
+	--color-color-text-placeholder: oklch(60% 0 0);
+	--color-color-link-text: oklch(25% 0.1 270);
+	--color-color-link-text-muted: oklch(45% 0.05 270);
+
+	--color-color-action-background: oklch(15% 0 0);
+	--color-color-action-background-surface: oklch(25% 0 0);
+	--color-color-action-border: oklch(15% 0 0);
+	--color-color-action-border-muted: oklch(40% 0 0);
+	--color-color-action-text-muted: oklch(70% 0 0);
+
+	--color-color-avatar-background: oklch(75% 0.05 120);
+	--color-color-avatar-text: oklch(20% 0 0);
+
+	--color-color-disabled-background: oklch(90% 0 0);
+	--color-color-disabled-text: oklch(60% 0 0);
+	--color-color-disabled-border: oklch(80% 0 0);
+
+	--color-color-success-background: oklch(75% 0.1 140);
+	--color-color-success-text: oklch(25% 0.1 140);
+	--color-color-success-border: oklch(60% 0.1 140);
+
+	--color-color-info-background: oklch(75% 0.1 270);
+	--color-color-info-text: oklch(25% 0.1 270);
+	--color-color-info-border: oklch(60% 0.1 270);
+
+	--color-color-warning-background: oklch(85% 0.1 80);
+	--color-color-warning-text: oklch(45% 0.1 80);
+	--color-color-warning-border: oklch(70% 0.1 80);
+
+	--color-color-error-background: oklch(75% 0.1 20);
+	--color-color-error-text: oklch(25% 0.1 20);
+	--color-color-error-border: oklch(60% 0.1 20);
+}
+
+@layer theme {
+	/* ------------------------------ */
+	/* Dark Mode Colors
+    /* ------------------------------ */
+	@media (prefers-color-scheme: dark) {
+		:root,
+		:host {
+			--color-color-background: oklch(5% 0 0);
+			--color-color-background-surface: oklch(10% 0 0);
+			--color-color-overlay-background: oklch(100% 0 0 / 0.1);
+
+			--color-color-border: oklch(20% 0 0);
+			--color-color-border-muted: oklch(15% 0 0);
+			--color-color-focus-ring: oklch(65% 0.05 270);
+			--color-color-focus-ring-muted: oklch(50% 0.02 270);
+
+			--color-color-text: oklch(95% 0 0);
+			--color-color-text-muted: oklch(70% 0 0);
+			--color-color-text-placeholder: oklch(40% 0 0);
+			--color-color-link-text: oklch(75% 0.1 270);
+			--color-color-link-text-muted: oklch(55% 0.05 270);
+
+			--color-color-action-background: oklch(85% 0 0);
+			--color-color-action-background-surface: oklch(75% 0 0);
+			--color-color-action-border: oklch(85% 0 0);
+			--color-color-action-border-muted: oklch(60% 0 0);
+			--color-color-action-text-muted: oklch(30% 0 0);
+
+			--color-color-avatar-background: oklch(40% 0.05 120);
+			--color-color-avatar-text: oklch(90% 0 0);
+
+			--color-color-disabled-background: oklch(20% 0 0);
+			--color-color-disabled-text: oklch(50% 0 0);
+			--color-color-disabled-border: oklch(30% 0 0);
+
+			--color-color-success-background: oklch(45% 0.1 140);
+			--color-color-success-text: oklch(85% 0.1 140);
+			--color-color-success-border: oklch(50% 0.1 140);
+
+			--color-color-info-background: oklch(45% 0.1 270);
+			--color-color-info-text: oklch(85% 0.1 270);
+			--color-color-info-border: oklch(50% 0.1 270);
+
+			--color-color-warning-background: oklch(55% 0.1 80);
+			--color-color-warning-text: oklch(85% 0.1 80);
+			--color-color-warning-border: oklch(60% 0.1 80);
+
+			--color-color-error-background: oklch(45% 0.1 20);
+			--color-color-error-text: oklch(85% 0.1 20);
+			--color-color-error-border: oklch(50% 0.1 20);
+		}
+	}
+}
+
+@layer base {
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-serif);
+		font-weight: 500;
+	}
+
+	h1 {
+		font-size: 32px;
+	}
+
+	h2 {
+		font-size: 28px;
+	}
+
+	h3 {
+		font-size: 24px;
+	}
+}

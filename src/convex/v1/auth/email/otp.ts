@@ -1,0 +1,337 @@
+/* eslint-disable no-irregular-whitespace */
+type OtpEmail = {
+	previewText: string;
+	headerText: string;
+	otp: string;
+};
+
+export function otpEmail({ previewText, headerText, otp }: OtpEmail) {
+	return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+  data-source-file="emails/auth-otp.email-template.tsx"
+  data-source-line="70"
+  dir="ltr"
+  lang="en">
+  <head>
+    <link
+      rel="preload"
+      as="image"
+      href="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/fulhaus-email-logo.png?" />
+    <link
+      rel="preload"
+      as="image"
+      href="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/pinterest-social-icon.png" />
+    <link
+      rel="preload"
+      as="image"
+      href="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/instagram-social-icon.png" />
+    <link
+      rel="preload"
+      as="image"
+      href="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/linkedin-social-icon.png" />
+    <link
+      rel="preload"
+      as="image"
+      href="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/facebook-social-icon.png" />
+  </head>
+  <body
+    data-source-file="emails/auth-otp.email-template.tsx"
+    data-source-line="71"
+    style="background-color:rgb(255,255,255);margin-top:0px;margin-bottom:0px;margin-left:auto;margin-right:auto;font-family:-apple-system, BlinkMacSystemFont, &#x27;Segoe UI&#x27;, &#x27;Roboto&#x27;, &#x27;Oxygen&#x27;, &#x27;Ubuntu&#x27;, &#x27;Cantarell&#x27;, &#x27;Fira Sans&#x27;, &#x27;Droid Sans&#x27;, &#x27;Helvetica Neue&#x27;, sans-serif;color:rgb(16,24,40);padding-bottom:4rem">
+    <!--$-->
+    <table
+      border="0"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      role="presentation"
+      align="center">
+      <tbody>
+        <tr>
+          <td
+            style="background-color:rgb(255,255,255);margin-top:0px;margin-bottom:0px;margin-left:auto;margin-right:auto;font-family:-apple-system, BlinkMacSystemFont, &#x27;Segoe UI&#x27;, &#x27;Roboto&#x27;, &#x27;Oxygen&#x27;, &#x27;Ubuntu&#x27;, &#x27;Cantarell&#x27;, &#x27;Fira Sans&#x27;, &#x27;Droid Sans&#x27;, &#x27;Helvetica Neue&#x27;, sans-serif;color:rgb(16,24,40);padding-bottom:4rem">
+            <div
+              style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0"
+              data-skip-in-text="true"
+              data-source-file="emails/auth-otp.email-template.tsx"
+              data-source-line="72">
+              ${previewText}
+              <div>
+                 ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿
+              </div>
+            </div>
+            <table
+              align="center"
+              width="100%"
+              data-source-file="emails/auth-otp.email-template.tsx"
+              data-source-line="73"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="margin-top:0px;margin-bottom:0px;margin-left:auto;margin-right:auto;padding-top:0px;padding-bottom:0px;padding-left:1.25rem;padding-right:1.25rem;max-width:37.5em">
+              <tbody>
+                <tr style="width:100%">
+                  <td>
+                    <table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      data-source-file="emails/auth-otp.email-template.tsx"
+                      data-source-line="74"
+                      style="margin-top:2rem">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <a
+                              href="https://www.fulhaus.com"
+                              data-source-file="emails/auth-otp.email-template.tsx"
+                              data-source-line="75"
+                              style="color:#067df7;text-decoration-line:none"
+                              target="_blank"
+                              ><img
+                                data-source-file="emails/auth-otp.email-template.tsx"
+                                data-source-line="76"
+                                alt="Fülhaus"
+                                height="512"
+                                src="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/fulhaus-email-logo.png?"
+                                style="height:1.5rem;width:auto;display:block;outline:none;border:none;text-decoration:none"
+                                width="1899"
+                            /></a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h1
+                      data-source-file="emails/auth-otp.email-template.tsx"
+                      data-source-line="85"
+                      style="font-size:1.875rem;line-height:2.25rem;color:rgb(17,24,39);font-weight:400;margin-top:3rem;margin-bottom:2rem">
+                      ${headerText}
+                    </h1>
+                    <table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      data-source-file="emails/auth-otp.email-template.tsx"
+                      data-source-line="91"
+                      style="background-color:rgb(250,250,250);border-radius:0.375rem;padding:1rem">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <p
+                              class="text-semibold"
+                              data-source-file="emails/auth-otp.email-template.tsx"
+                              data-source-line="92"
+                              style="text-align:center;font-size:2.25rem;line-height:2.5rem;letter-spacing:0.1em;margin-top:16px;margin-bottom:16px">
+                              ${otp}
+                            </p>
+                            <span
+                              data-source-file="emails/auth-otp.email-template.tsx"
+                              data-source-line="95"
+                              style="display:block;font-size:0.75rem;line-height:1rem;text-align:center;color:rgb(225,33,33)"
+                              >This code expires in 5 minutes</span
+                            >
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p
+                      data-source-file="emails/auth-otp.email-template.tsx"
+                      data-source-line="99"
+                      style="margin-top:3rem;margin-bottom:3rem;font-size:14px;line-height:24px">
+                      If you are not trying to sign in to Fülhaus, you can
+                      ignore this email.
+                    </p>
+                    <table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      data-source-file="emails/auth-otp.email-template.tsx"
+                      data-source-line="103">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              data-source-file="emails/auth-otp.email-template.tsx"
+                              data-source-line="104">
+                              <tbody style="width:100%">
+                                <tr style="width:100%">
+                                  <td
+                                    data-source-file="emails/auth-otp.email-template.tsx"
+                                    data-source-line="105"
+                                    data-id="__react-email-column"
+                                    style="width:66%">
+                                    <a
+                                      href="https://www.fulhaus.com"
+                                      data-source-file="emails/auth-otp.email-template.tsx"
+                                      data-source-line="106"
+                                      style="color:#067df7;text-decoration-line:none"
+                                      target="_blank"
+                                      ><img
+                                        data-source-file="emails/auth-otp.email-template.tsx"
+                                        data-source-line="107"
+                                        alt="Fülhaus"
+                                        height="512"
+                                        src="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/fulhaus-email-logo.png?"
+                                        style="opacity:0.5;height:1rem;width:auto;display:block;outline:none;border:none;text-decoration:none"
+                                        width="1899"
+                                    /></a>
+                                  </td>
+                                  <td
+                                    data-source-file="emails/auth-otp.email-template.tsx"
+                                    data-source-line="116"
+                                    data-id="__react-email-column">
+                                    <table
+                                      align="center"
+                                      width="100%"
+                                      border="0"
+                                      cellpadding="0"
+                                      cellspacing="0"
+                                      role="presentation"
+                                      data-source-file="emails/auth-otp.email-template.tsx"
+                                      data-source-line="117">
+                                      <tbody>
+                                        <tr>
+                                          <td>
+                                            <table
+                                              align="center"
+                                              width="100%"
+                                              border="0"
+                                              cellpadding="0"
+                                              cellspacing="0"
+                                              role="presentation"
+                                              data-source-file="emails/auth-otp.email-template.tsx"
+                                              data-source-line="118">
+                                              <tbody style="width:100%">
+                                                <tr style="width:100%">
+                                                  <td
+                                                    data-source-file="emails/auth-otp.email-template.tsx"
+                                                    data-source-line="120"
+                                                    data-id="__react-email-column">
+                                                    <a
+                                                      href="https://www.pinterest.com/fulhausinc"
+                                                      data-source-file="emails/auth-otp.email-template.tsx"
+                                                      data-source-line="121"
+                                                      style="color:#067df7;text-decoration-line:none"
+                                                      target="_blank"
+                                                      ><img
+                                                        data-source-file="emails/auth-otp.email-template.tsx"
+                                                        data-source-line="122"
+                                                        alt="Pinterest Icon"
+                                                        height="16"
+                                                        src="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/pinterest-social-icon.png"
+                                                        style="opacity:0.5;display:block;outline:none;border:none;text-decoration:none"
+                                                        width="16"
+                                                    /></a>
+                                                  </td>
+                                                  <td
+                                                    data-source-file="emails/auth-otp.email-template.tsx"
+                                                    data-source-line="120"
+                                                    data-id="__react-email-column">
+                                                    <a
+                                                      href="http://instagram.com/fulhausinc"
+                                                      data-source-file="emails/auth-otp.email-template.tsx"
+                                                      data-source-line="121"
+                                                      style="color:#067df7;text-decoration-line:none"
+                                                      target="_blank"
+                                                      ><img
+                                                        data-source-file="emails/auth-otp.email-template.tsx"
+                                                        data-source-line="122"
+                                                        alt="Instagram Icon"
+                                                        height="16"
+                                                        src="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/instagram-social-icon.png"
+                                                        style="opacity:0.5;display:block;outline:none;border:none;text-decoration:none"
+                                                        width="16"
+                                                    /></a>
+                                                  </td>
+                                                  <td
+                                                    data-source-file="emails/auth-otp.email-template.tsx"
+                                                    data-source-line="120"
+                                                    data-id="__react-email-column">
+                                                    <a
+                                                      href="https://www.linkedin.com/company/f%C3%BClhaus-inc"
+                                                      data-source-file="emails/auth-otp.email-template.tsx"
+                                                      data-source-line="121"
+                                                      style="color:#067df7;text-decoration-line:none"
+                                                      target="_blank"
+                                                      ><img
+                                                        data-source-file="emails/auth-otp.email-template.tsx"
+                                                        data-source-line="122"
+                                                        alt="Linkedin Icon"
+                                                        height="16"
+                                                        src="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/linkedin-social-icon.png"
+                                                        style="opacity:0.5;display:block;outline:none;border:none;text-decoration:none"
+                                                        width="16"
+                                                    /></a>
+                                                  </td>
+                                                  <td
+                                                    data-source-file="emails/auth-otp.email-template.tsx"
+                                                    data-source-line="120"
+                                                    data-id="__react-email-column">
+                                                    <a
+                                                      href="https://www.facebook.com/fulhausinc"
+                                                      data-source-file="emails/auth-otp.email-template.tsx"
+                                                      data-source-line="121"
+                                                      style="color:#067df7;text-decoration-line:none"
+                                                      target="_blank"
+                                                      ><img
+                                                        data-source-file="emails/auth-otp.email-template.tsx"
+                                                        data-source-line="122"
+                                                        alt="Facebook Icon"
+                                                        height="16"
+                                                        src="https://pub-e4742e96ef9945dfa0f14c36708e269a.r2.dev/facebook-social-icon.png"
+                                                        style="opacity:0.5;display:block;outline:none;border:none;text-decoration:none"
+                                                        width="16"
+                                                    /></a>
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p
+                      data-source-file="emails/auth-otp.email-template.tsx"
+                      data-source-line="137"
+                      style="font-size:0.75rem;line-height:1rem;opacity:0.5;margin-top:16px;margin-bottom:16px">
+                      ©
+                      <!-- -->2025<!-- -->
+                      Fülhaus Inc | All rights reserved
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!--3--><!--/$-->
+  </body>
+</html>
+`;
+}
