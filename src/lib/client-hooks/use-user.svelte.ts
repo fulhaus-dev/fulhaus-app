@@ -1,5 +1,5 @@
 import { api } from '../../convex/_generated/api.js';
-import { useConvexQuery } from '$lib/client-hooks/convex.client.svelte.js';
+import { useConvexQuerySubscription } from '$lib/client-hooks/convex.client.svelte.js';
 import type { UserProfile } from '$lib/types.js';
 
 export function useUser() {
@@ -7,7 +7,7 @@ export function useUser() {
 		profile: {} as UserProfile
 	});
 
-	useConvexQuery(
+	useConvexQuerySubscription(
 		api.v1.user.query.getUser,
 		{},
 		{

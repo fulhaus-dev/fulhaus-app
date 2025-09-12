@@ -1,4 +1,4 @@
-import { httpAction } from '../../_generated/server';
+import { httpAction } from '../../../_generated/server';
 
 export const getJwksJson = httpAction(async () => {
 	const jwks = {

@@ -1,6 +1,6 @@
 import { MutationCtx, QueryCtx } from '../../_generated/server';
 import { Infer } from 'convex/values';
-import { updateUserValidator } from './validator';
+import { vUpdateUserValidator } from './validator';
 import { Id } from '../../_generated/dataModel';
 import date from '../../util/date';
 import workspaceModel from '../workspace/model';
@@ -45,7 +45,7 @@ async function getUserByEmail(ctx: QueryCtx, email: string) {
 
 async function updateUserById(
 	ctx: MutationCtx,
-	{ userId, updates }: { userId: Id<'users'>; updates: Infer<typeof updateUserValidator> }
+	{ userId, updates }: { userId: Id<'users'>; updates: Infer<typeof vUpdateUserValidator> }
 ) {
 	return await ctx.db.patch(userId, updates);
 }

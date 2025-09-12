@@ -2,6 +2,7 @@ import { Id } from '../_generated/dataModel';
 import { MutationCtx, QueryCtx } from '../_generated/server';
 import ServerError from '../response/error';
 import { FunctionName } from '../type';
+import chatModel from '../v1/chat/model';
 import userPermissionModel from '../v1/user/permission/model';
 
 async function userIsAuthenticated(ctx: MutationCtx | QueryCtx) {
@@ -45,9 +46,22 @@ async function workspaceMemberIsAuthorizedToPerformFunction(
 	return userId;
 }
 
+async function isWorkspaceChat(
+	ctx: MutationCtx | QueryCtx,
+	workspaceId: Id<'workspaces'>,
+	chatId: Id<'chats'>
+) {
+	const chat = await chatModel.getChatById(ctx, chatId);
+	if (!chat) throw ServerError.NotFound('Chat not found.');
+	if (chat.workspaceId !== workspaceId) throw ServerError.Forbidden('Access denied.');
+
+	return chat;
+}
+
 const authorization = {
 	userIsAuthenticated,
 	userIsWorkspaceMember,
-	workspaceMemberIsAuthorizedToPerformFunction
+	workspaceMemberIsAuthorizedToPerformFunction,
+	isWorkspaceChat
 };
 export default authorization;

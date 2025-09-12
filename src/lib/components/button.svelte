@@ -17,7 +17,7 @@
 
 <button
 	class={cn(
-		'relative inline-flex h-12 w-full cursor-pointer items-center justify-center gap-x-2 rounded-md border-2 border-color-action-border px-4 font-medium whitespace-nowrap ring-2 ring-color-focus-ring active:opacity-50 disabled:cursor-not-allowed disabled:border-1 disabled:opacity-50 disabled:ring-0',
+		'relative inline-flex h-12 w-full cursor-pointer items-center justify-center gap-x-2 rounded-md border border-color-action-border-muted px-4 font-medium whitespace-nowrap ring-2 ring-color-focus-ring-muted active:opacity-50 disabled:cursor-not-allowed disabled:border-1 disabled:opacity-50 disabled:ring-0',
 		variant === 'filled' && 'bg-color-action-background text-color-action-text',
 		variant === 'outlined' && 'bg-transparent',
 		variant === 'text' && 'h-auto w-auto border-0 px-0 ring-0',

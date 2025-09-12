@@ -1,5 +1,5 @@
 import { httpRouter } from 'convex/server';
-import { getJwksJson } from './v1/auth/httpAction';
+import { getJwksJson } from './v1/auth/http/action';
 
 const http = httpRouter();
 

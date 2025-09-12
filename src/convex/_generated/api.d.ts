@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as config_google from "../config/google.js";
 import type * as constant from "../constant.js";
 import type * as email_service from "../email/service.js";
 import type * as http from "../http.js";
@@ -15,15 +16,24 @@ import type * as middleware_authorization from "../middleware/authorization.js";
 import type * as response_error from "../response/error.js";
 import type * as response_success from "../response/success.js";
 import type * as type from "../type.js";
+import type * as util_array from "../util/array.js";
 import type * as util_date from "../util/date.js";
 import type * as util_generator from "../util/generator.js";
 import type * as v1_auth_email_otp from "../v1/auth/email/otp.js";
-import type * as v1_auth_httpAction from "../v1/auth/httpAction.js";
+import type * as v1_auth_http_action from "../v1/auth/http/action.js";
 import type * as v1_auth_model from "../v1/auth/model.js";
 import type * as v1_auth_mutation from "../v1/auth/mutation.js";
 import type * as v1_auth_scheduler from "../v1/auth/scheduler.js";
 import type * as v1_auth_table from "../v1/auth/table.js";
 import type * as v1_auth_type from "../v1/auth/type.js";
+import type * as v1_chat_internal_action from "../v1/chat/internal/action.js";
+import type * as v1_chat_internal_mutation from "../v1/chat/internal/mutation.js";
+import type * as v1_chat_internal_query from "../v1/chat/internal/query.js";
+import type * as v1_chat_model from "../v1/chat/model.js";
+import type * as v1_chat_table from "../v1/chat/table.js";
+import type * as v1_chat_validator from "../v1/chat/validator.js";
+import type * as v1_ludwig_mutation from "../v1/ludwig/mutation.js";
+import type * as v1_ludwig_query from "../v1/ludwig/query.js";
 import type * as v1_user_model from "../v1/user/model.js";
 import type * as v1_user_mutation from "../v1/user/mutation.js";
 import type * as v1_user_permission_constant from "../v1/user/permission/constant.js";
@@ -33,7 +43,6 @@ import type * as v1_user_permission_type from "../v1/user/permission/type.js";
 import type * as v1_user_permission_validator from "../v1/user/permission/validator.js";
 import type * as v1_user_query from "../v1/user/query.js";
 import type * as v1_user_table from "../v1/user/table.js";
-import type * as v1_user_type from "../v1/user/type.js";
 import type * as v1_user_validator from "../v1/user/validator.js";
 import type * as v1_workspace_model from "../v1/workspace/model.js";
 import type * as v1_workspace_query from "../v1/workspace/query.js";
@@ -54,6 +63,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "config/google": typeof config_google;
   constant: typeof constant;
   "email/service": typeof email_service;
   http: typeof http;
@@ -61,15 +71,24 @@ declare const fullApi: ApiFromModules<{
   "response/error": typeof response_error;
   "response/success": typeof response_success;
   type: typeof type;
+  "util/array": typeof util_array;
   "util/date": typeof util_date;
   "util/generator": typeof util_generator;
   "v1/auth/email/otp": typeof v1_auth_email_otp;
-  "v1/auth/httpAction": typeof v1_auth_httpAction;
+  "v1/auth/http/action": typeof v1_auth_http_action;
   "v1/auth/model": typeof v1_auth_model;
   "v1/auth/mutation": typeof v1_auth_mutation;
   "v1/auth/scheduler": typeof v1_auth_scheduler;
   "v1/auth/table": typeof v1_auth_table;
   "v1/auth/type": typeof v1_auth_type;
+  "v1/chat/internal/action": typeof v1_chat_internal_action;
+  "v1/chat/internal/mutation": typeof v1_chat_internal_mutation;
+  "v1/chat/internal/query": typeof v1_chat_internal_query;
+  "v1/chat/model": typeof v1_chat_model;
+  "v1/chat/table": typeof v1_chat_table;
+  "v1/chat/validator": typeof v1_chat_validator;
+  "v1/ludwig/mutation": typeof v1_ludwig_mutation;
+  "v1/ludwig/query": typeof v1_ludwig_query;
   "v1/user/model": typeof v1_user_model;
   "v1/user/mutation": typeof v1_user_mutation;
   "v1/user/permission/constant": typeof v1_user_permission_constant;
@@ -79,7 +98,6 @@ declare const fullApi: ApiFromModules<{
   "v1/user/permission/validator": typeof v1_user_permission_validator;
   "v1/user/query": typeof v1_user_query;
   "v1/user/table": typeof v1_user_table;
-  "v1/user/type": typeof v1_user_type;
   "v1/user/validator": typeof v1_user_validator;
   "v1/workspace/model": typeof v1_workspace_model;
   "v1/workspace/query": typeof v1_workspace_query;

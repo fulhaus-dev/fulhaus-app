@@ -1,0 +1,221 @@
+import {
+	useConvexClient,
+	useConvexQuerySubscription
+} from '$lib/client-hooks/convex.client.svelte.js';
+import { page } from '$app/state';
+import { asyncTryCatch } from '$lib/utils/try-catch.js';
+import { useRouteQuery } from '$lib/client-hooks/use-route-query.js';
+import { QueryParams } from '$lib/enums.js';
+import { onDestroy } from 'svelte';
+import type { ChatMessageDoc, ChatUser } from '$lib/types.js';
+import { useUser } from '$lib/client-hooks/use-user.svelte.js';
+import autoScroll from '$lib/dom-actions/auto-scroll.js';
+import type { Doc, Id } from '../../convex/_generated/dataModel';
+import { api } from '../../convex/_generated/api';
+
+type ChatUsersMetadata = Record<string, ChatUser>;
+
+let autoscroll: ReturnType<typeof autoScroll> | undefined;
+
+export function useLudwigChat() {
+	const convexClient = useConvexClient();
+	const routeQuery = useRouteQuery();
+	const userId = page.data.currentUserId;
+	if (!userId) throw new Error('No user ID found');
+
+	const { user } = useUser();
+
+	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'>;
+	const ludwigChatId = $derived.by(
+		() =>
+			(page.url.searchParams.get(QueryParams.LUDWIG_CHAT_ID) ?? undefined) as
+				| Id<'chats'>
+				| undefined
+	);
+
+	const state = $state({
+		prompt: undefined as string | undefined,
+		messages: [] as ChatMessageDoc[],
+		usersMetadata: {
+			[userId]: {
+				userId,
+				fullName: user?.profile?.fullName,
+				imageUrl: user?.profile?.imageUrl
+			}
+		} as ChatUsersMetadata,
+		loading: true,
+		loadingResponse: false,
+		error: undefined as string | undefined
+	});
+
+	const hasMessageHistory = $derived(state.messages.length > 0);
+
+	$effect(() => {
+		if (!ludwigChatId) {
+			resetState();
+			state.loading = false;
+			return;
+		}
+
+		if (hasMessageHistory) {
+			state.loading = false;
+			return;
+		}
+
+		loadMessageHistory(ludwigChatId);
+	});
+
+	async function loadMessageHistory(ludwigChatId: Id<'chats'>) {
+		const { data: response, error } = await asyncTryCatch(() =>
+			convexClient.query(api.v1.ludwig.query.getLudwigChatMessages, {
+				workspaceId: currentWorkspaceId,
+				chatId: ludwigChatId
+			})
+		);
+
+		if (error) {
+			state.error = error.message;
+			resetState();
+			state.loading = false;
+			return;
+		}
+
+		state.messages = response?.data.messages ?? [];
+		state.usersMetadata =
+			response?.data.usersMetadata.reduce<ChatUsersMetadata>((usersMetadata, metadata) => {
+				usersMetadata[metadata.userId] = metadata;
+				return usersMetadata;
+			}, {}) ?? {};
+
+		state.loading = false;
+	}
+
+	function resetState() {
+		state.messages = [];
+		state.loading = false;
+
+		if (userId) state.usersMetadata = { [userId]: state.usersMetadata[userId] };
+	}
+
+	useConvexQuerySubscription(
+		api.v1.ludwig.query.getLudwigChatResponseStreams,
+		() => ({
+			workspaceId: currentWorkspaceId,
+			chatId: ludwigChatId
+		}),
+		{
+			onData: (response) => onStreamResponse(response.data.map((data) => data.stream)),
+			onError: (error) => {
+				state.loadingResponse = false;
+				state.error = error.message;
+				autoscroll?.stop();
+			}
+		}
+	);
+
+	let streamedMessageIndex: number | undefined;
+	function onStreamResponse(chatResponseStreams: Doc<'chatResponseStreams'>['stream'][]) {
+		if (!userId) return;
+		if (!chatResponseStreams) return;
+		if (Object.keys(chatResponseStreams[0] ?? {}).length < 1) return;
+		let currentStreamedMessage = '';
+
+		for (const chatResponseStream of chatResponseStreams) {
+			if (chatResponseStream.type !== 'start') state.loadingResponse = true;
+
+			if (chatResponseStream.type === 'text-delta') {
+				if (!streamedMessageIndex) {
+					const streamedMessageId = window.crypto.randomUUID() as Id<'chatMessages'>;
+					state.messages.push({
+						id: streamedMessageId,
+						userId,
+						message: { content: '', role: 'assistant' },
+						createdAt: Date.now()
+					});
+
+					streamedMessageIndex = state.messages.findIndex(
+						(message) => message.id === streamedMessageId
+					);
+					state.loadingResponse = true;
+				}
+
+				currentStreamedMessage += chatResponseStream.delta ?? '';
+				state.messages[streamedMessageIndex].message.content = currentStreamedMessage;
+			}
+
+			if (chatResponseStream.type === 'finish') {
+				streamedMessageIndex = undefined;
+				currentStreamedMessage = '';
+				state.loadingResponse = false;
+				autoscroll?.stop();
+			}
+		}
+	}
+
+	async function sendLudwigChatMessage(predefinedPrompt?: string) {
+		if (!userId) return;
+		if (!state.prompt && !predefinedPrompt) return;
+
+		state.error = undefined;
+		state.loadingResponse = true;
+
+		const userPrompt = predefinedPrompt ?? state.prompt;
+		state.messages = [
+			...state.messages,
+			{
+				id: window.crypto.randomUUID() as Id<'chatMessages'>,
+				userId,
+				message: { content: userPrompt, role: 'user' },
+				createdAt: Date.now()
+			}
+		];
+		state.prompt = '';
+		autoscroll?.start();
+
+		const { data: response, error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.ludwig.mutation.streamLudwigChatResponse, {
+				workspaceId: currentWorkspaceId,
+				chatId: ludwigChatId,
+				prompt: userPrompt!
+			})
+		);
+
+		if (error) {
+			state.error = error.message;
+			state.loadingResponse = false;
+			autoscroll?.stop();
+			return;
+		}
+
+		if (!ludwigChatId) {
+			// state.ludwigChatId = response.data.chatId;
+
+			routeQuery.append(`${QueryParams.LUDWIG_CHAT_ID}=${response.data.chatId}`);
+		}
+	}
+
+	async function onSubmitLudwigChatMessage(
+		event: SubmitEvent & {
+			currentTarget: EventTarget & HTMLFormElement;
+		}
+	) {
+		event.preventDefault();
+
+		sendLudwigChatMessage();
+	}
+
+	function chatAutoScroll(node: HTMLElement) {
+		autoscroll = autoScroll(node);
+	}
+
+	onDestroy(() => {
+		autoscroll?.destroy();
+	});
+
+	return {
+		ludwigChat: state,
+		onSubmitLudwigChatMessage,
+		sendLudwigChatMessage,
+		chatAutoScroll
+	};
+}

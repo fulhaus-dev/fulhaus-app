@@ -1,4 +1,4 @@
 import { Infer } from 'convex/values';
-import { permissionValidator } from './validator';
+import { vPermissionValidator } from './validator';
 
-export type Permission = Infer<typeof permissionValidator>;
+export type Permission = Infer<typeof vPermissionValidator>;

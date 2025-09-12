@@ -1,6 +1,6 @@
 import { v } from 'convex/values';
 
-export const updateUserValidator = v.object({
+export const vUpdateUserValidator = v.object({
 	email: v.optional(v.string()),
 	firstName: v.optional(v.string()),
 	lastName: v.optional(v.string()),

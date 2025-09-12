@@ -5,6 +5,7 @@ import { browser } from '$app/environment';
 import asyncFetch from '$lib/utils/async-fetch';
 import { PUBLIC_AUTH_TOKEN_EXP_IN_MINUTES } from '$env/static/public';
 import { QueryParams } from '$lib/enums';
+import type { Value } from 'convex/values';
 
 const BROWSER = browser;
 
@@ -49,9 +50,9 @@ function setupConvex(url: string, options: ConvexClientOptions = {}) {
 	$effect(() => () => client.close());
 }
 
-function useConvexQuery<Query extends FunctionReference<'query'>>(
+function useConvexQuerySubscription<Query extends FunctionReference<'query'>>(
 	query: Query,
-	args: FunctionArgs<Query>,
+	args: FunctionArgs<Query> | (() => FunctionArgs<Query>),
 	options?: {
 		onData?: (data: FunctionReturnType<Query>) => void;
 		onError?: (error: Error) => void;
@@ -67,11 +68,18 @@ function useConvexQuery<Query extends FunctionReference<'query'>>(
 	let unsubscribe: (() => void) | null = null;
 
 	$effect(() => {
-		if (unsubscribe) unsubscribe();
+		const argsSnapshot = getArgsSnapshot(args);
+
+		if (unsubscribe) {
+			unsubscribe();
+			unsubscribe = null;
+		}
+
+		if (!argsSnapshot) return;
 
 		unsubscribe = client.onUpdate(
 			query,
-			args,
+			argsSnapshot,
 			(data) => {
 				state.response = data;
 				options?.onData?.(data);
@@ -90,4 +98,12 @@ function useConvexQuery<Query extends FunctionReference<'query'>>(
 	return { query: state };
 }
 
-export { useConvexClient, setupConvex, useConvexQuery };
+function getArgsSnapshot(
+	args: Record<string, Value> | (() => Record<string, Value>)
+): Record<string, Value> {
+	if (typeof args === 'function') args = args();
+
+	return $state.snapshot(args);
+}
+
+export { useConvexClient, setupConvex, useConvexQuerySubscription };

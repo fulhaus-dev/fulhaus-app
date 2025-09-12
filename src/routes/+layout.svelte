@@ -9,7 +9,10 @@
 	let { children } = $props();
 </script>
 
-<main class="h-screen w-screen">
-	<Navbar />
-	{@render children?.()}
+<main class="relative h-screen w-screen">
+	<Navbar class="sticky top-0 h-[2.8rem]" />
+
+	<main class="h-[calc(100%-2.8rem)] w-full">
+		{@render children?.()}
+	</main>
 </main>

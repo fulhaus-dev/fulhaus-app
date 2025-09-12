@@ -1,20 +1,26 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
 /* ------------------------------ */
 /* Custom Fonts
 /* ------------------------------ */
 @font-face {
-	font-family: 'Zodiak';
-	src: url('/fonts/Zodiak-Variable.woff2') format('woff2');
+	font-family: 'Sentient';
+	src: url('/fonts/Sentient-Variable.woff2') format('woff2');
 	font-weight: 101 901;
 	font-style: normal;
-	font-display: optional;
+	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Zodiak';
-	src: url('/fonts/Zodiak-VariableItalic.woff2') format('woff2');
+	font-family: 'Sentient';
+	src: url('/fonts/Sentient-VariableItalic.woff2') format('woff2');
 	font-weight: 101 901;
 	font-style: italic;
-	font-display: optional;
+	font-display: swap;
 }
 
 @font-face {
@@ -22,7 +28,7 @@
 	src: url('/fonts/GeneralSans-Variable.woff2') format('woff2');
 	font-weight: 200 701;
 	font-style: normal;
-	font-display: optional;
+	font-display: swap;
 }
 
 @font-face {
@@ -30,21 +36,15 @@
 	src: url('/fonts/GeneralSans-VariableItalic.woff2') format('woff2');
 	font-weight: 200 701;
 	font-style: italic;
-	font-display: optional;
+	font-display: swap;
 }
-
-@import 'tailwindcss';
-@import 'tw-animate-css';
-
-@plugin '@tailwindcss/forms';
-@plugin '@tailwindcss/typography';
 
 @theme {
 	/* ------------------------------ */
 	/* Font
     /* ------------------------------ */
 	--font-serif:
-		'Zodiak', sans-serif, ui-sans-serif, system-ui, 'Apple Color Emoji', 'Segoe UI Emoji',
+		'Sentient', sans-serif, ui-sans-serif, system-ui, 'Apple Color Emoji', 'Segoe UI Emoji',
 		'Segoe UI Symbol', 'Noto Color Emoji';
 
 	--font-sans:
@@ -166,7 +166,7 @@
 	h2,
 	h3 {
 		font-family: var(--font-serif);
-		font-weight: 500;
+		font-weight: 300;
 	}
 
 	h1 {
