@@ -6,6 +6,7 @@
 	import z from 'zod';
 
 	type FileUploadProps = {
+		class?: string;
 		title?: string;
 		maxSizeMb?: number;
 		accept?: string;
@@ -15,6 +16,7 @@
 	};
 
 	let {
+		class: className = '',
 		title,
 		accept,
 		maxSizeMb,
@@ -60,7 +62,9 @@
 	}
 </script>
 
-<div class="w-full max-w-[40rem] space-y-8 rounded-md bg-color-background-surface p-8">
+<div
+	class={cn('w-full max-w-[40rem] space-y-8 rounded-md bg-color-background-surface p-8', className)}
+>
 	<div class="space-y-4">
 		{#if !!title}
 			<h3>{title}</h3>

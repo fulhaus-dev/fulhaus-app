@@ -1,10 +1,10 @@
 import { mutation } from '../../../_generated/server';
 import authorization from '../../../middleware/authorization';
 import workspaceAssetModel from './model';
-import { vSaveWorkspaceAsset } from './validator';
+import { vSaveWorkspaceAssetFields } from './validator';
 
 export const saveWorkspaceAsset = mutation({
-	args: vSaveWorkspaceAsset,
+	args: vSaveWorkspaceAssetFields,
 	handler: async (ctx, args) => {
 		const userId = await authorization.workspaceMemberIsAuthorizedToPerformFunction(
 			ctx,

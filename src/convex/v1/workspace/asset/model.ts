@@ -1,6 +1,8 @@
 import { Infer } from 'convex/values';
-import { MutationCtx } from '../../../_generated/server';
+import { MutationCtx, QueryCtx } from '../../../_generated/server';
 import { workspaceAssetTable } from './table';
+import { Id } from '../../../_generated/dataModel';
+import { vSaveWorkspaceAsset } from './validator';
 
 async function saveWorkspaceAsset(
 	ctx: MutationCtx,
@@ -9,7 +11,28 @@ async function saveWorkspaceAsset(
 	return await ctx.db.insert('workspaceAssets', args);
 }
 
+async function getWorkspaceAssets(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
+	return await ctx.db
+		.query('workspaceAssets')
+		.withIndex('workspace_id', (q) => q.eq('workspaceId', workspaceId))
+		.take(100);
+}
+
+async function getWorkspaceAssetsByType(
+	ctx: QueryCtx,
+	args: { workspaceId: Id<'workspaces'>; type: Infer<typeof vSaveWorkspaceAsset>['type'] }
+) {
+	return await ctx.db
+		.query('workspaceAssets')
+		.withIndex('workspace_assets_by_type', (q) =>
+			q.eq('workspaceId', args.workspaceId).eq('type', args.type)
+		)
+		.take(100);
+}
+
 const workspaceAssetModel = {
-	saveWorkspaceAsset
+	saveWorkspaceAsset,
+	getWorkspaceAssets,
+	getWorkspaceAssetsByType
 };
 export default workspaceAssetModel;

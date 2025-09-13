@@ -1,8 +1,10 @@
 import { defineTable } from 'convex/server';
 import { v } from 'convex/values';
-import { vSaveWorkspaceAsset } from './validator';
+import { vSaveWorkspaceAssetFields } from './validator';
 
 export const workspaceAssetTable = defineTable({
-	...vSaveWorkspaceAsset,
+	...vSaveWorkspaceAssetFields,
 	createdById: v.id('users')
-}).index('workspace_id', ['workspaceId']);
+})
+	.index('workspace_id', ['workspaceId'])
+	.index('workspace_assets_by_type', ['workspaceId', 'type']);

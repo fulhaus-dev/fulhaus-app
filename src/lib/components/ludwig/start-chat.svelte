@@ -2,6 +2,7 @@
 	import Button from '$lib/components/button.svelte';
 	import PromptInspoImage from '$lib/assets/images/prompt-inspo.png';
 	import PromptFloorPlanImage from '$lib/assets/images/prompt-floorplan.png';
+	import DesignAssetViewer from '$lib/components/design/design-asset/design-asset-viewer.svelte';
 
 	export const PREDEFINED_PROMPTS = [
 		{ id: 'living-room', value: 'Living Room' },
@@ -25,6 +26,8 @@
 	>
 		Let's design your space together!
 	</h1>
+
+	<DesignAssetViewer />
 
 	<div class="w-fit space-y-4">
 		<div class="mx-auto flex w-fit flex-wrap gap-2">

@@ -50,6 +50,7 @@ import type * as v1_user_validator from "../v1/user/validator.js";
 import type * as v1_workspace_asset_http_action from "../v1/workspace/asset/http/action.js";
 import type * as v1_workspace_asset_model from "../v1/workspace/asset/model.js";
 import type * as v1_workspace_asset_mutation from "../v1/workspace/asset/mutation.js";
+import type * as v1_workspace_asset_query from "../v1/workspace/asset/query.js";
 import type * as v1_workspace_asset_table from "../v1/workspace/asset/table.js";
 import type * as v1_workspace_asset_validator from "../v1/workspace/asset/validator.js";
 import type * as v1_workspace_model from "../v1/workspace/model.js";
@@ -114,6 +115,7 @@ declare const fullApi: ApiFromModules<{
   "v1/workspace/asset/http/action": typeof v1_workspace_asset_http_action;
   "v1/workspace/asset/model": typeof v1_workspace_asset_model;
   "v1/workspace/asset/mutation": typeof v1_workspace_asset_mutation;
+  "v1/workspace/asset/query": typeof v1_workspace_asset_query;
   "v1/workspace/asset/table": typeof v1_workspace_asset_table;
   "v1/workspace/asset/validator": typeof v1_workspace_asset_validator;
   "v1/workspace/model": typeof v1_workspace_model;
