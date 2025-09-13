@@ -10,8 +10,8 @@
 	});
 </script>
 
-<div class="h-full w-full justify-items-center space-y-8 py-20">
-	<div>
+<div class="h-full w-full space-y-8 py-20">
+	<div class="mx-auto w-fit">
 		<h3>Get recommendations right from your Pinterest Boards</h3>
 		<p class="text-color-text-muted">
 			Connect your account to design from your existing Pinterest inspiration.
@@ -19,7 +19,7 @@
 	</div>
 
 	<Button
-		class="relative h-[32vh] w-full max-w-[32rem] border border-color-border-muted"
+		class="relative mx-auto block h-[32vh] w-full max-w-[32rem] border border-color-border-muted"
 		variant="text"
 		onclick={() => goto(`/api/pinterest/auth?redirect=${encodeURIComponent(currentRoute)}`)}
 	>

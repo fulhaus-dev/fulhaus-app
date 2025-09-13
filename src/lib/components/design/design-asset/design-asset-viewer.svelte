@@ -5,6 +5,7 @@
 	import FileUploadDialog from '$lib/components/file-upload-dialog.svelte';
 	import TextInput from '$lib/components/text-input.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
+	import { cn } from '$lib/utils/cn';
 	import { CloudUploadIcon, SearchIcon, XIcon } from '@lucide/svelte';
 	import { Tabs } from 'bits-ui';
 
@@ -16,7 +17,7 @@
 		},
 		{
 			id: 'sample',
-			label: 'Sample',
+			label: 'Samples',
 			Component: SampleAssets
 		},
 		{
@@ -26,10 +27,19 @@
 		}
 	];
 
+	type DesignAssetViewerProps = {
+		class?: string;
+	};
+
+	const { class: className = '' }: DesignAssetViewerProps = $props();
+
 	let searchMode = $state(false);
 </script>
 
-<Tabs.Root class="relative w-full rounded-md bg-color-background" value="personal">
+<Tabs.Root
+	class={cn('relative w-full rounded-md bg-color-background py-2', className)}
+	value="personal"
+>
 	<div class="sticky top-2 z-1 w-full px-2 py-1">
 		{#if !searchMode}
 			<Tabs.List
@@ -47,20 +57,24 @@
 				</div>
 
 				<div class="flex h-full items-center gap-x-4 pr-2">
-					<Tooltip class="flex cursor-pointer items-center justify-center" content="Search">
-						<button type="button" onclick={() => (searchMode = true)}>
+					<Tooltip content="Search" sideOffset={2}>
+						<button
+							class="flex cursor-pointer items-center justify-center"
+							type="button"
+							onclick={() => (searchMode = true)}
+						>
 							<SearchIcon />
 						</button>
 					</Tooltip>
 
-					<FileUploadDialog
-						class="flex h-full cursor-pointer items-center justify-center active:opacity-50"
-						title="Upload an asset"
-					>
-						<Tooltip class="cursor-pointer" content="Upload asset">
+					<Tooltip content="Upload asset" sideOffset={2}>
+						<FileUploadDialog
+							class="flex h-full cursor-pointer items-center justify-center active:opacity-50"
+							title="Upload an asset"
+						>
 							<CloudUploadIcon />
-						</Tooltip>
-					</FileUploadDialog>
+						</FileUploadDialog>
+					</Tooltip>
 				</div>
 			</Tabs.List>
 		{/if}

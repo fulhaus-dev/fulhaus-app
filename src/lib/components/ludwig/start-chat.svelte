@@ -3,6 +3,7 @@
 	import PromptInspoImage from '$lib/assets/images/prompt-inspo.png';
 	import PromptFloorPlanImage from '$lib/assets/images/prompt-floorplan.png';
 	import DesignAssetViewer from '$lib/components/design/design-asset/design-asset-viewer.svelte';
+	import DesignAssetViewerDialog from '$lib/components/design/design-asset/design-asset-viewer-dialog.svelte';
 
 	export const PREDEFINED_PROMPTS = [
 		{ id: 'living-room', value: 'Living Room' },
@@ -27,8 +28,6 @@
 		Let's design your space together!
 	</h1>
 
-	<DesignAssetViewer />
-
 	<div class="w-fit space-y-4">
 		<div class="mx-auto flex w-fit flex-wrap gap-2">
 			{#each PREDEFINED_PROMPTS as prompt (prompt.id)}
@@ -37,12 +36,14 @@
 		</div>
 
 		<div class="flex gap-x-4">
-			{@render FilePromptButton({
-				label: 'Start with inspiration',
-				description: 'Use sample images, Pinterest boards, or your own photos',
-				imageSrc: PromptInspoImage,
-				imageAlt: 'A modern living room space'
-			})}
+			<DesignAssetViewerDialog class="w-full">
+				{@render FilePromptButton({
+					label: 'Start with inspiration',
+					description: 'Use sample images, Pinterest boards, or your own photos',
+					imageSrc: PromptInspoImage,
+					imageAlt: 'A modern living room space'
+				})}
+			</DesignAssetViewerDialog>
 
 			{@render FilePromptButton({
 				label: 'Start with a floor plan',

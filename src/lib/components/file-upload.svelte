@@ -9,7 +9,7 @@
 		class?: string;
 		title?: string;
 		maxSizeMb?: number;
-		accept?: string;
+		accept?: `.${string}`;
 		multiple?: boolean;
 		onUploadFile?: (files: File[]) => void;
 		onUploadUrl?: (value: string) => void;
@@ -18,8 +18,8 @@
 	let {
 		class: className = '',
 		title,
-		accept,
-		maxSizeMb,
+		accept = '.jpeg, .jpg, .png, .pdf',
+		maxSizeMb = 10,
 		multiple = true,
 		onUploadFile = () => {},
 		onUploadUrl = () => {}
@@ -28,7 +28,7 @@
 	const acceptInfo = $derived(
 		accept
 			?.split(',')
-			.map((ext) => ext.toUpperCase())
+			.map((ext) => ext.toUpperCase().replace('.', ''))
 			.join(' | ')
 	);
 	const maxSizeMbInfo = $derived(
@@ -77,7 +77,7 @@
 			<p class="mt-4">Drag and drop or click to upload</p>
 
 			{#if acceptInfo && maxSizeMbInfo}
-				<small class="text-color-text-muted"
+				<small class="block text-xs text-color-text-muted"
 					>{`${acceptInfo ? `${acceptInfo} ` : ''}${maxSizeMbInfo}`}</small
 				>
 			{/if}

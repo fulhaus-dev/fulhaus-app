@@ -11,7 +11,7 @@
 	const { class: className = '', images, onSelect }: ImageMasonryProps = $props();
 </script>
 
-<div class="@container h-full w-full">
+<div class="@container w-full">
 	<div
 		class={cn(
 			'relative z-0 w-full columns-1 gap-x-0.5 p-0.5 pb-20 md:columns-2 @lg:columns-3 xl:@5xl:columns-5 2xl:@7xl:columns-7',
@@ -24,7 +24,10 @@
 				aria-describedby={image.description ? `desc-${image.id}` : undefined}
 				role={onSelect ? undefined : null}
 				tabindex={onSelect ? undefined : null}
-				class="group relative mb-0.5 block h-auto w-full cursor-pointer active:scale-95"
+				class={cn(
+					'group relative mb-0.5 block h-auto w-full',
+					onSelect && 'cursor-pointer active:scale-95'
+				)}
 				onclick={() => onSelect?.(image.url)}
 			>
 				<figure>
