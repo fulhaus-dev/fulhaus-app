@@ -40,3 +40,7 @@ export type ChatUser = {
 	fullName: string;
 	imageUrl?: string;
 };
+
+export type UploadFileType = 'inspo' | 'floorPlan';
+
+export type UploadType = 'device' | 'url' | 'private';

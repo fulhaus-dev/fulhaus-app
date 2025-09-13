@@ -3,12 +3,12 @@ import { internalMutation, mutation } from '../../_generated/server';
 import { otpEmail } from './email/otp';
 import authModel from './model';
 import authScheduler from './scheduler';
-import emailService from '../../email/service';
 import userModel from '../user/model';
 import ServerError from '../../response/error';
 import { SuccessData, SuccessMessage } from '../../response/success';
 import { Id } from '../../_generated/dataModel';
 import authorization from '../../middleware/authorization';
+import { internal } from '../../_generated/api';
 
 export const sendAuthOtp = mutation({
 	args: {
@@ -24,7 +24,7 @@ export const sendAuthOtp = mutation({
 
 		const headerText = `Your ${isSignUp ? 'sign up' : 'log in'} code`;
 
-		await emailService.sendEmail(ctx, {
+		await ctx.scheduler.runAfter(0, internal.email.internal.action.sendEmail, {
 			from: `Fülhaus <${process.env.AUTH_OTP_SENDER_EMAIL}>`,
 			to: email,
 			subject: `[Action required] ${headerText}`,

@@ -25,7 +25,7 @@
 	}: ChatFormProps = $props();
 </script>
 
-<form class="relative max-h-fit" {onsubmit}>
+<form class="relative max-h-fit leading-0" {onsubmit}>
 	<TextArea
 		class={cn(
 			'max-h-[40rem] min-h-12 rounded-lg rounded-br-3xl bg-color-background pr-12',

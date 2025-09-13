@@ -9,3 +9,5 @@ export const httpStatusCode = {
 	INTERNAL_SERVER_ERROR: 500,
 	SERVICE_UNAVAILABLE: 503
 } as const;
+
+export const functionNames = ['createDesign', 'getDesign'] as const;

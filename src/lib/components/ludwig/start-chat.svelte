@@ -1,5 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
+	import PromptInspoImage from '$lib/assets/images/prompt-inspo.png';
+	import PromptFloorPlanImage from '$lib/assets/images/prompt-floorplan.png';
 
 	export const PREDEFINED_PROMPTS = [
 		{ id: 'living-room', value: 'Living Room' },
@@ -35,16 +37,14 @@
 			{@render FilePromptButton({
 				label: 'Start with inspiration',
 				description: 'Use sample images, Pinterest boards, or your own photos',
-				imageSrc:
-					'https://images.unsplash.com/photo-1742367539759-6e4fc2e39209?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fGJlYXV0b2Z1bCUyMGludGVyaW9yJTIwZGVzaWduJTIwc3BhY2V8ZW58MHx8MHx8fDA%3D',
+				imageSrc: PromptInspoImage,
 				imageAlt: 'A modern living room space'
 			})}
 
 			{@render FilePromptButton({
 				label: 'Start with a floor plan',
 				description: 'Upload your floor plan',
-				imageSrc:
-					'https://images.unsplash.com/photo-1721244653580-79577d2822a2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zmxvb3IlMjBwbGFufGVufDB8fDB8fHww',
+				imageSrc: PromptFloorPlanImage,
 				imageAlt: 'Floor plan'
 			})}
 		</div>

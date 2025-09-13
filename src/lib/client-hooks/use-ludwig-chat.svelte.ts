@@ -51,8 +51,13 @@ export function useLudwigChat() {
 	const hasMessageHistory = $derived(state.messages.length > 0);
 
 	$effect(() => {
-		if (!ludwigChatId) {
+		if (!ludwigChatId && hasMessageHistory) {
 			resetState();
+			state.loading = false;
+			return;
+		}
+
+		if (!ludwigChatId) {
 			state.loading = false;
 			return;
 		}
@@ -159,7 +164,7 @@ export function useLudwigChat() {
 		state.error = undefined;
 		state.loadingResponse = true;
 
-		const userPrompt = predefinedPrompt ?? state.prompt;
+		const userPrompt = (predefinedPrompt ?? state.prompt) as string;
 		state.messages = [
 			...state.messages,
 			{
@@ -187,11 +192,7 @@ export function useLudwigChat() {
 			return;
 		}
 
-		if (!ludwigChatId) {
-			// state.ludwigChatId = response.data.chatId;
-
-			routeQuery.append(`${QueryParams.LUDWIG_CHAT_ID}=${response.data.chatId}`);
-		}
+		if (!ludwigChatId) routeQuery.append(`${QueryParams.LUDWIG_CHAT_ID}=${response.data.chatId}`);
 	}
 
 	async function onSubmitLudwigChatMessage(

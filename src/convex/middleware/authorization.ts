@@ -1,18 +1,20 @@
 import { Id } from '../_generated/dataModel';
-import { MutationCtx, QueryCtx } from '../_generated/server';
+import { ActionCtx, MutationCtx, QueryCtx } from '../_generated/server';
 import ServerError from '../response/error';
 import { FunctionName } from '../type';
 import chatModel from '../v1/chat/model';
 import userPermissionModel from '../v1/user/permission/model';
 
-async function userIsAuthenticated(ctx: MutationCtx | QueryCtx) {
+type AuthorizationCtx = MutationCtx | QueryCtx;
+
+async function userIsAuthenticated(ctx: AuthorizationCtx | ActionCtx) {
 	const userIdentity = await ctx.auth.getUserIdentity();
 	if (!userIdentity) throw ServerError.Unauthorized();
 
 	return userIdentity?.userId as Id<'users'>;
 }
 
-async function userIsWorkspaceMember(ctx: MutationCtx | QueryCtx, workspaceId: Id<'workspaces'>) {
+async function userIsWorkspaceMember(ctx: AuthorizationCtx, workspaceId: Id<'workspaces'>) {
 	const userId = await userIsAuthenticated(ctx);
 
 	const userIsMemberOfWorkspace = await userPermissionModel.isMemberOfWorkspace(ctx, {
@@ -47,7 +49,7 @@ async function workspaceMemberIsAuthorizedToPerformFunction(
 }
 
 async function isWorkspaceChat(
-	ctx: MutationCtx | QueryCtx,
+	ctx: AuthorizationCtx,
 	workspaceId: Id<'workspaces'>,
 	chatId: Id<'chats'>
 ) {

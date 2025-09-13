@@ -4,6 +4,7 @@ import { userTable } from './v1/user/table';
 import { workspaceTable } from './v1/workspace/table';
 import { userPermissionTable } from './v1/user/permission/table';
 import { chatMessageTable, chatResponseStreamTable, chatTable } from './v1/chat/table';
+import { workspaceAssetTable } from './v1/workspace/asset/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -13,5 +14,6 @@ export default defineSchema({
 	userPermissions: userPermissionTable,
 	chats: chatTable,
 	chatMessages: chatMessageTable,
-	chatResponseStreams: chatResponseStreamTable
+	chatResponseStreams: chatResponseStreamTable,
+	workspaceAssets: workspaceAssetTable
 });

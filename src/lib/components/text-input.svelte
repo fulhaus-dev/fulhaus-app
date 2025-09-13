@@ -38,33 +38,31 @@
 	}
 </script>
 
-<div class="leading-0">
-	{#if !!label}
-		<Label for={id} class="mb-2 ml-px">
-			{label}
+{#if !!label}
+	<Label for={id} class="mb-2 ml-px">
+		{label}
 
-			{#if optional}
-				<small class="text-xs text-color-text-muted"> (Optional)</small>
-			{/if}
-		</Label>
-	{/if}
+		{#if optional}
+			<small class="text-xs text-color-text-muted"> (Optional)</small>
+		{/if}
+	</Label>
+{/if}
 
-	<input
-		{id}
-		class={cn(
-			'h-12 w-full rounded-md border border-color-border bg-color-background-surface px-4 placeholder:text-color-text-muted invalid:border-color-error-border focus-visible:border-color-border focus-visible:ring-2 focus-visible:ring-color-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-color-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-color-error-border',
-			className
-		)}
-		data-slot="input"
-		{type}
-		bind:value
-		inputmode={type === 'number' ? 'numeric' : undefined}
-		onblur={handleBlur}
-		oninput={handleInput}
-		{...otherTextInputProps}
-	/>
+<input
+	{id}
+	class={cn(
+		'h-12 w-full rounded-md border border-color-border bg-color-background-surface px-4 placeholder:text-color-text-muted invalid:border-color-error-border focus-visible:border-color-border focus-visible:ring-2 focus-visible:ring-color-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-color-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-color-error-border',
+		className
+	)}
+	data-slot="input"
+	{type}
+	bind:value
+	inputmode={type === 'number' ? 'numeric' : undefined}
+	onblur={handleBlur}
+	oninput={handleInput}
+	{...otherTextInputProps}
+/>
 
-	{#if showError && !!error}
-		<ErrorText class="ml-2" {error} />
-	{/if}
-</div>
+{#if showError && !!error}
+	<ErrorText class="ml-2" {error} />
+{/if}

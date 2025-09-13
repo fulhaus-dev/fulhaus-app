@@ -1,5 +1,5 @@
 import { Value } from 'convex/values';
-import { httpStatusCode } from './constant';
+import { functionNames, httpStatusCode } from './constant';
 
 export type HttpStatusCode = (typeof httpStatusCode)[keyof typeof httpStatusCode];
 
@@ -10,4 +10,4 @@ export type ErrorData = {
 	details?: ErrorDetails;
 };
 
-export type FunctionName = 'createDesign' | 'getDesign';
+export type FunctionName = (typeof functionNames)[number];

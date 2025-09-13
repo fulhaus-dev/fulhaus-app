@@ -6,7 +6,7 @@ export const GET = async ({ cookies, url }) => {
 	const forceRefreshToken = url.searchParams.get(QueryParams.FORCE_REFRESH_TOKEN) === '1';
 	const { authSessionId, authToken: currentAuthToken } = getAuthParams(cookies);
 
-	let authToken = currentAuthToken;
+	let authToken = currentAuthToken ?? null;
 
 	if ((forceRefreshToken && authSessionId) || (authSessionId && !authToken))
 		authToken = await refreshAuthToken(cookies, authSessionId as Id<'sessions'>);
