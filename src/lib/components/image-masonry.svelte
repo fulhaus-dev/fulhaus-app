@@ -25,7 +25,7 @@
 				role={onSelect ? undefined : null}
 				tabindex={onSelect ? undefined : null}
 				class={cn(
-					'group relative mb-0.5 block h-auto w-full',
+					'group relative mb-0.5 block h-auto w-full rounded-md bg-color-background-surface',
 					onSelect && 'cursor-pointer active:scale-95'
 				)}
 				onclick={() => onSelect?.(image.url)}

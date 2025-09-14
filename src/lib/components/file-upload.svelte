@@ -12,7 +12,7 @@
 		accept?: `.${string}`;
 		multiple?: boolean;
 		onUploadFile?: (files: File[]) => void;
-		onUploadUrl?: (value: string) => void;
+		onUploadUrl?: (url: string) => void;
 	};
 
 	let {
@@ -20,7 +20,7 @@
 		title,
 		accept = '.jpeg, .jpg, .png, .pdf',
 		maxSizeMb = 10,
-		multiple = true,
+		multiple = false,
 		onUploadFile = () => {},
 		onUploadUrl = () => {}
 	}: FileUploadProps = $props();
@@ -53,6 +53,7 @@
 		if (!fileList) return;
 
 		onUploadFile(Array.from(fileList));
+		uploadFiles = '';
 	}
 
 	function handleUrlUpload() {

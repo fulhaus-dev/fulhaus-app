@@ -1,8 +1,10 @@
 import type { ErrorRecord } from '$lib/types';
 import error from '$lib/utils/error';
 
-export type AsyncFetchOptions = Omit<RequestInit, 'method'> & { ignoreContentType?: boolean };
-type AsyncFetchRequestInit = RequestInit & { ignoreContentType?: boolean };
+type CustomAsyncFetchOptions = { ignoreContentType?: boolean };
+
+export type AsyncFetchOptions = Omit<RequestInit, 'method'> & CustomAsyncFetchOptions;
+type AsyncFetchRequestInit = RequestInit & CustomAsyncFetchOptions;
 
 type AsyncFetchResponse =
 	| {

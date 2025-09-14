@@ -2,13 +2,14 @@ import { goto } from '$app/navigation';
 import { page } from '$app/state';
 import type { QueryParams } from '$lib/enums';
 import { tick } from 'svelte';
+import { SvelteURLSearchParams } from 'svelte/reactivity';
 
 export function useRouteQuery() {
 	function append(
 		queryString: `${QueryParams}=${string}` | `${QueryParams}=${string}&${QueryParams}=${string}`,
 		options: Parameters<typeof goto>[1] = {}
 	) {
-		const params = new URLSearchParams(page.url.searchParams);
+		const params = new SvelteURLSearchParams(page.url.searchParams);
 
 		const queryStringArray = queryString.split('&');
 

@@ -164,7 +164,6 @@ export function useAuth() {
 
 		const { error } = await asyncTryCatch(() =>
 			convexClient.mutation(api.v1.user.mutation.updateUserById, {
-				userId: state.userId!,
 				updates: {
 					firstName: state.firstName,
 					lastName: state.lastName,

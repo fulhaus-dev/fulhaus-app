@@ -10,7 +10,7 @@ const encodeBase64 = (str: string) => {
 
 export async function GET({ url, cookies }) {
 	const code = url.searchParams.get('code');
-	if (!code) error(500, 'Could not connect to Pinterest');
+	if (!code) throw error(500, 'Could not connect to Pinterest');
 
 	const stateString = url.searchParams.get('state');
 	const { data: state } = tryCatch<{ userId: string; redirectTo: string }>(() =>

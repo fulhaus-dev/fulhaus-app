@@ -41,6 +41,4 @@ export type ChatUser = {
 	imageUrl?: string;
 };
 
-export type UploadFileType = 'inspo' | 'floorPlan';
-
-export type UploadType = 'device' | 'url' | 'private';
+export type DesignAssetFileType = Doc<'workspaceAssets'>['type'];

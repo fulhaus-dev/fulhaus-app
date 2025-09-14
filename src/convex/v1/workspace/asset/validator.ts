@@ -22,12 +22,3 @@ export const vAssetMetadata = v.union(
 );
 
 export const vWorkspaceAssetType = v.union(v.literal('inspo'), v.literal('floorplan'));
-
-export const vSaveWorkspaceAssetFields = {
-	workspaceId: v.id('workspaces'),
-	type: vWorkspaceAssetType,
-	url: v.string(),
-	metadata: vAssetMetadata
-};
-
-export const vSaveWorkspaceAsset = v.object(vSaveWorkspaceAssetFields);

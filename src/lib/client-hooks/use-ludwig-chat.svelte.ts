@@ -4,7 +4,7 @@ import {
 } from '$lib/client-hooks/convex.client.svelte.js';
 import { page } from '$app/state';
 import { asyncTryCatch } from '$lib/utils/try-catch.js';
-import { useRouteQuery } from '$lib/client-hooks/use-route-query.js';
+import { useRouteQuery } from '$lib/client-hooks/use-route-query.svelte.js';
 import { QueryParams } from '$lib/enums.js';
 import { onDestroy } from 'svelte';
 import type { ChatMessageDoc, ChatUser } from '$lib/types.js';

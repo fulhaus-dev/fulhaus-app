@@ -2,8 +2,8 @@
 	import Button from '$lib/components/button.svelte';
 	import PromptInspoImage from '$lib/assets/images/prompt-inspo.png';
 	import PromptFloorPlanImage from '$lib/assets/images/prompt-floorplan.png';
-	import DesignAssetViewer from '$lib/components/design/design-asset/design-asset-viewer.svelte';
 	import DesignAssetViewerDialog from '$lib/components/design/design-asset/design-asset-viewer-dialog.svelte';
+	import DesignAssetUploadDialog from '$lib/components/design/design-asset/design-asset-upload-dialog.svelte';
 
 	export const PREDEFINED_PROMPTS = [
 		{ id: 'living-room', value: 'Living Room' },
@@ -45,12 +45,19 @@
 				})}
 			</DesignAssetViewerDialog>
 
-			{@render FilePromptButton({
-				label: 'Start with a floor plan',
-				description: 'Upload your floor plan',
-				imageSrc: PromptFloorPlanImage,
-				imageAlt: 'Floor plan'
-			})}
+			<DesignAssetUploadDialog
+				class="w-full"
+				type="floorplan"
+				title="Upload floor plan"
+				accept=".jpg, .jpeg, .png, .pdf"
+			>
+				{@render FilePromptButton({
+					label: 'Start with a floor plan',
+					description: 'Upload your floor plan',
+					imageSrc: PromptFloorPlanImage,
+					imageAlt: 'Floor plan'
+				})}
+			</DesignAssetUploadDialog>
 		</div>
 	</div>
 </div>
@@ -75,9 +82,8 @@
 	imageSrc: string;
 	imageAlt: string;
 })}
-	<Button
-		class="items start h-auto w-full justify-between gap-x-20 rounded-lg p-1 pl-2 text-sm"
-		variant="filled"
+	<div
+		class="items start relative inline-flex h-auto w-full cursor-pointer items-center justify-between gap-x-20 rounded-lg border border-color-action-border-muted bg-color-action-background p-1 pl-2 text-sm font-medium whitespace-nowrap text-color-action-text ring-2 ring-color-focus-ring-muted active:opacity-50 disabled:cursor-not-allowed disabled:border-1 disabled:opacity-50 disabled:ring-0"
 	>
 		<p class="text-start text-sm text-wrap">
 			<span class="block font-semibold">{label}</span>
@@ -85,5 +91,5 @@
 		</p>
 
 		<img class="h-20 w-20 rounded-md object-cover" src={imageSrc} alt={imageAlt} />
-	</Button>
+	</div>
 {/snippet}

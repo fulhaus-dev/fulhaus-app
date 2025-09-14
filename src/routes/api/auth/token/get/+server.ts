@@ -1,5 +1,6 @@
 import { QueryParams } from '$lib/enums';
 import { getAuthParams, refreshAuthToken } from '$lib/server/authenticate';
+import { error } from '@sveltejs/kit';
 import type { Id } from '../../../../../convex/_generated/dataModel';
 
 export const GET = async ({ cookies, url }) => {
@@ -11,11 +12,7 @@ export const GET = async ({ cookies, url }) => {
 	if ((forceRefreshToken && authSessionId) || (authSessionId && !authToken))
 		authToken = await refreshAuthToken(cookies, authSessionId as Id<'sessions'>);
 
-	if (!authToken)
-		return new Response(JSON.stringify({ authToken }), {
-			status: 404,
-			headers: { 'Content-Type': 'application/json' }
-		});
+	if (!authToken) throw error(404, 'Token not found');
 
 	return new Response(JSON.stringify({ authToken }), {
 		status: 200,

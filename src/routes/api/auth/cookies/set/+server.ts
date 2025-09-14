@@ -1,14 +1,11 @@
 import { setAuthCookies, type SetAuthCookieData } from '$lib/server/authenticate';
+import { error } from '@sveltejs/kit';
 
 export const POST = async ({ request, cookies }) => {
 	const setAuthCookieData: SetAuthCookieData = await request.json();
 
 	const { userId, currentWorkspaceId, token, sessionId } = setAuthCookieData;
-	if (!userId || !currentWorkspaceId || !token || !sessionId)
-		return new Response(JSON.stringify({ message: 'Bad request' }), {
-			status: 400,
-			headers: { 'Content-Type': 'application/json' }
-		});
+	if (!userId || !currentWorkspaceId || !token || !sessionId) throw error(400, 'Bad request');
 
 	setAuthCookies(cookies, setAuthCookieData);
 

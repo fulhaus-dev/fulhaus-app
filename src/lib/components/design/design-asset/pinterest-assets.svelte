@@ -3,6 +3,8 @@
 	import Button from '$lib/components/button.svelte';
 	import { onMount } from 'svelte';
 
+	const { onSelect }: { onSelect?: (imageUrl: string) => void } = $props();
+
 	let currentRoute = $state('/');
 
 	onMount(() => {

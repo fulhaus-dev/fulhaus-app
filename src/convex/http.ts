@@ -11,7 +11,7 @@ http.route({
 });
 
 http.route({
-	path: '/workspace/asset',
+	path: '/workspace/upload-asset',
 	method: 'POST',
 	handler: uploadWorkspaceAsset
 });

@@ -48,7 +48,7 @@ export default class ServerError extends ConvexError<ErrorData> {
 		return new ServerError(message, httpStatusCode.TOO_MANY_REQUESTS, details);
 	}
 
-	static InternalServer(message = 'Internal server error.', details?: ErrorDetails) {
+	static InternalServerError(message = 'Internal server error.', details?: ErrorDetails) {
 		return new ServerError(message, httpStatusCode.INTERNAL_SERVER_ERROR, details);
 	}
 

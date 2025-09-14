@@ -1,24 +1,27 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import { useRouteQuery } from '$lib/client-hooks/use-route-query.svelte';
+	import DesignAssetUploadDialog from '$lib/components/design/design-asset/design-asset-upload-dialog.svelte';
 	import PinterestAssets from '$lib/components/design/design-asset/pinterest-assets.svelte';
 	import SampleAssets from '$lib/components/design/design-asset/sample-assets.svelte';
 	import WorkspaceAssets from '$lib/components/design/design-asset/workspace-assets.svelte';
-	import FileUploadDialog from '$lib/components/file-upload-dialog.svelte';
 	import TextInput from '$lib/components/text-input.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
+	import { QueryParams } from '$lib/enums';
 	import { cn } from '$lib/utils/cn';
 	import { CloudUploadIcon, SearchIcon, XIcon } from '@lucide/svelte';
 	import { Tabs } from 'bits-ui';
 
 	const tabs = [
 		{
-			id: 'personal',
-			label: 'Your Assets',
-			Component: WorkspaceAssets
-		},
-		{
 			id: 'sample',
 			label: 'Samples',
 			Component: SampleAssets
+		},
+		{
+			id: 'personal',
+			label: 'Your Assets',
+			Component: WorkspaceAssets
 		},
 		{
 			id: 'pinterest',
@@ -29,16 +32,27 @@
 
 	type DesignAssetViewerProps = {
 		class?: string;
+		onSelect?: (imageUrl: string) => void;
 	};
 
-	const { class: className = '' }: DesignAssetViewerProps = $props();
+	const { class: className = '', onSelect }: DesignAssetViewerProps = $props();
 
 	let searchMode = $state(false);
+
+	const routeQuery = useRouteQuery();
+
+	function getTabValue() {
+		return page.url.searchParams.get(QueryParams.ACTIVE_DESIGN_ASSET_TAB) ?? 'sample';
+	}
+
+	function setTabValue(newValue: string) {
+		routeQuery.append(`${QueryParams.ACTIVE_DESIGN_ASSET_TAB}=${newValue}`);
+	}
 </script>
 
 <Tabs.Root
 	class={cn('relative w-full rounded-md bg-color-background py-2', className)}
-	value="personal"
+	bind:value={getTabValue, setTabValue}
 >
 	<div class="sticky top-2 z-1 w-full px-2 py-1">
 		{#if !searchMode}
@@ -67,13 +81,15 @@
 						</button>
 					</Tooltip>
 
-					<Tooltip content="Upload asset" sideOffset={2}>
-						<FileUploadDialog
+					<Tooltip content="Upload" sideOffset={2}>
+						<DesignAssetUploadDialog
+							type="inspo"
 							class="flex h-full cursor-pointer items-center justify-center active:opacity-50"
-							title="Upload an asset"
+							title="Upload inspiration image"
+							accept=".jpeg, .jpg, .png"
 						>
 							<CloudUploadIcon />
-						</FileUploadDialog>
+						</DesignAssetUploadDialog>
 					</Tooltip>
 				</div>
 			</Tabs.List>
@@ -99,7 +115,7 @@
 	{#each tabs as tab (tab.id)}
 		<Tabs.Content value={tab.id}>
 			{#if tab.Component}
-				<tab.Component />
+				<tab.Component {onSelect} />
 			{/if}
 		</Tabs.Content>
 	{/each}

@@ -2,7 +2,7 @@ import { Infer } from 'convex/values';
 import { MutationCtx, QueryCtx } from '../../../_generated/server';
 import { workspaceAssetTable } from './table';
 import { Id } from '../../../_generated/dataModel';
-import { vSaveWorkspaceAsset } from './validator';
+import { vWorkspaceAssetType } from './validator';
 
 async function saveWorkspaceAsset(
 	ctx: MutationCtx,
@@ -20,7 +20,7 @@ async function getWorkspaceAssets(ctx: QueryCtx, workspaceId: Id<'workspaces'>) 
 
 async function getWorkspaceAssetsByType(
 	ctx: QueryCtx,
-	args: { workspaceId: Id<'workspaces'>; type: Infer<typeof vSaveWorkspaceAsset>['type'] }
+	args: { workspaceId: Id<'workspaces'>; type: Infer<typeof vWorkspaceAssetType> }
 ) {
 	return await ctx.db
 		.query('workspaceAssets')
