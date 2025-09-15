@@ -8,11 +8,7 @@
 	type ChatFormProps = {
 		loading?: boolean;
 		onCancel?: () => void;
-		onsubmit?: (
-			event: SubmitEvent & {
-				currentTarget: EventTarget & HTMLFormElement;
-			}
-		) => void;
+		onsubmit?: (event: Event) => void;
 	} & Omit<ComponentProps<typeof TextArea>, 'onsubmit'>;
 
 	let {
@@ -23,6 +19,10 @@
 		onsubmit,
 		...textAreaProps
 	}: ChatFormProps = $props();
+
+	function onkeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter' && !event.shiftKey) onsubmit?.(event);
+	}
 </script>
 
 <form class="relative max-h-fit leading-0" {onsubmit}>
@@ -33,12 +33,13 @@
 		)}
 		placeholder="Ask me anything..."
 		bind:value
+		{onkeydown}
 		{...textAreaProps}
 	/>
 
 	{#if loading}
 		<Button class="absolute right-1 bottom-1 z-1 size-8 rounded-full p-1.5" onclick={onCancel}>
-			<div class="bg-color-surface size-full animate-pulse rounded"></div>
+			<div class="size-full animate-pulse rounded bg-color-background-surface"></div>
 		</Button>
 	{/if}
 

@@ -1,22 +1,28 @@
 import { v } from 'convex/values';
 import { internalAction } from '../../../_generated/server';
 import { smoothStream, streamText } from 'ai';
-import { googleGemini2_5FlashChat } from '../../../config/google';
 import { internal } from '../../../_generated/api';
 import { vChatMessage } from '../validator';
+import { vAiAgentOptions, vAiAgentToolFnSet } from '../../../validator';
+import { getAiAgentTools } from '../util';
 
 export const streamChatResponse = internalAction({
 	args: {
 		workspaceId: v.id('workspaces'),
 		userId: v.id('users'),
 		chatId: v.id('chats'),
+		agentOptions: vAiAgentOptions,
+		agentToolFnSet: v.optional(vAiAgentToolFnSet),
 		messages: v.array(vChatMessage)
 	},
-	handler: async (ctx, { workspaceId, userId, chatId, messages }) => {
+
+	handler: async (ctx, { workspaceId, userId, chatId, agentOptions, agentToolFnSet, messages }) => {
+		const agentTools = getAiAgentTools({ ctx, workspaceId, chatId, userId }, agentToolFnSet);
+
 		const result = streamText({
-			model: googleGemini2_5FlashChat,
-			system: 'You are a helpful assistant.',
+			...agentOptions,
 			messages,
+			tools: agentTools,
 			experimental_transform: smoothStream({
 				delayInMs: 20
 			}),

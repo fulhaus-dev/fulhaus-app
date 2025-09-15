@@ -31,3 +31,17 @@ export const deleteChatResponseStreams = internalMutation({
 	},
 	handler: async (ctx, args) => await chatModel.deleteChatResponseStreams(ctx, args)
 });
+
+export const updateChatById = internalMutation({
+	args: {
+		chatId: v.id('chats'),
+		projectId: v.optional(v.id('projects')),
+		designId: v.optional(v.id('designs'))
+	},
+	handler: async (ctx, args) => {
+		await chatModel.updateChatById(ctx, args.chatId, {
+			projectId: args.projectId,
+			designId: args.designId
+		});
+	}
+});

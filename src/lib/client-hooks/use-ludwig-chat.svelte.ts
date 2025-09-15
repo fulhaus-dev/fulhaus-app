@@ -45,6 +45,7 @@ export function useLudwigChat() {
 		} as ChatUsersMetadata,
 		loading: true,
 		loadingResponse: false,
+		isStreaming: false,
 		error: undefined as string | undefined
 	});
 
@@ -125,6 +126,8 @@ export function useLudwigChat() {
 		if (Object.keys(chatResponseStreams[0] ?? {}).length < 1) return;
 		let currentStreamedMessage = '';
 
+		state.isStreaming = true;
+
 		for (const chatResponseStream of chatResponseStreams) {
 			if (chatResponseStream.type !== 'start') state.loadingResponse = true;
 
@@ -152,6 +155,7 @@ export function useLudwigChat() {
 				streamedMessageIndex = undefined;
 				currentStreamedMessage = '';
 				state.loadingResponse = false;
+				state.isStreaming = false;
 				autoscroll?.stop();
 			}
 		}
@@ -195,11 +199,7 @@ export function useLudwigChat() {
 		if (!ludwigChatId) routeQuery.append(`${QueryParams.LUDWIG_CHAT_ID}=${response.data.chatId}`);
 	}
 
-	async function onSubmitLudwigChatMessage(
-		event: SubmitEvent & {
-			currentTarget: EventTarget & HTMLFormElement;
-		}
-	) {
+	async function onSubmitLudwigChatMessage(event: Event) {
 		event.preventDefault();
 
 		sendLudwigChatMessage();

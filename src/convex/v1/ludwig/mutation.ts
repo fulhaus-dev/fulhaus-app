@@ -5,6 +5,7 @@ import authorization from '../../middleware/authorization';
 import chatModel from '../chat/model';
 import { vChatUserMessage } from '../chat/validator';
 import { internal } from '../../_generated/api';
+import { ludwigAgentOptions, ludwigAgentToolFnSet } from './ai/agent';
 
 export const streamLudwigChatResponse = mutation({
 	args: {
@@ -38,15 +39,32 @@ export const streamLudwigChatResponse = mutation({
 			message: userMessage
 		});
 
-		const chatMessages = await chatModel.getChatMessages(ctx, {
-			workspaceId,
-			chatId
-		});
+		const [chat, chatMessages] = await Promise.all([
+			chatModel.getChatById(ctx, chatId),
+			chatModel.getChatMessages(ctx, {
+				workspaceId,
+				chatId
+			})
+		]);
+
+		let ludwigDesignContext = ``;
+
+		const contextParts = [];
+		if (chat?.projectId) contextParts.push(`The project ID is ${chat.projectId}`);
+
+		if (chat?.designId) contextParts.push(`The design ID is ${chat.designId}`);
+
+		if (contextParts.length > 0) ludwigDesignContext = contextParts.join('\n') + '\n';
 
 		await ctx.scheduler.runAfter(0, internal.v1.chat.internal.action.streamChatResponse, {
 			workspaceId,
 			userId,
 			chatId,
+			agentOptions: {
+				...ludwigAgentOptions,
+				system: ludwigDesignContext + ludwigAgentOptions.system
+			},
+			agentToolFnSet: ludwigAgentToolFnSet,
 			messages: chatMessages.map((message) => message.message)
 		});
 

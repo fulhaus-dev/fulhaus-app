@@ -36,7 +36,7 @@
 		{/if}
 
 		{#if hasMessages}
-			<div class="mb-40 min-h-full w-full pt-8">
+			<div class={cn('min-h-full w-full pt-8 pb-[92%]', ludwigChat.isStreaming && 'pb-12')}>
 				{#each ludwigChat.messages as { id, userId, message } (id)}
 					{#if message?.role === 'user'}
 						<UserChatMessageCard {message} user={ludwigChat.usersMetadata[userId]} />

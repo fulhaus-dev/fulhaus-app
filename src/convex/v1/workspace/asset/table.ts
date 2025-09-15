@@ -10,4 +10,5 @@ export const workspaceAssetTable = defineTable({
 	createdById: v.id('users')
 })
 	.index('workspace_id', ['workspaceId'])
-	.index('workspace_assets_by_type', ['workspaceId', 'type']);
+	.index('workspace_assets_by_type', ['workspaceId', 'type'])
+	.index('by_url', ['url']);

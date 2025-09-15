@@ -132,6 +132,17 @@ async function deleteChatResponseStreams(
 	);
 }
 
+async function updateChatById(
+	ctx: MutationCtx,
+	chatId: Id<'chats'>,
+	args: {
+		projectId?: Id<'projects'>;
+		designId?: Id<'designs'>;
+	}
+) {
+	return await ctx.db.patch(chatId, args);
+}
+
 const chatModel = {
 	createChat,
 	saveChatMessage,
@@ -140,6 +151,7 @@ const chatModel = {
 	getChatMessages,
 	getChatMessageHistory,
 	getChatResponseStreams,
-	deleteChatResponseStreams
+	deleteChatResponseStreams,
+	updateChatById
 };
 export default chatModel;
