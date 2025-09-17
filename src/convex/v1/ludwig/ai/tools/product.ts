@@ -16,10 +16,10 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 			const productCategories = spaceTypeProductCategories[input.spaceType];
 
 			return {
-				recommendedProductCategories: productCategories.recommended,
-				allProductCategories: productCategories.all,
-				chatId: toolCtxParams.chatId,
-				message: 'Product categories for the design'
+				success: true,
+				message: `Product categories for '${input.spaceType}' retrieved successfully`,
+				...productCategories,
+				chatId: toolCtxParams.chatId
 			};
 		}
 	});

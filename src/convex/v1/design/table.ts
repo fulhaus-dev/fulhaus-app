@@ -10,6 +10,7 @@ export const designTable = defineTable({
 	description: v.string(),
 	spaceType: vSpaceType,
 	inspirationImageUrl: v.string(),
+	floorPlanUrl: v.optional(v.string()),
 	productCategories: v.array(vProductCategory),
 	renderedImageUrl: v.optional(v.string()),
 	createdById: v.id('users'),

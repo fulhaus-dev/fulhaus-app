@@ -32,7 +32,6 @@
 			<DesignAssetUpload
 				class="shadow shadow-color-shadow-muted"
 				onUpload={(url) => {
-					console.log(url);
 					onUpload?.(url);
 					open = false;
 				}}

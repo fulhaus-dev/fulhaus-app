@@ -14,10 +14,10 @@
 
 	const { message, user }: UserChatMessageCardProps = $props();
 
-	const userMessage = $derived.by(() => {
+	const userMessageContent = $derived.by(() => {
 		if (message.role !== 'user') return;
 
-		return chat.getChatMessageContentTexts(message.content);
+		return chat.getChatMessageContent(message.content);
 	});
 
 	let messageParagraphRef = $state<HTMLParagraphElement | null>(null);
@@ -30,24 +30,39 @@
 	let isExpandCard = $state(false);
 </script>
 
-{#if userMessage}
+{#if userMessageContent}
 	<div
 		class={cn(
 			'relative mt-12 flex w-fit items-center gap-x-2 rounded-2xl rounded-tr-none bg-color-background-surface p-4',
-			messageIsOverflowing && 'items-start'
+			messageIsOverflowing ||
+				(userMessageContent.some((content) => content.type === 'image') && 'items-start')
 		)}
 	>
 		<Avatar class="size-8" src={user.imageUrl} fullName={user.fullName} />
 
-		<p
-			bind:this={messageParagraphRef}
-			class={cn(
-				'max-h-20 max-w-fit flex-1 overflow-hidden text-ellipsis transition-all',
-				isExpandCard && 'max-h-auto'
-			)}
-		>
-			{userMessage}
-		</p>
+		<div>
+			{#each userMessageContent as content, i (`${content.type}-${i}`)}
+				{#if content.type === 'text'}
+					<p
+						bind:this={messageParagraphRef}
+						class={cn(
+							'max-h-20 max-w-fit flex-1 overflow-hidden text-ellipsis transition-all',
+							isExpandCard && 'max-h-auto'
+						)}
+					>
+						{content.text}
+					</p>
+				{/if}
+
+				{#if (content.type === 'image' && typeof (content as any).image === 'string') || (content.type === 'file' && typeof (content as any).data === 'string' && (content as any).mediaType.startsWith('image/'))}
+					<img
+						class="mt-2 h-auto w-48 rounded-md object-cover"
+						src={(content as any).image ?? (content as any).data}
+						alt="user chat file"
+					/>
+				{/if}
+			{/each}
+		</div>
 
 		{#if messageIsOverflowing || isExpandCard}
 			<Button

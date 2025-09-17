@@ -31,9 +31,10 @@ export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolC
 			// });
 
 			return {
+				success: true,
+				message: 'Design furniture recommendations generated successfully',
 				designId: input.designId,
-				chatId: toolCtxParams.chatId,
-				message: 'Design furniture recommendations generated successfully'
+				chatId: toolCtxParams.chatId
 			};
 		}
 	});

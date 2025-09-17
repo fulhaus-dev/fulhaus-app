@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as agent from "../agent.js";
 import type * as config_cloudflare from "../config/cloudflare.js";
 import type * as config_google from "../config/google.js";
 import type * as config_resend from "../config/resend.js";
@@ -46,14 +47,17 @@ import type * as v1_design_table from "../v1/design/table.js";
 import type * as v1_design_validator from "../v1/design/validator.js";
 import type * as v1_ludwig_ai_agent from "../v1/ludwig/ai/agent.js";
 import type * as v1_ludwig_ai_constant from "../v1/ludwig/ai/constant.js";
-import type * as v1_ludwig_ai_system from "../v1/ludwig/ai/system.js";
 import type * as v1_ludwig_ai_tools_design from "../v1/ludwig/ai/tools/design.js";
 import type * as v1_ludwig_ai_tools_product from "../v1/ludwig/ai/tools/product.js";
 import type * as v1_ludwig_ai_tools_project from "../v1/ludwig/ai/tools/project.js";
 import type * as v1_ludwig_ai_tools_recommendation from "../v1/ludwig/ai/tools/recommendation.js";
 import type * as v1_ludwig_ai_tools_ui from "../v1/ludwig/ai/tools/ui.js";
+import type * as v1_ludwig_internal_mutation from "../v1/ludwig/internal/mutation.js";
+import type * as v1_ludwig_internal_query from "../v1/ludwig/internal/query.js";
+import type * as v1_ludwig_model from "../v1/ludwig/model.js";
 import type * as v1_ludwig_mutation from "../v1/ludwig/mutation.js";
 import type * as v1_ludwig_query from "../v1/ludwig/query.js";
+import type * as v1_ludwig_table from "../v1/ludwig/table.js";
 import type * as v1_project_internal_mutation from "../v1/project/internal/mutation.js";
 import type * as v1_project_model from "../v1/project/model.js";
 import type * as v1_project_table from "../v1/project/table.js";
@@ -94,6 +98,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  agent: typeof agent;
   "config/cloudflare": typeof config_cloudflare;
   "config/google": typeof config_google;
   "config/resend": typeof config_resend;
@@ -132,14 +137,17 @@ declare const fullApi: ApiFromModules<{
   "v1/design/validator": typeof v1_design_validator;
   "v1/ludwig/ai/agent": typeof v1_ludwig_ai_agent;
   "v1/ludwig/ai/constant": typeof v1_ludwig_ai_constant;
-  "v1/ludwig/ai/system": typeof v1_ludwig_ai_system;
   "v1/ludwig/ai/tools/design": typeof v1_ludwig_ai_tools_design;
   "v1/ludwig/ai/tools/product": typeof v1_ludwig_ai_tools_product;
   "v1/ludwig/ai/tools/project": typeof v1_ludwig_ai_tools_project;
   "v1/ludwig/ai/tools/recommendation": typeof v1_ludwig_ai_tools_recommendation;
   "v1/ludwig/ai/tools/ui": typeof v1_ludwig_ai_tools_ui;
+  "v1/ludwig/internal/mutation": typeof v1_ludwig_internal_mutation;
+  "v1/ludwig/internal/query": typeof v1_ludwig_internal_query;
+  "v1/ludwig/model": typeof v1_ludwig_model;
   "v1/ludwig/mutation": typeof v1_ludwig_mutation;
   "v1/ludwig/query": typeof v1_ludwig_query;
+  "v1/ludwig/table": typeof v1_ludwig_table;
   "v1/project/internal/mutation": typeof v1_project_internal_mutation;
   "v1/project/model": typeof v1_project_model;
   "v1/project/table": typeof v1_project_table;

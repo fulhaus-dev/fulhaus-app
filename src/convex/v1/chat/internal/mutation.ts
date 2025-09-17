@@ -39,9 +39,7 @@ export const updateChatById = internalMutation({
 		designId: v.optional(v.id('designs'))
 	},
 	handler: async (ctx, args) => {
-		await chatModel.updateChatById(ctx, args.chatId, {
-			projectId: args.projectId,
-			designId: args.designId
-		});
+		const { chatId, ...update } = args;
+		await chatModel.updateChatById(ctx, chatId, update);
 	}
 });

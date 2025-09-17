@@ -1,23 +1,26 @@
+import { stepCountIs } from 'ai';
 import { googleGemini2_5FlashChat } from '../../../config/google';
-import { systemInstruction } from './system';
 import { createDesignTool, updateDesignTool } from './tools/design';
 import { getProductCategoriesForDesignTool } from './tools/product';
 import { createProjectTool, updateProjectTool } from './tools/project';
 import { generateDesignFurnitureRecommendationTool } from './tools/recommendation';
-import { provideFloorPlanUiTool, provideInspirationImageUiTool } from './tools/ui';
+import uiTools from './tools/ui';
+import { AgentConfig } from '../../../type';
+import { Id } from '../../../_generated/dataModel';
 
-export const ludwigAgentOptions = {
-	model: googleGemini2_5FlashChat,
-	system: systemInstruction
-};
-
-export const ludwigAgentToolFnSet = {
-	createProject: createProjectTool,
-	updateProject: updateProjectTool,
-	provideInspirationImageUI: provideInspirationImageUiTool,
-	provideFloorPlanUI: provideFloorPlanUiTool,
-	getProductCategoriesForDesign: getProductCategoriesForDesignTool,
-	createDesign: createDesignTool,
-	updateDesign: updateDesignTool,
-	generateDesignFurnitureRecommendation: generateDesignFurnitureRecommendationTool
+export const ludwigAgent: AgentConfig = {
+	options: {
+		model: googleGemini2_5FlashChat,
+		systemPromptFileId: process.env.LUDWIG_SYSTEM_PROMPT_FILE_ID! as Id<'_storage'>,
+		stopWhen: stepCountIs(5)
+	},
+	toolFnSet: {
+		createProject: createProjectTool,
+		updateProject: updateProjectTool,
+		...uiTools,
+		getProductCategoriesForDesign: getProductCategoriesForDesignTool,
+		createDesign: createDesignTool,
+		updateDesign: updateDesignTool,
+		generateDesignFurnitureRecommendation: generateDesignFurnitureRecommendationTool
+	}
 };

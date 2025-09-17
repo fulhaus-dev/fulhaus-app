@@ -12,6 +12,7 @@ export const vCreateDesign = v.object({
 	description: v.string(),
 	spaceType: vSpaceType,
 	inspirationImageUrl: v.string(),
+	floorPlanUrl: v.optional(v.string()),
 	productCategories: v.array(vProductCategory)
 });
 
@@ -20,5 +21,6 @@ export const vUpdateDesign = v.object({
 	description: v.optional(v.string()),
 	spaceType: v.optional(vSpaceType),
 	inspirationImageUrl: v.optional(v.string()),
+	floorPlanUrl: v.optional(v.string()),
 	productCategories: v.optional(v.array(vProductCategory))
 });

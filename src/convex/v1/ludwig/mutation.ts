@@ -3,15 +3,17 @@ import { mutation } from '../../_generated/server';
 import { SuccessData } from '../../response/success';
 import authorization from '../../middleware/authorization';
 import chatModel from '../chat/model';
-import { vChatUserMessage } from '../chat/validator';
+import { vChatUserContent, vChatUserMessage } from '../chat/validator';
 import { internal } from '../../_generated/api';
-import { ludwigAgentOptions, ludwigAgentToolFnSet } from './ai/agent';
+import ludwigModel from './model';
 
 export const streamLudwigChatResponse = mutation({
 	args: {
 		workspaceId: v.id('workspaces'),
 		chatId: v.optional(v.id('chats')),
-		prompt: v.string()
+		content: vChatUserContent,
+		inspoImageUrl: v.optional(v.string()),
+		floorPlanUrl: v.optional(v.string())
 	},
 	handler: async (ctx, args) => {
 		const userId = await authorization.workspaceMemberIsAuthorizedToPerformFunction(
@@ -20,16 +22,26 @@ export const streamLudwigChatResponse = mutation({
 			'createDesign'
 		);
 
-		const { workspaceId, prompt } = args;
+		const { workspaceId, content } = args;
 
 		let chatId = args.chatId;
 		if (!chatId) chatId = await chatModel.createChat(ctx, { workspaceId, userId });
 
 		await authorization.isWorkspaceChat(ctx, workspaceId, chatId);
 
+		if (args.inspoImageUrl)
+			await ludwigModel.setChatTempAssetByChatId(ctx, chatId, {
+				inspoImageUrl: args.inspoImageUrl
+			});
+
+		if (args.floorPlanUrl)
+			await ludwigModel.setChatTempAssetByChatId(ctx, chatId, {
+				floorPlanUrl: args.floorPlanUrl
+			});
+
 		const userMessage: Infer<typeof vChatUserMessage> = {
 			role: 'user',
-			content: prompt
+			content
 		};
 
 		await chatModel.saveChatMessage(ctx, {
@@ -39,33 +51,18 @@ export const streamLudwigChatResponse = mutation({
 			message: userMessage
 		});
 
-		const [chat, chatMessages] = await Promise.all([
-			chatModel.getChatById(ctx, chatId),
-			chatModel.getChatMessages(ctx, {
-				workspaceId,
-				chatId
-			})
-		]);
-
-		let ludwigDesignContext = ``;
-
-		const contextParts = [];
-		if (chat?.projectId) contextParts.push(`The project ID is ${chat.projectId}`);
-
-		if (chat?.designId) contextParts.push(`The design ID is ${chat.designId}`);
-
-		if (contextParts.length > 0) ludwigDesignContext = contextParts.join('\n') + '\n';
+		const chatContext = await chatModel.getChatContext(ctx, {
+			workspaceId,
+			chatId
+		});
 
 		await ctx.scheduler.runAfter(0, internal.v1.chat.internal.action.streamChatResponse, {
 			workspaceId,
 			userId,
 			chatId,
-			agentOptions: {
-				...ludwigAgentOptions,
-				system: ludwigDesignContext + ludwigAgentOptions.system
-			},
-			agentToolFnSet: ludwigAgentToolFnSet,
-			messages: chatMessages.map((message) => message.message)
+			agentName: 'Ludwig',
+			additionalSystemContext: chatContext.chatDesignContext,
+			messages: chatContext.chatMessages.map((message) => message.message)
 		});
 
 		return SuccessData({ chatId });

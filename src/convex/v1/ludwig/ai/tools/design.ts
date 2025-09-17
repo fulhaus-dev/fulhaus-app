@@ -18,7 +18,12 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 					.describe(
 						'An literal value of the space type, that best represents the general classification of the space to be designed.'
 					),
-				inspirationImageUrl: z.url().describe('A URL of the inspiration image for the design.'),
+				inspirationImageUrl: z
+					.url()
+					.describe('The exact inspiration image url provided by the user.'),
+				floorPlanUrl: z
+					.optional(z.url())
+					.describe('The exact floor plan url provided by the user. If any'),
 				productCategories: z
 					.array(z.enum(productCategories))
 					.describe(
@@ -30,13 +35,37 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 			const { ctx, userId, workspaceId, chatId } = toolCtxParams;
 			const { projectId, ...otherInput } = input;
 
+			const ludwigChatTempAsset = await ctx.runQuery(
+				internal.v1.ludwig.internal.query.getLudwigChatTempAssetsByChatId,
+				{ chatId }
+			);
+
+			const inspirationImageUrl = ludwigChatTempAsset?.inspoImageUrl;
+			const floorPlanUrl = ludwigChatTempAsset?.floorPlanUrl;
+
+			if (!inspirationImageUrl)
+				return {
+					success: false,
+					error:
+						'Inspiration image url was not provided by the user. Did you forget to request for the inspiration image by calling the appropriate UI tool?'
+				};
+
+			if (input.floorPlanUrl && !floorPlanUrl)
+				return {
+					success: false,
+					error:
+						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
+				};
+
 			const newDesignId = await ctx.runMutation(internal.v1.design.internal.mutation.createDesign, {
 				userId,
 				create: {
 					...otherInput,
 					projectId: projectId as Id<'projects'>,
 					workspaceId,
-					chatId
+					chatId,
+					inspirationImageUrl,
+					floorPlanUrl
 				}
 			});
 
@@ -45,9 +74,17 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 				designId: newDesignId
 			});
 
+			await ctx.runMutation(
+				internal.v1.ludwig.internal.mutation.deleteLudwigChatTempAssetsByChatId,
+				{
+					chatId
+				}
+			);
+
 			return {
-				designId: newDesignId,
-				message: 'Design created successfully'
+				success: true,
+				message: 'Design created successfully',
+				designId: newDesignId
 			};
 		}
 	});
@@ -61,18 +98,24 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 				designId: z.string().describe('The ID of the design to update.'),
 				update: z
 					.object({
-						name: z.string().optional().describe('The new name for the design.'),
+						name: z.optional(z.string()).describe('The new name for the design.'),
 						description: z
-							.string()
+							.optional(z.string())
 							.describe('The new short, one sentence description for the design.'),
 						spaceType: z
-							.enum(spaceTypes)
+							.optional(z.enum(spaceTypes))
+
 							.describe(
 								'New literal value of the space type, that best represents the general classification of the space to be designed.'
 							),
-						inspirationImageUrl: z.url().describe('New URL of the inspiration image.'),
+						inspirationImageUrl: z
+							.optional(z.url())
+							.describe('The new exact inspiration image url provided by the user.'),
+						floorPlanUrl: z
+							.optional(z.url())
+							.describe('The new exact floor plan url provided by the user.'),
 						productCategories: z
-							.array(z.enum(productCategories))
+							.optional(z.array(z.enum(productCategories)))
 							.describe(
 								'New array of literal furniture product categories for the space type to be designed.'
 							)
@@ -81,8 +124,33 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 			})
 			.strip(),
 		execute: async (input) => {
-			const { ctx, userId } = toolCtxParams;
+			const { ctx, userId, chatId } = toolCtxParams;
 			const { designId, update } = input;
+
+			const ludwigChatTempAsset = await ctx.runQuery(
+				internal.v1.ludwig.internal.query.getLudwigChatTempAssetsByChatId,
+				{ chatId }
+			);
+
+			const inspirationImageUrl = ludwigChatTempAsset?.inspoImageUrl;
+			const floorPlanUrl = ludwigChatTempAsset?.floorPlanUrl;
+
+			if (update.inspirationImageUrl && !inspirationImageUrl)
+				return {
+					success: false,
+					error:
+						'Inspiration image url was not provided by the user. Did you forget to request for the inspiration image by calling the appropriate UI tool?'
+				};
+
+			if (update.floorPlanUrl && !floorPlanUrl)
+				return {
+					success: false,
+					error:
+						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
+				};
+
+			if (update.inspirationImageUrl) update.inspirationImageUrl = inspirationImageUrl;
+			if (update.floorPlanUrl) update.floorPlanUrl = floorPlanUrl;
 
 			await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
 				userId,
@@ -90,9 +158,17 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 				update
 			});
 
+			await ctx.runMutation(
+				internal.v1.ludwig.internal.mutation.deleteLudwigChatTempAssetsByChatId,
+				{
+					chatId
+				}
+			);
+
 			return {
-				designId,
-				message: 'Design updated successfully'
+				success: true,
+				message: 'Design updated successfully',
+				designId
 			};
 		}
 	});

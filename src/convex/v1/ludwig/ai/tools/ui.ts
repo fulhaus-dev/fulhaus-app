@@ -2,30 +2,40 @@ import { tool } from 'ai';
 import { AiToolCtxParams } from '../../../../type';
 import z from 'zod';
 
-export function provideInspirationImageUiTool(toolCtxParams: AiToolCtxParams) {
+function provideInspirationImageUiTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
 		description: 'Displays a UI to provide an inspiration image.',
 		inputSchema: z.object({}),
 		execute: async () => {
 			return {
+				success: true,
 				chatId: toolCtxParams.chatId,
 				uiType: 'Provide Inspiration Image',
+				toolName: 'provideInspirationImageUI',
 				message: 'Provide inspiration image UI displayed successfully'
 			};
 		}
 	});
 }
 
-export function provideFloorPlanUiTool(toolCtxParams: AiToolCtxParams) {
+function provideFloorPlanUiTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
 		description: 'Displays a UI to provide a floor plan.',
 		inputSchema: z.object({}),
 		execute: async () => {
 			return {
+				success: true,
+				message: 'Floor plan UI displayed successfully',
 				chatId: toolCtxParams.chatId,
 				uiType: 'Provide Floor Plan',
-				message: 'Provide floor plan UI displayed successfully'
+				toolName: 'provideFloorPlanUI'
 			};
 		}
 	});
 }
+
+const ludwigUiTools = {
+	provideInspirationImageUI: provideInspirationImageUiTool,
+	provideFloorPlanUI: provideFloorPlanUiTool
+};
+export default ludwigUiTools;

@@ -32,7 +32,7 @@
 
 	type DesignAssetViewerProps = {
 		class?: string;
-		onSelect?: (imageUrl: string) => void;
+		onSelect?: (fileUrl: string) => void;
 	};
 
 	const { class: className = '', onSelect }: DesignAssetViewerProps = $props();

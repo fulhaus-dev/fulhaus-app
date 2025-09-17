@@ -5,6 +5,8 @@ import date from '../../util/date';
 import { vChatMessage, vChatResponseStream, vLlmUsage } from './validator';
 import array from '../../util/array';
 import userModel from '../user/model';
+import projectModel from '../project/model';
+import designModel from '../design/model';
 
 async function createChat(
 	ctx: MutationCtx,
@@ -143,6 +145,65 @@ async function updateChatById(
 	return await ctx.db.patch(chatId, args);
 }
 
+async function getChatContext(
+	ctx: QueryCtx,
+	args: {
+		workspaceId: Id<'workspaces'>;
+		chatId: Id<'chats'>;
+	}
+) {
+	const { workspaceId, chatId } = args;
+
+	const [chat, chatMessages] = await Promise.all([
+		getChatById(ctx, chatId),
+		getChatMessages(ctx, {
+			workspaceId,
+			chatId
+		})
+	]);
+
+	const chatProjectId = chat?.projectId;
+	const chatDesignId = chat?.designId;
+
+	const contextParts = [];
+
+	const [chatProject, chatProjectDesigns, currentChatDesign] = await Promise.all([
+		chatProjectId ? projectModel.getProjectById(ctx, chatProjectId) : Promise.resolve(null),
+		chatProjectId ? designModel.getProjectDesigns(ctx, chatProjectId) : Promise.resolve([]),
+		chatDesignId ? designModel.getDesignById(ctx, chatDesignId) : Promise.resolve(null)
+	]);
+
+	if (chatProject) {
+		contextParts.push(`**Current Project ID:** ${chatProject._id}\n`);
+		contextParts.push(`**Current Project Name:** ${chatProject.name}\n`);
+		contextParts.push(`**Current Project Description:** ${chatProject.description}\n`);
+		contextParts.push(`**Current Project Summary:** ${chatProject.summary}\n\n`);
+	}
+
+	if (currentChatDesign) {
+		contextParts.push(`**Current Design ID:** ${currentChatDesign._id}\n`);
+		contextParts.push(`**Current Design Name:** ${currentChatDesign.name}\n`);
+		contextParts.push(`**Current Design Description:** ${currentChatDesign.description}\n`);
+		contextParts.push(`**Current Design Space Type:** ${currentChatDesign.spaceType}\n`);
+		contextParts.push(
+			`**Current Design Inspiration Image URL:** ${currentChatDesign.inspirationImageUrl}\n`
+		);
+		contextParts.push(
+			`**Current Design Product Categories:** ${currentChatDesign.productCategories.map((category) => category).join(', ')}\n\n`
+		);
+	}
+
+	if (chatProjectDesigns.length > 0)
+		contextParts.push(
+			`**Current Project Designed Spaces:** ${chatProjectDesigns.map((design) => design.spaceType).join(', ')}\n\n`
+		);
+
+	return {
+		chatMessages,
+		chatDesignContext: contextParts.join('')
+	};
+}
+
 const chatModel = {
 	createChat,
 	saveChatMessage,
@@ -152,6 +213,7 @@ const chatModel = {
 	getChatMessageHistory,
 	getChatResponseStreams,
 	deleteChatResponseStreams,
-	updateChatById
+	updateChatById,
+	getChatContext
 };
 export default chatModel;

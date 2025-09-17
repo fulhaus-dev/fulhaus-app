@@ -1,13 +1,15 @@
 <script lang="ts">
 	import FulhausLoader from '$lib/components/loaders/fulhaus-loader.svelte';
-	import ChatBackground from '$lib/components/ludwig/chat-background.svelte';
-	import ChatForm from '$lib/components/ludwig/chat-form.svelte';
-	import StartChat from '$lib/components/ludwig/start-chat.svelte';
+	import LudwigStartChatBackground from '$lib/components/ludwig/ludwig-start-chat-background.svelte';
+	import ChatForm from '$lib/components/chat/chat-form.svelte';
+	import LudwigStartChat from '$lib/components/ludwig/ludwig-start-chat.svelte';
 	import { useLudwigChat } from '$lib/client-hooks/use-ludwig-chat.svelte';
 	import { cn } from '$lib/utils/cn';
 	import UserChatMessageCard from '$lib/components/chat/user-chat-message-card.svelte';
 	import AiChatMessageCard from '$lib/components/chat/ai-chat-message-card.svelte';
-	import LudwigLoader from '$lib/components/loaders/ludwig-loader.svelte';
+	import LudwigChatLoader from '$lib/components/ludwig/ludwig-chat-loader.svelte';
+	import LudwigChatFileInputDialog from '$lib/components/ludwig/ludwig-chat-file-input-dialog.svelte';
+	import ErrorText from '$lib/components/error-text.svelte';
 
 	const { ludwigChat, chatAutoScroll, onSubmitLudwigChatMessage, sendLudwigChatMessage } =
 		useLudwigChat();
@@ -15,7 +17,7 @@
 </script>
 
 {#if !ludwigChat.loading && !hasMessages}
-	<ChatBackground />
+	<LudwigStartChatBackground />
 {/if}
 
 <section use:chatAutoScroll class="relative h-full w-full overflow-y-scroll">
@@ -31,7 +33,17 @@
 	>
 		{#if !hasMessages}
 			<div class="pt-32 pb-12">
-				<StartChat onSelectPredefinedPrompt={sendLudwigChatMessage} />
+				<LudwigStartChat
+					onSelectPredefinedPrompt={(predefinedPrompt) =>
+						sendLudwigChatMessage({ predefinedPrompt })}
+					onSelectInspirationImage={(imageUrl) =>
+						sendLudwigChatMessage({
+							predefinedPrompt: 'Inspiration Image',
+							inspoImageUrl: imageUrl
+						})}
+					onselectFloorPlanImage={(fileUrl) =>
+						sendLudwigChatMessage({ predefinedPrompt: 'Floor Plan', floorPlanUrl: fileUrl })}
+				/>
 			</div>
 		{/if}
 
@@ -47,13 +59,32 @@
 					{/if}
 				{/each}
 
+				<div class={cn('mt-4 block', ludwigChat.loadingResponse && 'hidden')}>
+					{#if ludwigChat.activeUiToolName === 'provideInspirationImageUI'}
+						{@render LudwigChatUiToolInput({ type: 'inspo' })}
+					{/if}
+					{#if ludwigChat.activeUiToolName === 'provideFloorPlanUI'}
+						{@render LudwigChatUiToolInput({ type: 'floorplan' })}
+					{/if}
+				</div>
+
+				{#if ludwigChat.error}
+					<ErrorText error={ludwigChat.error} />
+				{/if}
+
 				{#if ludwigChat.loadingResponse}
-					<LudwigLoader class="mt-2 ml-2" />
+					<LudwigChatLoader class="mt-2 ml-2" label={ludwigChat.activeToolLoadingLabel} />
 				{/if}
 			</div>
 		{/if}
 
-		<div class={cn('w-full', hasMessages && 'sticky bottom-0 z-1 bg-color-background pb-2')}>
+		<div
+			class={cn(
+				'w-full transition-all delay-300 ease-in',
+				hasMessages && 'sticky bottom-0 z-1 bg-color-background pb-2',
+				ludwigChat.activeUiToolName && 'opacity-0'
+			)}
+		>
 			<ChatForm
 				bind:value={ludwigChat.prompt}
 				placeholder={hasMessages ? 'Reply to Ludwig...' : 'Something else?'}
@@ -63,3 +94,25 @@
 		</div>
 	</div>
 </section>
+
+{#snippet LudwigChatUiToolInput({ type }: { type: 'inspo' | 'floorplan' })}
+	<div class="w-2/5 pl-4">
+		{#if type === 'inspo'}
+			<LudwigChatFileInputDialog
+				{type}
+				label="Click to provide an inspiration image"
+				onSelect={(imageUrl) =>
+					sendLudwigChatMessage({ predefinedPrompt: 'Inspiration Image', inspoImageUrl: imageUrl })}
+			/>
+		{/if}
+
+		{#if type === 'floorplan'}
+			<LudwigChatFileInputDialog
+				{type}
+				label="Click to provide a floor plan"
+				onSelect={(fileUrl) =>
+					sendLudwigChatMessage({ predefinedPrompt: 'Floor Plan', floorPlanUrl: fileUrl })}
+			/>
+		{/if}
+	</div>
+{/snippet}

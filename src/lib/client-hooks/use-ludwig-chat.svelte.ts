@@ -7,15 +7,27 @@ import { asyncTryCatch } from '$lib/utils/try-catch.js';
 import { useRouteQuery } from '$lib/client-hooks/use-route-query.svelte.js';
 import { QueryParams } from '$lib/enums.js';
 import { onDestroy } from 'svelte';
-import type { ChatMessageDoc, ChatUser } from '$lib/types.js';
+import type { ChatMessage, ChatMessageDoc, ChatUser } from '$lib/types.js';
 import { useUser } from '$lib/client-hooks/use-user.svelte.js';
 import autoScroll from '$lib/dom-actions/auto-scroll.js';
 import type { Doc, Id } from '../../convex/_generated/dataModel';
 import { api } from '../../convex/_generated/api';
+import asyncFetch from '$lib/utils/async-fetch';
+import { LUDWIG_UI_TOOL_NAMES } from '$lib/constants';
 
 type ChatUsersMetadata = Record<string, ChatUser>;
+type ActiveUiToolName = (typeof LUDWIG_UI_TOOL_NAMES)[number];
 
 let autoscroll: ReturnType<typeof autoScroll> | undefined;
+
+const toolLoadingLabels: Record<string, string> = {
+	createProject: 'Creating project...',
+	updateProject: 'Updating project...',
+	getProductCategoriesForDesign: 'Getting product categories...',
+	createDesign: 'Creating design...',
+	updateDesign: 'Updating design...',
+	generateDesignFurnitureRecommendation: 'Generating design furniture recommendation...'
+};
 
 export function useLudwigChat() {
 	const convexClient = useConvexClient();
@@ -35,6 +47,8 @@ export function useLudwigChat() {
 
 	const state = $state({
 		prompt: undefined as string | undefined,
+		inspoImageUrl: undefined as string | undefined,
+		floorPlanUrl: undefined as string | undefined,
 		messages: [] as ChatMessageDoc[],
 		usersMetadata: {
 			[userId]: {
@@ -43,9 +57,11 @@ export function useLudwigChat() {
 				imageUrl: user?.profile?.imageUrl
 			}
 		} as ChatUsersMetadata,
+		activeUiToolName: undefined as ActiveUiToolName | undefined,
 		loading: true,
 		loadingResponse: false,
 		isStreaming: false,
+		activeToolLoadingLabel: undefined as string | undefined,
 		error: undefined as string | undefined
 	});
 
@@ -87,6 +103,7 @@ export function useLudwigChat() {
 		}
 
 		state.messages = response?.data.messages ?? [];
+		state.activeUiToolName = response?.data.activeUiToolName as ActiveUiToolName | undefined;
 		state.usersMetadata =
 			response?.data.usersMetadata.reduce<ChatUsersMetadata>((usersMetadata, metadata) => {
 				usersMetadata[metadata.userId] = metadata;
@@ -131,6 +148,13 @@ export function useLudwigChat() {
 		for (const chatResponseStream of chatResponseStreams) {
 			if (chatResponseStream.type !== 'start') state.loadingResponse = true;
 
+			if (chatResponseStream.type === 'tool-input-start')
+				state.activeToolLoadingLabel = toolLoadingLabels[chatResponseStream.toolName];
+
+			if (chatResponseStream.type === 'tool-output-available')
+				if (LUDWIG_UI_TOOL_NAMES.includes(chatResponseStream.output.toolName))
+					state.activeUiToolName = chatResponseStream.output.toolName as ActiveUiToolName;
+
 			if (chatResponseStream.type === 'text-delta') {
 				if (!streamedMessageIndex) {
 					const streamedMessageId = window.crypto.randomUUID() as Id<'chatMessages'>;
@@ -161,31 +185,78 @@ export function useLudwigChat() {
 		}
 	}
 
-	async function sendLudwigChatMessage(predefinedPrompt?: string) {
+	async function sendLudwigChatMessage({
+		predefinedPrompt,
+		inspoImageUrl,
+		floorPlanUrl
+	}: {
+		predefinedPrompt?: string;
+		inspoImageUrl?: string;
+		floorPlanUrl?: string;
+	}) {
 		if (!userId) return;
 		if (!state.prompt && !predefinedPrompt) return;
+		state.activeUiToolName = undefined;
 
 		state.error = undefined;
 		state.loadingResponse = true;
 
 		const userPrompt = (predefinedPrompt ?? state.prompt) as string;
+		const userInspoImageUrl = inspoImageUrl ?? state.inspoImageUrl;
+		const userFloorPlanUrl = floorPlanUrl ?? state.floorPlanUrl;
+
+		const userMessage: ChatMessage = {
+			role: 'user',
+			content: [{ type: 'text', text: userPrompt }]
+		};
+
+		if (userInspoImageUrl)
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(userMessage.content as any[]).push({ type: 'image', image: userInspoImageUrl });
+		if (userFloorPlanUrl) {
+			const { response, error: fileMediaTypeError } = await asyncFetch.get(
+				`/api/file-url/get-content-type?url=${encodeURIComponent(userFloorPlanUrl)}`
+			);
+
+			if (fileMediaTypeError) {
+				state.error = fileMediaTypeError.message;
+				state.loadingResponse = false;
+				return;
+			}
+
+			const data = await response.json();
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(userMessage.content as any[]).push({
+				type: 'file',
+				data: userFloorPlanUrl,
+				mediaType: data.mediaType
+			});
+		}
+
 		state.messages = [
 			...state.messages,
 			{
 				id: window.crypto.randomUUID() as Id<'chatMessages'>,
 				userId,
-				message: { content: userPrompt, role: 'user' },
+				message: userMessage,
 				createdAt: Date.now()
 			}
 		];
+
 		state.prompt = '';
+		state.inspoImageUrl = undefined;
+		state.floorPlanUrl = undefined;
+
 		autoscroll?.start();
 
 		const { data: response, error } = await asyncTryCatch(() =>
 			convexClient.mutation(api.v1.ludwig.mutation.streamLudwigChatResponse, {
 				workspaceId: currentWorkspaceId,
 				chatId: ludwigChatId,
-				prompt: userPrompt!
+				content: userMessage.content,
+				inspoImageUrl: userInspoImageUrl,
+				floorPlanUrl: userFloorPlanUrl
 			})
 		);
 
@@ -202,7 +273,7 @@ export function useLudwigChat() {
 	async function onSubmitLudwigChatMessage(event: Event) {
 		event.preventDefault();
 
-		sendLudwigChatMessage();
+		sendLudwigChatMessage({});
 	}
 
 	function chatAutoScroll(node: HTMLElement) {

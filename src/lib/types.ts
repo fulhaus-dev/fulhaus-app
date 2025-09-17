@@ -28,6 +28,8 @@ export type ImageData = {
 
 export type ChatMessage = Doc<'chatMessages'>['message'];
 
+export type ChatMessageContent = Doc<'chatMessages'>['message']['content'];
+
 export type ChatMessageDoc = {
 	id: Id<'chatMessages'>;
 	message: ChatMessage;
@@ -42,3 +44,24 @@ export type ChatUser = {
 };
 
 export type DesignAssetFileType = Doc<'workspaceAssets'>['type'];
+
+export type LudwigProjectDetails = {
+	_id: Id<'projects'>;
+	name: string;
+	description: string;
+};
+
+export type LudwigDesignDetails = {
+	_id: Id<'designs'>;
+	name: string;
+	description: string;
+	spaceType: Doc<'designs'>['spaceType'];
+	inspirationImageUrl: string;
+	floorPlanUrl?: string;
+	productCategories: Doc<'designs'>['productCategories'];
+};
+
+export type LudwigDesignDetailsResponse = {
+	projectDetails?: LudwigProjectDetails;
+	designDetails?: LudwigDesignDetails;
+};

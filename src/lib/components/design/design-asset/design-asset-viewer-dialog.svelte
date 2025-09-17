@@ -6,7 +6,7 @@
 	type DesignAssetViewerDialogProps = {
 		class?: string;
 		children: Snippet;
-		onSelect?: (imageUrl: string) => void;
+		onSelect?: (fileUrl: string) => void;
 	};
 
 	const { class: className = '', children, onSelect }: DesignAssetViewerDialogProps = $props();

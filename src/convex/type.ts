@@ -2,7 +2,7 @@ import { Value } from 'convex/values';
 import { functionNames, httpStatusCode, productCategories, spaceTypes } from './constant';
 import { ActionCtx } from './_generated/server';
 import { Id } from './_generated/dataModel';
-import { LanguageModel, ToolSet } from 'ai';
+import { LanguageModel, StopCondition, ToolSet } from 'ai';
 
 export type HttpStatusCode = (typeof httpStatusCode)[keyof typeof httpStatusCode];
 
@@ -29,5 +29,12 @@ export type ToolFnSet = Record<string, (toolCtxParams: AiToolCtxParams) => ToolS
 
 export type AiAgentOptions = {
 	model: LanguageModel;
-	system: string;
+	systemPromptFileId: Id<'_storage'>;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	stopWhen: StopCondition<any>;
+};
+
+export type AgentConfig = {
+	options: AiAgentOptions;
+	toolFnSet: ToolFnSet;
 };

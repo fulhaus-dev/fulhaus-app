@@ -22,9 +22,5 @@ export const chatMessageTable = defineTable({
 export const chatResponseStreamTable = defineTable({
 	workspaceId: v.id('workspaces'),
 	chatId: v.id('chats'),
-	stream: v.object({
-		type: v.string(),
-		id: v.optional(v.string()),
-		delta: v.optional(v.string())
-	})
+	stream: v.any()
 }).index('workspace_chat_response_stream', ['workspaceId', 'chatId']);

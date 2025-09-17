@@ -7,6 +7,7 @@ import { chatMessageTable, chatResponseStreamTable, chatTable } from './v1/chat/
 import { workspaceAssetTable } from './v1/workspace/asset/table';
 import { projectTable } from './v1/project/table';
 import { designTable } from './v1/design/table';
+import { ludwigChatTempAssetTable } from './v1/ludwig/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -19,5 +20,6 @@ export default defineSchema({
 	chatResponseStreams: chatResponseStreamTable,
 	workspaceAssets: workspaceAssetTable,
 	projects: projectTable,
-	designs: designTable
+	designs: designTable,
+	ludwigChatTempAssets: ludwigChatTempAssetTable
 });

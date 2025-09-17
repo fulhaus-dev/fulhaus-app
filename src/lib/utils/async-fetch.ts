@@ -18,10 +18,11 @@ type AsyncFetchResponse =
 
 async function executeFetch(
 	path: string,
-	options?: AsyncFetchRequestInit
+	options: AsyncFetchRequestInit
 ): Promise<AsyncFetchResponse> {
 	const headers = (options?.headers ?? {}) as Record<string, string>;
-	if (!options?.ignoreContentType) headers['Content-Type'] = 'application/json';
+	if (!options?.ignoreContentType && options.method !== 'HEAD')
+		headers['Content-Type'] = 'application/json';
 
 	try {
 		const response = await fetch(path, {
@@ -53,6 +54,8 @@ async function executeFetch(
 }
 
 const asyncFetch = {
+	head: (path: string, options: AsyncFetchOptions = {}) =>
+		executeFetch(path, { ...options, method: 'HEAD' }),
 	get: (path: string, options: AsyncFetchOptions = {}) =>
 		executeFetch(path, { ...options, method: 'GET' }),
 	post: (path: string, options: AsyncFetchOptions = {}) =>
