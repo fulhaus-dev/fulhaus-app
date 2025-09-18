@@ -1,4 +1,4 @@
-import { ProductCategory, SpaceType } from '../../../type';
+import { ProductCategory, SpaceType } from '../type';
 
 export const spaceTypeProductCategories: Record<
 	SpaceType,

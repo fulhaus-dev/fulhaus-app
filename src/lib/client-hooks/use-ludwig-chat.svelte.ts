@@ -175,6 +175,9 @@ export function useLudwigChat() {
 				state.messages[streamedMessageIndex].message.content = currentStreamedMessage;
 			}
 
+			if (chatResponseStream.type === 'error')
+				state.error = 'An error occurred. Unable to complete your request. Try again.';
+
 			if (chatResponseStream.type === 'finish') {
 				streamedMessageIndex = undefined;
 				currentStreamedMessage = '';

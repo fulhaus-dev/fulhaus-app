@@ -1,8 +1,8 @@
 import { v } from 'convex/values';
-import { productCategories, spaceTypes } from '../../constant';
+import { spaceTypes } from './space';
+import { vProductCategory } from './product/validator';
 
 export const vSpaceType = v.union(...spaceTypes.map((tag) => v.literal(tag)));
-export const vProductCategory = v.union(...productCategories.map((tag) => v.literal(tag)));
 
 export const vCreateDesign = v.object({
 	workspaceId: v.id('workspaces'),

@@ -4,6 +4,7 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 @plugin 'tailwind-scrollbar';
+@plugin '@iconify/tailwind4';
 
 /* ------------------------------ */
 /* Custom Fonts

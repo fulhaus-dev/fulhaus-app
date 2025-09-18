@@ -1,5 +1,5 @@
 import { Value } from 'convex/values';
-import { functionNames, httpStatusCode, productCategories, spaceTypes } from './constant';
+import { functionNames, httpStatusCode } from './constant';
 import { ActionCtx } from './_generated/server';
 import { Id } from './_generated/dataModel';
 import { LanguageModel, StopCondition, ToolSet } from 'ai';
@@ -14,9 +14,6 @@ export type ErrorData = {
 };
 
 export type FunctionName = (typeof functionNames)[number];
-
-export type SpaceType = (typeof spaceTypes)[number];
-export type ProductCategory = (typeof productCategories)[number];
 
 export type AiToolCtxParams = {
 	ctx: ActionCtx;

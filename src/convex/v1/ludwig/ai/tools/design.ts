@@ -2,8 +2,10 @@ import { tool } from 'ai';
 import z from 'zod';
 import { internal } from '../../../../_generated/api';
 import { Id } from '../../../../_generated/dataModel';
-import { productCategories, spaceTypes } from '../../../../constant';
+
 import { AiToolCtxParams } from '../../../../type';
+import { spaceTypes } from '../../../design/space';
+import { productCategories } from '../../../design/product/category';
 
 export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({

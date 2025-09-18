@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { cn } from '$lib/utils/cn';
 	import { Tooltip } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 
@@ -9,17 +10,21 @@
 		sideOffset?: number;
 	};
 
-	const { class: className = '', children, content, sideOffset = 8 }: TooltipProps = $props();
+	const { class: className = '', children, content, sideOffset = 4 }: TooltipProps = $props();
 </script>
 
 <Tooltip.Provider>
 	<Tooltip.Root delayDuration={200}>
-		<Tooltip.Trigger class={className}>
-			{@render children()}
+		<Tooltip.Trigger class={cn('flex cursor-pointer items-center justify-center', className)}>
+			{#snippet child({ props })}
+				<div {...props}>
+					{@render children()}
+				</div>
+			{/snippet}
 		</Tooltip.Trigger>
-		<Tooltip.Content {sideOffset}>
+		<Tooltip.Content class="z-50" {sideOffset}>
 			<div
-				class="z-0 flex items-center justify-center rounded-md border border-color-border-muted bg-color-background px-2 py-0.5 text-[10px] font-medium shadow-xs shadow-color-shadow-muted outline-hidden"
+				class="flex items-center justify-center rounded-md border border-color-border-muted bg-color-action-background px-2 py-0.5 text-[10px] font-semibold text-color-action-text shadow-xs shadow-color-shadow-muted outline-hidden"
 			>
 				{content}
 			</div>

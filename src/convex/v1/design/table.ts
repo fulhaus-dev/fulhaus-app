@@ -1,6 +1,7 @@
 import { defineTable } from 'convex/server';
 import { v } from 'convex/values';
-import { vProductCategory, vSpaceType } from './validator';
+import { vSpaceType } from './validator';
+import { vProductCategory } from './product/validator';
 
 export const designTable = defineTable({
 	workspaceId: v.id('workspaces'),

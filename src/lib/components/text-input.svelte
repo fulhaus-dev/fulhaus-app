@@ -2,6 +2,7 @@
 	import ErrorText from '$lib/components/error-text.svelte';
 	import Label from '$lib/components/label.svelte';
 	import { cn } from '$lib/utils/cn';
+	import type { WithElementRef } from 'bits-ui';
 
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
@@ -13,6 +14,7 @@
 	} & Omit<HTMLInputAttributes, 'type'>;
 
 	let {
+		ref = $bindable(null),
 		id,
 		class: className = '',
 		type,
@@ -23,7 +25,7 @@
 		oninput,
 		onblur,
 		...otherTextInputProps
-	}: TextInputProps = $props();
+	}: WithElementRef<TextInputProps> = $props();
 
 	let showError = $state(false);
 
@@ -49,6 +51,7 @@
 {/if}
 
 <input
+	bind:this={ref}
 	{id}
 	class={cn(
 		'h-12 w-full rounded-md border border-color-border bg-color-background-surface px-4 placeholder:text-color-text-muted invalid:border-color-error-border focus-visible:border-color-border focus-visible:ring-2 focus-visible:ring-color-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-color-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-color-error-border',

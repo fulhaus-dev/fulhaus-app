@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import FulhausLogoWordmark from '$lib/components/fulhaus-logo-wordmark.svelte';
-	import NavbarUserDropdownMenu from '$lib/components/layout/navbar-user-dropdown-menu.svelte';
+	import NavbarUserDropdownMenu from '$lib/components/layout/navbar/navbar.user-dropdown-menu.svelte';
 	import Link from '$lib/components/link.svelte';
 	import { cn } from '$lib/utils/cn';
 	import { CircleQuestionMarkIcon, ShoppingCartIcon, Icon } from '@lucide/svelte';

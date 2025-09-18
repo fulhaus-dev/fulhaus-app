@@ -10,6 +10,6 @@ export const updateUserById = mutation({
 	handler: async (ctx, { updates }) => {
 		const userId = await authorization.userIsAuthenticated(ctx);
 
-		await userModel.updateUserById(ctx, { userId, updates });
+		return await userModel.updateUserById(ctx, { userId, updates });
 	}
 });

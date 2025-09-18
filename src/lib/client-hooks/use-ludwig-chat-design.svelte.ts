@@ -24,7 +24,6 @@ export function useLudwigChatDesign() {
 		{
 			onData: (ludwigDesignDetailsQuery) => {
 				state.designData = ludwigDesignDetailsQuery.data;
-				console.log('ludwigDesignDetailsQuery', ludwigDesignDetailsQuery.data);
 			}
 		}
 	);

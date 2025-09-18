@@ -65,3 +65,20 @@ export type LudwigDesignDetailsResponse = {
 	projectDetails?: LudwigProjectDetails;
 	designDetails?: LudwigDesignDetails;
 };
+
+export type UpdateProject = {
+	name?: string;
+	description?: string;
+	summary?: string;
+};
+
+export type SpaceType = Doc<'designs'>['spaceType'];
+export type ProductCategories = Doc<'designs'>['productCategories'];
+
+export type UpdateDesign = {
+	name?: string;
+	description?: string;
+	inspirationImageUrl?: string;
+	floorPlanUrl?: string;
+	productCategories?: ProductCategories;
+};

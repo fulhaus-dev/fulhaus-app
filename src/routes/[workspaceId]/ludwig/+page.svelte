@@ -68,7 +68,7 @@
 					{/if}
 				</div>
 
-				{#if ludwigChat.error}
+				{#if ludwigChat.error && !ludwigChat.loadingResponse}
 					<ErrorText error={ludwigChat.error} />
 				{/if}
 

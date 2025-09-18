@@ -1,8 +1,8 @@
 import { tool } from 'ai';
 import { AiToolCtxParams } from '../../../../type';
 import z from 'zod';
-import { spaceTypes } from '../../../../constant';
-import { spaceTypeProductCategories } from '../constant';
+import { spaceTypes } from '../../../design/space';
+import designProductModel from '../../../design/product/model';
 
 export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
@@ -13,7 +13,7 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 			})
 			.strip(),
 		execute: async (input) => {
-			const productCategories = spaceTypeProductCategories[input.spaceType];
+			const productCategories = designProductModel.getProductCategoriesForSpace(input.spaceType);
 
 			return {
 				success: true,
