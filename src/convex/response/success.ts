@@ -1,6 +1,6 @@
 import { httpStatusCode } from '../constant';
 
-export function SuccessData<T extends Object>(data: T) {
+export function SuccessData<T extends object>(data: T) {
 	return {
 		statusCode: httpStatusCode.OK,
 		data

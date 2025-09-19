@@ -13,7 +13,9 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 			})
 			.strip(),
 		execute: async (input) => {
-			const productCategories = designProductModel.getProductCategoriesForSpace(input.spaceType);
+			const productCategories = designProductModel.getDesignProductCategoriesForSpace(
+				input.spaceType
+			);
 
 			return {
 				success: true,

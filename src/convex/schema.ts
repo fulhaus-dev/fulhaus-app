@@ -8,6 +8,7 @@ import { workspaceAssetTable } from './v1/workspace/asset/table';
 import { projectTable } from './v1/project/table';
 import { designTable } from './v1/design/table';
 import { ludwigChatTempAssetTable } from './v1/ludwig/table';
+import { designProductTable } from './v1/design/product/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -21,5 +22,6 @@ export default defineSchema({
 	workspaceAssets: workspaceAssetTable,
 	projects: projectTable,
 	designs: designTable,
-	ludwigChatTempAssets: ludwigChatTempAssetTable
+	ludwigChatTempAssets: ludwigChatTempAssetTable,
+	designProducts: designProductTable
 });

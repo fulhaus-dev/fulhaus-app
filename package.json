@@ -60,7 +60,7 @@
 		"@react-email/render": "^1.2.3",
 		"ai": "^5.0.41",
 		"bits-ui": "^2.9.6",
-		"convex": "^1.27.0",
+		"convex": "^1.27.1",
 		"dompurify": "^3.2.6",
 		"image-size": "^2.0.2",
 		"jose": "^6.1.0",

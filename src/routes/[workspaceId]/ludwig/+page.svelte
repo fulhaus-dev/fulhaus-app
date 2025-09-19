@@ -82,7 +82,7 @@
 			class={cn(
 				'w-full transition-all delay-300 ease-in',
 				hasMessages && 'sticky bottom-0 z-1 bg-color-background pb-2',
-				ludwigChat.activeUiToolName && 'opacity-0'
+				(ludwigChat.activeUiToolName || ludwigChat.recommendationsAvailable) && 'opacity-0'
 			)}
 		>
 			<ChatForm

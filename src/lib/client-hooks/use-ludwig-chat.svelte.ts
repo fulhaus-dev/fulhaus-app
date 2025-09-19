@@ -14,6 +14,7 @@ import type { Doc, Id } from '../../convex/_generated/dataModel';
 import { api } from '../../convex/_generated/api';
 import asyncFetch from '$lib/utils/async-fetch';
 import { LUDWIG_UI_TOOL_NAMES } from '$lib/constants';
+import { goto } from '$app/navigation';
 
 type ChatUsersMetadata = Record<string, ChatUser>;
 type ActiveUiToolName = (typeof LUDWIG_UI_TOOL_NAMES)[number];
@@ -62,6 +63,7 @@ export function useLudwigChat() {
 		loadingResponse: false,
 		isStreaming: false,
 		activeToolLoadingLabel: undefined as string | undefined,
+		recommendationsAvailable: false,
 		error: undefined as string | undefined
 	});
 
@@ -151,9 +153,14 @@ export function useLudwigChat() {
 			if (chatResponseStream.type === 'tool-input-start')
 				state.activeToolLoadingLabel = toolLoadingLabels[chatResponseStream.toolName];
 
-			if (chatResponseStream.type === 'tool-output-available')
+			if (chatResponseStream.type === 'tool-output-available') {
+				console.log(chatResponseStream);
 				if (LUDWIG_UI_TOOL_NAMES.includes(chatResponseStream.output.toolName))
 					state.activeUiToolName = chatResponseStream.output.toolName as ActiveUiToolName;
+
+				if (chatResponseStream.output.toolName === 'generateDesignFurnitureRecommendation')
+					state.recommendationsAvailable = true;
+			}
 
 			if (chatResponseStream.type === 'text-delta') {
 				if (!streamedMessageIndex) {
@@ -184,6 +191,17 @@ export function useLudwigChat() {
 				state.loadingResponse = false;
 				state.isStreaming = false;
 				autoscroll?.stop();
+
+				if (state.recommendationsAvailable) {
+					setTimeout(() => {
+						// eslint-disable-next-line svelte/no-navigation-without-resolve
+						goto(`/${currentWorkspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${ludwigChatId}`);
+
+						setTimeout(() => {
+							state.recommendationsAvailable = false;
+						}, 500);
+					}, 1000);
+				}
 			}
 		}
 	}

@@ -43,19 +43,15 @@ export const spaceTypeProductCategories: Record<
 			'Pots & Vases'
 		],
 		recommended: [
-			'Shelving Unit',
 			'Shelf',
 			'Storage Cabinet',
 			'Rug',
-			'Rug Pad',
 			'Ceiling Lamp',
 			'Floor Lamp',
 			'Bench',
 			'Arm Chair',
 			'Curtain',
-			'Curtain Rod',
 			'Standing Mirror',
-			'Wallpaper',
 			'Plant'
 		]
 	},
@@ -130,15 +126,11 @@ export const spaceTypeProductCategories: Record<
 			'Sofa',
 			'Coffee Table',
 			'Side Table',
-			'TV',
 			'TV Media Console',
 			'Rug',
-			'Rug Pad',
-			'Ceiling Lamp',
 			'Floor Lamp',
 			'Sconce',
 			'Ottoman',
-			'Pillow',
 			'Throw Blanket'
 		]
 	},
@@ -185,11 +177,8 @@ export const spaceTypeProductCategories: Record<
 			'Bathroom Accessories',
 			'Bath Linens',
 			'Towel',
-			'Sconce',
-			'Tile',
 			'Rug',
 			'Curtain',
-			'Curtain Rod',
 			'Waste basket'
 		]
 	},
@@ -253,20 +242,14 @@ export const spaceTypeProductCategories: Record<
 		],
 		recommended: [
 			'Bed',
-			'Bedding',
-			'Head Board',
 			'Nightstand',
 			'Dresser',
 			'Wardrobe',
 			'Rug',
-			'Rug Pad',
 			'Table Lamp',
-			'Ceiling Lamp',
 			'Curtain',
-			'Curtain Rod',
 			'Standing Mirror',
-			'Throw Blanket',
-			'Throw Pillow',
+			'Pillow',
 			'Artwork'
 		]
 	},
@@ -312,8 +295,6 @@ export const spaceTypeProductCategories: Record<
 			'Ceiling Lamp',
 			'Pendant Light',
 			'Rug',
-			'Table Lamp',
-			'Screen',
 			'Artwork',
 			'Plant'
 		]
@@ -374,21 +355,7 @@ export const spaceTypeProductCategories: Record<
 			'Planter',
 			'Pots & Vases'
 		],
-		recommended: [
-			'Dining Table',
-			'Dining Chair',
-			'Pendant Light',
-			'Sideboard',
-			'Rug',
-			'Rug Pad',
-			'Tablecloth',
-			'Dinnerware',
-			'Plate',
-			'Bowl',
-			'Wine Glass',
-			'Artwork',
-			'Plant'
-		]
+		recommended: ['Dining Table', 'Dining Chair', 'Pendant Light', 'Rug', 'Artwork', 'Plant']
 	},
 	Entryway: {
 		all: [
@@ -422,16 +389,7 @@ export const spaceTypeProductCategories: Record<
 			'Planter',
 			'Pots & Vases'
 		],
-		recommended: [
-			'Bench',
-			'Console Table',
-			'Coat Rack',
-			'Entry Hook',
-			'Rug',
-			'Wall Mirror',
-			'Sconce',
-			'Plant'
-		]
+		recommended: ['Bench', 'Coat Rack', 'Entry Hook', 'Rug', 'Wall Mirror', 'Sconce', 'Plant']
 	},
 	'Event Space': {
 		all: [
@@ -482,8 +440,6 @@ export const spaceTypeProductCategories: Record<
 			'Rug',
 			'Pendant Light',
 			'Sconce',
-			'Side Table',
-			'Console Table',
 			'Artwork',
 			'Plant'
 		]
@@ -517,17 +473,7 @@ export const spaceTypeProductCategories: Record<
 			'Plant',
 			'Planter'
 		],
-		recommended: [
-			'Standing Mirror',
-			'Bench',
-			'Rack',
-			'Shelf',
-			'Shelving Unit',
-			'Rug',
-			'Ceiling Lamp',
-			'Sconce',
-			'TV'
-		]
+		recommended: ['Standing Mirror', 'Bench', 'Rack', 'Shelf', 'Rug', 'Ceiling Lamp', 'Sconce']
 	},
 	Kitchen: {
 		all: [
@@ -654,14 +600,11 @@ export const spaceTypeProductCategories: Record<
 			'Pots & Vases'
 		],
 		recommended: [
-			'Cabinet',
 			'Storage Cabinet',
 			'Counter',
 			'Hanger',
-			'Iron',
 			'Ironing Board',
 			'Rack',
-			'Shelf',
 			'Shelving Unit',
 			'Towel',
 			'Ceiling Lamp',
@@ -786,12 +729,9 @@ export const spaceTypeProductCategories: Record<
 			'Coffee Table',
 			'Side Table',
 			'Rug',
-			'Rug Pad',
 			'Floor Lamp',
-			'Ceiling Lamp',
-			'Pillow',
+			'Throw Pillow',
 			'Throw Blanket',
-			'TV',
 			'TV Media Console',
 			'Artwork',
 			'Plant'
@@ -895,7 +835,6 @@ export const spaceTypeProductCategories: Record<
 			'Rack',
 			'Wardrobe',
 			'Towel',
-			'Bathroom Accessories',
 			'Wall Mirror',
 			'Standing Mirror',
 			'Linoleum',
@@ -963,7 +902,7 @@ export const spaceTypeProductCategories: Record<
 			'Rug',
 			'Pendant Light',
 			'Bar Cart',
-			'Pillow',
+			'Throw Pillow',
 			'Throw Blanket',
 			'Artwork',
 			'Speaker Dock'
@@ -1017,14 +956,12 @@ export const spaceTypeProductCategories: Record<
 			'Sectional',
 			'Sofa',
 			'Ottoman',
-			'TV',
 			'TV Media Console',
 			'TV Wall Mount',
 			'Sconce',
 			'Curtain',
 			'Rug',
-			'Rug Pad',
-			'Pillow',
+			'Throw Pillow',
 			'Throw Blanket',
 			'Speaker Dock'
 		]
@@ -1075,7 +1012,6 @@ export const spaceTypeProductCategories: Record<
 			'Nightstand',
 			'Cabinet',
 			'Curtain',
-			'Curtain Rod',
 			'Ceiling Lamp',
 			'Wall Mirror',
 			'Storage Cabinet',
@@ -1127,9 +1063,7 @@ export const spaceTypeProductCategories: Record<
 			'Console Table',
 			'Sideboard',
 			'Artwork',
-			'Plant',
-			'TV',
-			'TV Wall Mount'
+			'Plant'
 		]
 	},
 	Mudroom: {
@@ -1396,7 +1330,6 @@ export const spaceTypeProductCategories: Record<
 			'Pots & Vases'
 		],
 		recommended: [
-			'Wardrobe',
 			'Dresser',
 			'Hanger',
 			'Rack',

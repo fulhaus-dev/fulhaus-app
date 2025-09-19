@@ -1,11 +1,42 @@
+import { Id } from '../../../_generated/dataModel';
+import { MutationCtx, QueryCtx } from '../../../_generated/server';
 import { SpaceType } from '../type';
 import { spaceTypeProductCategories } from './constant';
+import date from '../../../util/date';
+import { Infer } from 'convex/values';
+import { vCreateDesignProduct } from './validator';
+import designModel from '../model';
 
-function getProductCategoriesForSpace(spaceType: SpaceType) {
+function getDesignProductCategoriesForSpace(spaceType: SpaceType) {
 	return spaceTypeProductCategories[spaceType];
 }
 
+async function createDesignProduct(ctx: MutationCtx, args: Infer<typeof vCreateDesignProduct>) {
+	return await ctx.db.insert('designProducts', {
+		...args,
+		createdAt: date.now()
+	});
+}
+
+async function getDesignProductById(ctx: QueryCtx, designProductId: Id<'designProducts'>) {
+	return await ctx.db.get(designProductId);
+}
+
+async function getDesignProductsByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
+	const designProducts = await ctx.db
+		.query('designProducts')
+		.withIndex('by_chat_id', (q) => q.eq('chatId', chatId))
+		.take(100);
+
+	const design = await designModel.getDesignById(ctx, designProducts[0].designId);
+
+	return { designProducts, design };
+}
+
 const designProductModel = {
-	getProductCategoriesForSpace
+	getDesignProductCategoriesForSpace,
+	createDesignProduct,
+	getDesignProductById,
+	getDesignProductsByChatId
 };
 export default designProductModel;
