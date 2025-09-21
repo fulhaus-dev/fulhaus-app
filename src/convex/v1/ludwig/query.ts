@@ -136,7 +136,8 @@ export const getLudwigChatDesignDetails = query({
 			spaceType: design?.spaceType,
 			inspirationImageUrl: design?.inspirationImageUrl,
 			floorPlanFile: design?.floorPlanFile,
-			productCategories: design?.productCategories
+			productCategories: design?.productCategories,
+			publishedAt: design?.publishedAt
 		};
 
 		return SuccessData({

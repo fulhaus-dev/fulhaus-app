@@ -60,6 +60,7 @@ export type LudwigDesignDetails = {
 	inspirationImageUrl: string;
 	floorPlanFile?: FloorPlanFile;
 	productCategories: Doc<'designs'>['productCategories'];
+	publishedAt?: number;
 };
 
 export type LudwigDesignDetailsResponse = {

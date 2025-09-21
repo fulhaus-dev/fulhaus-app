@@ -1,7 +1,14 @@
 <script lang="ts">
 	import type { LudwigDesignDetails, UpdateDesign } from '$lib/types';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
-	import { CopyIcon, DownloadIcon, ImageIcon, MoveRightIcon, PencilLineIcon } from '@lucide/svelte';
+	import {
+		CopyIcon,
+		DownloadIcon,
+		ImageIcon,
+		MoveRightIcon,
+		PencilLineIcon,
+		RssIcon
+	} from '@lucide/svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import SidebarDesignEditMode from '$lib/components/layout/sidebar/sidebar.design-edit-mode.svelte';
 	import { cn } from '$lib/utils/cn';
@@ -10,16 +17,10 @@
 	import { productCategoryIcons } from '$lib/constants';
 	import { useDesign } from '$lib/client-hooks/use-design.svelte';
 	import { useFileDownload } from '$lib/client-hooks/use-file-download.svelte';
-	import { QueryParams } from '$lib/enums';
-	import type { Id } from '../../../../convex/_generated/dataModel';
 
 	type LudwigDesignDetailsProps = {
 		design?: LudwigDesignDetails;
 	};
-
-	const currentChatId = $derived.by(() => page.url.searchParams.get(QueryParams.LUDWIG_CHAT_ID)) as
-		| Id<'chats'>
-		| undefined;
 
 	const { design }: LudwigDesignDetailsProps = $props();
 	const hasDesign = $derived(!!design?._id);
@@ -59,16 +60,26 @@
 			<h5 class={cn('w-full text-center font-medium', !inEditMode && 'hidden')}>Edit Design</h5>
 
 			{#if !inEditMode}
-				<div class="flex w-full items-start justify-between gap-x-12">
+				<div class="flex w-full items-start justify-between gap-x-8">
 					<div class="flex-1">
 						<div class="flex space-y-1 gap-x-2">
-							<ImageIcon class="size-6" />
-							<h5 class="font-medium">{design?.name}</h5>
+							<!-- <ImageIcon class="size-6" /> -->
+							<h5 class="font-medium">
+								{design?.name}
+							</h5>
 						</div>
 						<p class="text-xs text-color-text-muted">{design?.description}</p>
 					</div>
 
 					<div class="flex items-center gap-x-4">
+						<IconTooltipButton
+							content={design?.publishedAt ? 'Unpublish design' : 'Publish design'}
+							onclick={() => {}}
+						>
+							<RssIcon
+								class={cn('size-4 text-color-text-muted', design?.publishedAt && 'text-green-500')}
+							/>
+						</IconTooltipButton>
 						<IconTooltipButton content="Duplicate design" onclick={() => {}}>
 							<CopyIcon class="size-4" />
 						</IconTooltipButton>

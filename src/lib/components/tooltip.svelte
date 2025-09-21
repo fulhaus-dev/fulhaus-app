@@ -15,7 +15,9 @@
 
 <Tooltip.Provider>
 	<Tooltip.Root delayDuration={200}>
-		<Tooltip.Trigger class={cn('flex cursor-pointer items-center justify-center', className)}>
+		<Tooltip.Trigger
+			class={cn('flex h-fit w-fit cursor-pointer items-center justify-center', className)}
+		>
 			{#snippet child({ props })}
 				<div {...props}>
 					{@render children()}
