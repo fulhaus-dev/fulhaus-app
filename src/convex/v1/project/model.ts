@@ -38,11 +38,30 @@ async function updateProjectById(
 	return await ctx.db.patch(projectId, { ...args, updatedById: userId, updatedAt: date.now() });
 }
 
+async function updateProjectFloorPlans(
+	ctx: MutationCtx,
+	projectId: Id<'projects'>,
+	userId: Id<'users'>,
+	newFloorPlanUrls: string[]
+) {
+	const project = await getProjectById(ctx, projectId);
+	const currentProjectFloorPlanUrls = project?.floorPlanUrls ?? [];
+
+	const newFloorPlanUrlsSet = [...new Set([...currentProjectFloorPlanUrls, ...newFloorPlanUrls])];
+
+	return await ctx.db.patch(projectId, {
+		floorPlanUrls: newFloorPlanUrlsSet,
+		updatedById: userId,
+		updatedAt: date.now()
+	});
+}
+
 const projectModel = {
 	createProject,
 	getProjectById,
 	getWorkspaceProjects,
-	updateProjectById
+	updateProjectById,
+	updateProjectFloorPlans
 };
 
 export default projectModel;

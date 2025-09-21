@@ -21,7 +21,7 @@
 	const projectDetails = $derived.by(() => ludwigDesignDetails.designData.projectDetails);
 	const designDetails = $derived.by(() => ludwigDesignDetails.designData.designDetails);
 
-	const canOpen = $derived(!!currentChatId && !!projectDetails);
+	const canOpen = $derived(!!currentChatId && !!projectDetails?._id);
 
 	let manuallyCollapsed = $state(false);
 </script>
@@ -31,7 +31,7 @@
 		'h-full overflow-x-hidden border-r border-color-border bg-color-background opacity-100 transition-all duration-300 ease-in-out',
 		className,
 		manuallyCollapsed ? 'w-12' : 'w-96',
-		canOpen ? (manuallyCollapsed ? 'w-12' : 'w-96') : 'w-0 opacity-0'
+		!canOpen && 'w-0 opacity-0'
 	)}
 	{...otherSidebarProps}
 >

@@ -54,6 +54,7 @@ function useConvexQuerySubscription<Query extends FunctionReference<'query'>>(
 	query: Query,
 	args: FunctionArgs<Query> | (() => FunctionArgs<Query>),
 	options?: {
+		requiredArgsKeys?: string[];
 		onData?: (data: FunctionReturnType<Query>) => void;
 		onError?: (error: Error) => void;
 	}
@@ -69,13 +70,15 @@ function useConvexQuerySubscription<Query extends FunctionReference<'query'>>(
 
 	$effect(() => {
 		const argsSnapshot = getArgsSnapshot(args);
+		if (!argsSnapshot) return;
+
+		const canSubscribe = checkCanSubscribe(argsSnapshot, options?.requiredArgsKeys);
+		if (!canSubscribe) return;
 
 		if (unsubscribe) {
 			unsubscribe();
 			unsubscribe = null;
 		}
-
-		if (!argsSnapshot) return;
 
 		unsubscribe = client.onUpdate(
 			query,
@@ -91,19 +94,38 @@ function useConvexQuerySubscription<Query extends FunctionReference<'query'>>(
 		);
 	});
 
+	function getArgsSnapshot(args: Record<string, Value> | (() => Record<string, Value>)) {
+		if (typeof args === 'function') args = args();
+
+		return $state.snapshot(args);
+	}
+
+	function checkCanSubscribe(argsSnapshot: Record<string, Value>, requiredArgsKeys?: string[]) {
+		if (!requiredArgsKeys) return true;
+
+		for (const argKey of requiredArgsKeys) {
+			const hasRequiredArgsKeys = Object.keys(argsSnapshot).every((argKey) =>
+				requiredArgsKeys.includes(argKey)
+			);
+			if (!hasRequiredArgsKeys) return false;
+
+			const argsSnapshotValue = argsSnapshot[argKey];
+			if (
+				argsSnapshotValue === null ||
+				argsSnapshotValue === undefined ||
+				(typeof argsSnapshotValue === 'string' && argsSnapshotValue.trim() === '')
+			)
+				return false;
+		}
+
+		return true;
+	}
+
 	onDestroy(() => {
 		if (unsubscribe) unsubscribe();
 	});
 
 	return { query: state };
-}
-
-function getArgsSnapshot(
-	args: Record<string, Value> | (() => Record<string, Value>)
-): Record<string, Value> {
-	if (typeof args === 'function') args = args();
-
-	return $state.snapshot(args);
 }
 
 export { useConvexClient, setupConvex, useConvexQuerySubscription };

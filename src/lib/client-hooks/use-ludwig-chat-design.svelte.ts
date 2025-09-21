@@ -22,6 +22,7 @@ export function useLudwigChatDesign() {
 			chatId: currentChatId
 		}),
 		{
+			requiredArgsKeys: ['workspaceId', 'chatId'],
 			onData: (ludwigDesignDetailsQuery) => {
 				state.designData = ludwigDesignDetailsQuery.data;
 			}

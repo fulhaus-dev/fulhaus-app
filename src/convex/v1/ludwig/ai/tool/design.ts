@@ -59,6 +59,13 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
 				};
 
+			if (floorPlanUrl)
+				await ctx.runMutation(internal.v1.project.internal.mutation.updateProjectFloorPlans, {
+					projectId: projectId as Id<'projects'>,
+					userId,
+					newFloorPlanUrls: [floorPlanUrl]
+				});
+
 			const newDesignId = await ctx.runMutation(internal.v1.design.internal.mutation.createDesign, {
 				userId,
 				create: {
@@ -97,6 +104,7 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 		description: 'Update design',
 		inputSchema: z
 			.object({
+				projectId: z.string().describe('The ID of the current project.'),
 				designId: z.string().describe('The ID of the design to update.'),
 				update: z
 					.object({
@@ -152,7 +160,15 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 				};
 
 			if (update.inspirationImageUrl) update.inspirationImageUrl = inspirationImageUrl;
-			if (update.floorPlanUrl) update.floorPlanUrl = floorPlanUrl;
+			if (update.floorPlanUrl) {
+				update.floorPlanUrl = floorPlanUrl;
+
+				await ctx.runMutation(internal.v1.project.internal.mutation.updateProjectFloorPlans, {
+					projectId: input.projectId as Id<'projects'>,
+					userId,
+					newFloorPlanUrls: [floorPlanUrl!]
+				});
+			}
 
 			await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
 				userId,
@@ -171,6 +187,31 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 				success: true,
 				message: 'Design updated successfully',
 				designId
+			};
+		}
+	});
+}
+
+export function redirectToStartNewDesignInSameProjectTool(toolCtxParams: AiToolCtxParams) {
+	return tool({
+		description: 'Redirects the user to start a new design within the same project.',
+		inputSchema: z.object({
+			spaceToDesign: z.enum(spaceTypes).describe('The space to design.')
+		}),
+		execute: async ({ spaceToDesign }) => {
+			const { ctx, workspaceId, userId } = toolCtxParams;
+
+			const chatId = await ctx.runMutation(internal.v1.ludwig.internal.mutation.createChat, {
+				userId,
+				workspaceId
+			});
+
+			return {
+				success: true,
+				message: 'User redirected to start a new design successfully',
+				chatId,
+				spaceToDesign,
+				toolName: 'redirectToStartNewDesignInSameProject'
 			};
 		}
 	});

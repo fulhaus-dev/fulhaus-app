@@ -4,7 +4,7 @@ import z from 'zod';
 
 function provideInspirationImageUiTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Displays a UI to provide an inspiration image.',
+		description: 'Displays a UI to the user to provide an inspiration image.',
 		inputSchema: z.object({}),
 		execute: async () => {
 			return {
@@ -20,7 +20,7 @@ function provideInspirationImageUiTool(toolCtxParams: AiToolCtxParams) {
 
 function provideFloorPlanUiTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Displays a UI to provide a floor plan.',
+		description: 'Displays a UI to the user to provide a floor plan.',
 		inputSchema: z.object({}),
 		execute: async () => {
 			return {
@@ -34,8 +34,25 @@ function provideFloorPlanUiTool(toolCtxParams: AiToolCtxParams) {
 	});
 }
 
+function selectFromExistingFloorPlansUiTool(toolCtxParams: AiToolCtxParams) {
+	return tool({
+		description: 'Displays a UI to the user to select from existing floor plans.',
+		inputSchema: z.object({}),
+		execute: async () => {
+			return {
+				success: true,
+				message: 'Select from existing Floor Plans UI displayed successfully',
+				chatId: toolCtxParams.chatId,
+				uiType: 'Select from existing Floor Plans',
+				toolName: 'selectFromExistingFloorPlansUI'
+			};
+		}
+	});
+}
+
 const ludwigUiTools = {
 	provideInspirationImageUI: provideInspirationImageUiTool,
-	provideFloorPlanUI: provideFloorPlanUiTool
+	provideFloorPlanUI: provideFloorPlanUiTool,
+	selectFromExistingFloorPlansUI: selectFromExistingFloorPlansUiTool
 };
 export default ludwigUiTools;

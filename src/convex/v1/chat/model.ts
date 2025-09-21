@@ -177,7 +177,10 @@ async function getChatContext(
 		contextParts.push(`**Current Project ID:** ${chatProject._id}\n`);
 		contextParts.push(`**Current Project Name:** ${chatProject.name}\n`);
 		contextParts.push(`**Current Project Description:** ${chatProject.description}\n`);
-		contextParts.push(`**Current Project Summary:** ${chatProject.summary}\n\n`);
+		contextParts.push(`**Current Project Summary:** ${chatProject.summary}\n`);
+		contextParts.push(
+			`**Project Has Existing Floor Plans:** ${(chatProject.floorPlanUrls ?? []).length > 0}\n\n`
+		);
 	}
 
 	if (currentChatDesign) {

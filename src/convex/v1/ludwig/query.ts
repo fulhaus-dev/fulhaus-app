@@ -3,7 +3,7 @@ import { query } from '../../_generated/server';
 import { SuccessData } from '../../response/success';
 import authorization from '../../middleware/authorization';
 import chatModel from '../chat/model';
-import ludwigUiTools from './ai/tools/ui';
+import ludwigUiTools from './ai/tool/ui';
 import projectModel from '../project/model';
 import designModel from '../design/model';
 

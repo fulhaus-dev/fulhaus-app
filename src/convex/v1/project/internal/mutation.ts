@@ -20,3 +20,18 @@ export const updateProjectById = internalMutation({
 	handler: async (ctx, args) =>
 		await projectModel.updateProjectById(ctx, args.projectId, args.userId, args.update)
 });
+
+export const updateProjectFloorPlans = internalMutation({
+	args: {
+		projectId: v.id('projects'),
+		userId: v.id('users'),
+		newFloorPlanUrls: v.array(v.string())
+	},
+	handler: async (ctx, args) =>
+		await projectModel.updateProjectFloorPlans(
+			ctx,
+			args.projectId,
+			args.userId,
+			args.newFloorPlanUrls
+		)
+});

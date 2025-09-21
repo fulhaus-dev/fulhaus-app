@@ -6,6 +6,7 @@ export const projectTable = defineTable({
 	name: v.string(),
 	description: v.string(),
 	summary: v.string(),
+	floorPlanUrls: v.optional(v.array(v.string())),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),
 	createdAt: v.number(),

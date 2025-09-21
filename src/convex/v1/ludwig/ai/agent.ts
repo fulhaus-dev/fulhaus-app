@@ -1,10 +1,14 @@
 import { stepCountIs } from 'ai';
 import { googleGemini2_5FlashChat } from '../../../config/google';
-import { createDesignTool, updateDesignTool } from './tools/design';
-import { getProductCategoriesForDesignTool } from './tools/product';
-import { createProjectTool, updateProjectTool } from './tools/project';
-import { generateDesignFurnitureRecommendationTool } from './tools/recommendation';
-import uiTools from './tools/ui';
+import {
+	createDesignTool,
+	redirectToStartNewDesignInSameProjectTool,
+	updateDesignTool
+} from './tool/design';
+import { getProductCategoriesForDesignTool } from './tool/product';
+import { createProjectTool, updateProjectTool } from './tool/project';
+import { generateDesignFurnitureRecommendationTool } from './tool/recommendation';
+import uiTools from './tool/ui';
 import { AgentConfig } from '../../../type';
 import { Id } from '../../../_generated/dataModel';
 
@@ -21,6 +25,7 @@ export const ludwigAgent: AgentConfig = {
 		getProductCategoriesForDesign: getProductCategoriesForDesignTool,
 		createDesign: createDesignTool,
 		updateDesign: updateDesignTool,
-		generateDesignFurnitureRecommendation: generateDesignFurnitureRecommendationTool
+		generateDesignFurnitureRecommendation: generateDesignFurnitureRecommendationTool,
+		redirectToStartNewDesignInSameProject: redirectToStartNewDesignInSameProjectTool
 	}
 };
