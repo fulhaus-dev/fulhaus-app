@@ -23,14 +23,15 @@ async function getDesignProductById(ctx: QueryCtx, designProductId: Id<'designPr
 }
 
 async function getDesignProductsByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
-	const designProducts = await ctx.db
-		.query('designProducts')
-		.withIndex('by_chat_id', (q) => q.eq('chatId', chatId))
-		.take(100);
+	const [design, designProducts] = await Promise.all([
+		designModel.getDesignsByChatId(ctx, chatId),
+		ctx.db
+			.query('designProducts')
+			.withIndex('by_chat_id', (q) => q.eq('chatId', chatId))
+			.take(100)
+	]);
 
-	const design = await designModel.getDesignById(ctx, designProducts[0].designId);
-
-	return { designProducts, design };
+	return { design, designProducts };
 }
 
 const designProductModel = {

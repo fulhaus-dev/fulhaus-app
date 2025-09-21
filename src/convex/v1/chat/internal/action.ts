@@ -44,7 +44,8 @@ export const streamChatResponse = internalAction({
 			experimental_transform: smoothStream({
 				delayInMs: 20
 			}),
-			onFinish: (finish) => onFinish(ctx, finish, { userId, workspaceId, chatId })
+			onFinish: async (finish) => onFinish(ctx, finish, { userId, workspaceId, chatId }),
+			onError: async () => await deleteChatResponseStreams(ctx, { workspaceId, chatId })
 		});
 
 		const messageChunks = result.toUIMessageStream();
@@ -69,10 +70,7 @@ async function onFinish(
 ) {
 	const { userId, workspaceId, chatId } = args;
 
-	await ctx.scheduler.runAfter(1000, internal.v1.chat.internal.mutation.deleteChatResponseStreams, {
-		workspaceId,
-		chatId
-	});
+	await deleteChatResponseStreams(ctx, { workspaceId, chatId });
 
 	for (const responseMessage of finish.response.messages) {
 		await ctx.runMutation(internal.v1.chat.internal.mutation.saveChatAssistantResponse, {
@@ -83,4 +81,14 @@ async function onFinish(
 			usage: finish.usage
 		});
 	}
+}
+
+async function deleteChatResponseStreams(
+	ctx: ActionCtx,
+	args: { workspaceId: Id<'workspaces'>; chatId: Id<'chats'> }
+) {
+	await ctx.scheduler.runAfter(1000, internal.v1.chat.internal.mutation.deleteChatResponseStreams, {
+		workspaceId: args.workspaceId,
+		chatId: args.chatId
+	});
 }

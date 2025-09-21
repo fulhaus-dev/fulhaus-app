@@ -5,7 +5,7 @@ import authorization from '../../middleware/authorization';
 import chatModel from '../chat/model';
 import ludwigUiTools from './ai/tool/ui';
 import projectModel from '../project/model';
-import designModel from '../design/model';
+import designProductModel from '../design/product/model';
 
 export const getLudwigChatMessages = query({
 	args: {
@@ -117,10 +117,14 @@ export const getLudwigChatDesignDetails = query({
 		const chat = await chatModel.getChatById(ctx, args.chatId);
 		if (!chat) return SuccessData({});
 
-		const [project, design] = await Promise.all([
+		const [project, designProductsData] = await Promise.all([
 			chat.projectId ? projectModel.getProjectById(ctx, chat.projectId) : Promise.resolve(null),
-			chat.designId ? designModel.getDesignById(ctx, chat.designId) : Promise.resolve(null)
+			chat.designId
+				? designProductModel.getDesignProductsByChatId(ctx, chat._id)
+				: Promise.resolve(null)
 		]);
+
+		const design = designProductsData?.design;
 
 		const projectDetails = {
 			_id: project?._id,
@@ -137,7 +141,8 @@ export const getLudwigChatDesignDetails = query({
 			inspirationImageUrl: design?.inspirationImageUrl,
 			floorPlanFile: design?.floorPlanFile,
 			productCategories: design?.productCategories,
-			publishedAt: design?.publishedAt
+			publishedAt: design?.publishedAt,
+			hasProducts: (designProductsData?.designProducts ?? []).length > 0
 		};
 
 		return SuccessData({

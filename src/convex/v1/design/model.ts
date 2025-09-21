@@ -29,6 +29,13 @@ async function getProjectDesigns(ctx: QueryCtx, projectId: Id<'projects'>) {
 		.take(100);
 }
 
+async function getDesignsByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
+	return await ctx.db
+		.query('designs')
+		.withIndex('by_chat_id', (q) => q.eq('chatId', chatId))
+		.first();
+}
+
 async function updateDesignById(
 	ctx: MutationCtx,
 	designId: Id<'designs'>,
@@ -42,6 +49,7 @@ const designModel = {
 	createDesign,
 	getDesignById,
 	getProjectDesigns,
+	getDesignsByChatId,
 	updateDesignById
 };
 

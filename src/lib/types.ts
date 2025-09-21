@@ -61,6 +61,7 @@ export type LudwigDesignDetails = {
 	floorPlanFile?: FloorPlanFile;
 	productCategories: Doc<'designs'>['productCategories'];
 	publishedAt?: number;
+	hasProducts: boolean;
 };
 
 export type LudwigDesignDetailsResponse = {

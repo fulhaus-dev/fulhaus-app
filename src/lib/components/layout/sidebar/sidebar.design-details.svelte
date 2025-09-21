@@ -1,14 +1,7 @@
 <script lang="ts">
 	import type { LudwigDesignDetails, UpdateDesign } from '$lib/types';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
-	import {
-		CopyIcon,
-		DownloadIcon,
-		ImageIcon,
-		MoveRightIcon,
-		PencilLineIcon,
-		RssIcon
-	} from '@lucide/svelte';
+	import { CopyIcon, DownloadIcon, MoveRightIcon, PencilLineIcon, RssIcon } from '@lucide/svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import SidebarDesignEditMode from '$lib/components/layout/sidebar/sidebar.design-edit-mode.svelte';
 	import { cn } from '$lib/utils/cn';
@@ -17,6 +10,8 @@
 	import { productCategoryIcons } from '$lib/constants';
 	import { useDesign } from '$lib/client-hooks/use-design.svelte';
 	import { useFileDownload } from '$lib/client-hooks/use-file-download.svelte';
+	import { QueryParams } from '$lib/enums';
+	import { goto } from '$app/navigation';
 
 	type LudwigDesignDetailsProps = {
 		design?: LudwigDesignDetails;
@@ -194,9 +189,28 @@
 					>
 				</div>
 
-				{#if page.route.id !== '/[workspaceId]/ludwig'}
-					<Button class={cn(inEditMode && 'hidden')}>
+				{#if page.route.id !== '/[workspaceId]/ludwig' && design?.chatId}
+					<Button
+						class={cn(inEditMode && 'hidden')}
+						onclick={() =>
+							goto(
+								`/${page.params.workspaceId}/ludwig?${QueryParams.LUDWIG_CHAT_ID}=${design.chatId}`
+							)}
+					>
 						<span class="w-full text-center">Chat with Ludwig</span>
+						<MoveRightIcon />
+					</Button>
+				{/if}
+
+				{#if page.route.id === '/[workspaceId]/ludwig' && design?.chatId && design.hasProducts}
+					<Button
+						class={cn(inEditMode && 'hidden')}
+						onclick={() =>
+							goto(
+								`/${page.params.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${design.chatId}`
+							)}
+					>
+						<span class="w-full text-center">View design</span>
 						<MoveRightIcon />
 					</Button>
 				{/if}

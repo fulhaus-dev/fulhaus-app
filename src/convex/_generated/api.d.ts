@@ -11,7 +11,9 @@
 import type * as agent from "../agent.js";
 import type * as config_cloudflare from "../config/cloudflare.js";
 import type * as config_google from "../config/google.js";
+import type * as config_openai from "../config/openai.js";
 import type * as config_resend from "../config/resend.js";
+import type * as config_x from "../config/x.js";
 import type * as constant from "../constant.js";
 import type * as email_internal_action from "../email/internal/action.js";
 import type * as http from "../http.js";
@@ -114,7 +116,9 @@ declare const fullApi: ApiFromModules<{
   agent: typeof agent;
   "config/cloudflare": typeof config_cloudflare;
   "config/google": typeof config_google;
+  "config/openai": typeof config_openai;
   "config/resend": typeof config_resend;
+  "config/x": typeof config_x;
   constant: typeof constant;
   "email/internal/action": typeof email_internal_action;
   http: typeof http;

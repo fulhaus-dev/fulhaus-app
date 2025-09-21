@@ -2,7 +2,7 @@ import { Infer, Value } from 'convex/values';
 import { functionNames, httpStatusCode } from './constant';
 import { ActionCtx } from './_generated/server';
 import { Id } from './_generated/dataModel';
-import { LanguageModel, StopCondition, ToolSet } from 'ai';
+import { LanguageModel, StopCondition, ToolChoice, ToolSet } from 'ai';
 import { vFloorPlanFile } from './validator';
 
 export type HttpStatusCode = (typeof httpStatusCode)[keyof typeof httpStatusCode];
@@ -30,6 +30,7 @@ export type AiAgentOptions = {
 	systemPromptFileId: Id<'_storage'>;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	stopWhen?: StopCondition<any>;
+	toolChoice?: ToolChoice<ToolSet>;
 };
 
 export type AgentConfig = {
