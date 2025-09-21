@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { LudwigDesignDetails, UpdateDesign } from '$lib/types';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
-	import { CopyIcon, ImageIcon, MoveRightIcon, PencilLineIcon } from '@lucide/svelte';
+	import { CopyIcon, DownloadIcon, ImageIcon, MoveRightIcon, PencilLineIcon } from '@lucide/svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import SidebarDesignEditMode from '$lib/components/layout/sidebar/sidebar.design-edit-mode.svelte';
 	import { cn } from '$lib/utils/cn';
@@ -9,11 +9,17 @@
 	import { page } from '$app/state';
 	import { productCategoryIcons } from '$lib/constants';
 	import { useDesign } from '$lib/client-hooks/use-design.svelte';
-	import { onMount } from 'svelte';
+	import { useFileDownload } from '$lib/client-hooks/use-file-download.svelte';
+	import { QueryParams } from '$lib/enums';
+	import type { Id } from '../../../../convex/_generated/dataModel';
 
 	type LudwigDesignDetailsProps = {
 		design?: LudwigDesignDetails;
 	};
+
+	const currentChatId = $derived.by(() => page.url.searchParams.get(QueryParams.LUDWIG_CHAT_ID)) as
+		| Id<'chats'>
+		| undefined;
 
 	const { design }: LudwigDesignDetailsProps = $props();
 	const hasDesign = $derived(!!design?._id);
@@ -23,15 +29,18 @@
 	let updates = $state<UpdateDesign>({});
 
 	const { updateDesign } = useDesign();
+	const { downloadFileInBrowser } = useFileDownload();
 
 	$effect(() => {
-		if (design && Object.keys(updates).length < 1)
+		if (design)
+			// if (design && (design.chatId !== currentChatId || Object.keys(updates).length < 1))
 			updates = {
 				name: design.name,
 				description: design.description,
 				productCategories: design.productCategories,
 				inspirationImageUrl: design.inspirationImageUrl,
-				floorPlanUrl: design.floorPlanUrl
+				floorPlanFileUrl: design.floorPlanFile?.url,
+				floorPlanFile: design.floorPlanFile
 			};
 	});
 </script>
@@ -52,8 +61,8 @@
 			{#if !inEditMode}
 				<div class="flex w-full items-start justify-between gap-x-12">
 					<div class="flex-1">
-						<div class="flex items-center space-y-1 gap-x-2">
-							<ImageIcon class="size-4" />
+						<div class="flex space-y-1 gap-x-2">
+							<ImageIcon class="size-6" />
 							<h5 class="font-medium">{design?.name}</h5>
 						</div>
 						<p class="text-xs text-color-text-muted">{design?.description}</p>
@@ -98,24 +107,52 @@
 					</div>
 
 					<!-- Inspiration Image -->
-					<div class="space-y-1">
-						<h5 class="font-medium">Inspiration Image</h5>
-						<img
-							class="h-auto w-full rounded-md object-cover"
-							src={design?.inspirationImageUrl}
-							alt="Inspiration"
-						/>
-					</div>
-
-					<!-- Floor plan File -->
-					{#if design?.floorPlanUrl}
+					{#if !!design?.inspirationImageUrl}
 						<div class="space-y-1">
-							<h5 class="font-medium">Floor plan</h5>
+							<div class="flex items-center gap-x-2">
+								<h5 class="font-medium">Inspiration Image</h5>
+
+								{@render DownloadFileUrlButton({
+									label: 'Download inspiration image',
+									fileUrl: design.inspirationImageUrl,
+									mediaType: 'image/png',
+									fileName: `${design.name} inspiration`
+								})}
+							</div>
+
 							<img
 								class="h-auto w-full rounded-md object-cover"
-								src={design?.floorPlanUrl}
+								src={design?.inspirationImageUrl}
 								alt="Inspiration"
 							/>
+						</div>
+					{/if}
+
+					<!-- Floor plan File -->
+					{#if !!design?.floorPlanFile}
+						<div class="space-y-1">
+							<div
+								class={cn(
+									design.floorPlanFile.mediaType.startsWith('image/') && 'flex items-center gap-x-2'
+								)}
+							>
+								<h5 class="font-medium">Floor plan</h5>
+
+								{@render DownloadFileUrlButton({
+									label: 'Download floor plan',
+									fileUrl: design.floorPlanFile.url,
+									mediaType: design.floorPlanFile.mediaType,
+									fileName: `${design.name} floor plan`
+								})}
+							</div>
+
+							{#if design.floorPlanFile.mediaType.startsWith('image/')}
+								<img
+									class="h-auto w-full rounded-md object-cover"
+									src={design?.floorPlanFile.url}
+									alt="Inspiration"
+								/>
+							{/if}
 						</div>
 					{/if}
 				{/if}
@@ -156,3 +193,29 @@
 		</div>
 	</div>
 {/if}
+
+{#snippet DownloadFileUrlButton({
+	label,
+	fileUrl,
+	mediaType = 'image/png',
+	fileName = 'download'
+}: {
+	label: string;
+	fileUrl: string;
+	mediaType?: string;
+	fileName?: string;
+})}
+	<button
+		class="flex cursor-pointer items-center gap-x-2 text-xs text-blue-500 underline underline-offset-4"
+		type="button"
+		onclick={() => downloadFileInBrowser({ fileUrl, fileName })}
+	>
+		{#if !mediaType.startsWith('image/')}
+			<span>{label}</span>
+		{/if}
+
+		<IconTooltipButton content={label}>
+			<DownloadIcon class="size-4" />
+		</IconTooltipButton>
+	</button>
+{/snippet}

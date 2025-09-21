@@ -1,12 +1,13 @@
 import { defineTable } from 'convex/server';
 import { v } from 'convex/values';
+import { vFloorPlanFile } from '../../validator';
 
 export const projectTable = defineTable({
 	workspaceId: v.id('workspaces'),
 	name: v.string(),
 	description: v.string(),
 	summary: v.string(),
-	floorPlanUrls: v.optional(v.array(v.string())),
+	floorPlanFiles: v.optional(v.array(vFloorPlanFile)),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),
 	createdAt: v.number(),

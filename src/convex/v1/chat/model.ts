@@ -179,7 +179,7 @@ async function getChatContext(
 		contextParts.push(`**Current Project Description:** ${chatProject.description}\n`);
 		contextParts.push(`**Current Project Summary:** ${chatProject.summary}\n`);
 		contextParts.push(
-			`**Project Has Existing Floor Plans:** ${(chatProject.floorPlanUrls ?? []).length > 0}\n\n`
+			`**Project Has Existing Floor Plans:** ${(chatProject.floorPlanFiles ?? []).length > 0}\n\n`
 		);
 	}
 

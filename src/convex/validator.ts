@@ -10,3 +10,8 @@ export const vCurrencyCode = v.union(...ISO_4217.map((iso) => v.literal(iso.code
 export const vAiAgentOptions = v.object({}) as Validator<AiAgentOptions>;
 
 export const vAiAgentToolFnSet = v.object({}) as Validator<ToolFnSet>;
+
+export const vFloorPlanFile = v.object({
+	url: v.string(),
+	mediaType: v.string()
+});

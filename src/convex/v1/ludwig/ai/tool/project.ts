@@ -6,7 +6,7 @@ import { AiToolCtxParams } from '../../../../type';
 
 export function createProjectTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Create project',
+		description: 'Creates a project',
 		inputSchema: z
 			.object({
 				name: z
@@ -50,7 +50,7 @@ export function createProjectTool(toolCtxParams: AiToolCtxParams) {
 
 export function updateProjectTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Update project',
+		description: 'Updates a project',
 		inputSchema: z
 			.object({
 				projectId: z.string().describe('The ID of the project to update.'),

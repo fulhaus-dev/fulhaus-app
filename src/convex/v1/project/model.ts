@@ -3,6 +3,7 @@ import { Infer } from 'convex/values';
 import { Id } from '../../_generated/dataModel';
 import date from '../../util/date';
 import { vCreateProject, vUpdateProject } from './validator';
+import { FloorPlanFile } from '../../type';
 
 async function createProject(
 	ctx: MutationCtx,
@@ -42,15 +43,22 @@ async function updateProjectFloorPlans(
 	ctx: MutationCtx,
 	projectId: Id<'projects'>,
 	userId: Id<'users'>,
-	newFloorPlanUrls: string[]
+	floorPlanFiles: FloorPlanFile[]
 ) {
 	const project = await getProjectById(ctx, projectId);
-	const currentProjectFloorPlanUrls = project?.floorPlanUrls ?? [];
+	const currentProjectFloorPlanFiles = project?.floorPlanFiles ?? [];
 
-	const newFloorPlanUrlsSet = [...new Set([...currentProjectFloorPlanUrls, ...newFloorPlanUrls])];
+	const mergedFloorPlanFiles = [
+		...new Map(
+			[...currentProjectFloorPlanFiles, ...floorPlanFiles].map((item) => [
+				`${item.url}|${item.mediaType}`,
+				item
+			])
+		).values()
+	];
 
 	return await ctx.db.patch(projectId, {
-		floorPlanUrls: newFloorPlanUrlsSet,
+		floorPlanFiles: mergedFloorPlanFiles,
 		updatedById: userId,
 		updatedAt: date.now()
 	});

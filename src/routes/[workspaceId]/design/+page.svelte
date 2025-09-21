@@ -16,8 +16,8 @@
 			<h4 class="text-sm font-medium">{design.name}</h4>
 		</div>
 
-		<div class="flex h-[calc(100%-2.4rem)] w-full items-center overflow-y-scroll pt-80 pb-40">
-			<div class="mx-auto grid h-auto w-full max-w-[1200px] grid-cols-4 gap-2">
+		<div class="h-[calc(100%-2.4rem)] w-full overflow-y-auto">
+			<div class="mx-auto grid w-full max-w-[1200px] grid-cols-4 gap-2 py-20">
 				{#each designProducts as designProduct (designProduct._id)}
 					<div
 						class="relative h-80 w-full rounded-md border border-color-border-muted bg-color-background-surface"

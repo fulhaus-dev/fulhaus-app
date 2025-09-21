@@ -1,8 +1,9 @@
-import { Value } from 'convex/values';
+import { Infer, Value } from 'convex/values';
 import { functionNames, httpStatusCode } from './constant';
 import { ActionCtx } from './_generated/server';
 import { Id } from './_generated/dataModel';
 import { LanguageModel, StopCondition, ToolSet } from 'ai';
+import { vFloorPlanFile } from './validator';
 
 export type HttpStatusCode = (typeof httpStatusCode)[keyof typeof httpStatusCode];
 
@@ -35,3 +36,5 @@ export type AgentConfig = {
 	options: AiAgentOptions;
 	toolFnSet: ToolFnSet;
 };
+
+export type FloorPlanFile = Infer<typeof vFloorPlanFile>;

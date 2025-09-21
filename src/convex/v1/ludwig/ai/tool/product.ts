@@ -1,16 +1,16 @@
 import { generateObject, tool } from 'ai';
-import { AiToolCtxParams } from '../../../../type';
-import z from 'zod';
+import { AiToolCtxParams, FloorPlanFile } from '../../../../type';
 import { spaceTypes } from '../../../design/space';
 import designProductModel from '../../../design/product/model';
 import { internal } from '../../../../_generated/api';
 import { ProductCategory, SpaceType } from '../../../design/type';
 import { asyncTryCatch } from '../../../../util/async';
 import { googleGemini2_5FlashLlm } from '../../../../config/google';
+import z from 'zod';
 
 export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Get product categories for the design',
+		description: 'Provides the product categories for the space to design',
 		inputSchema: z
 			.object({
 				spaceType: z.enum(spaceTypes).describe('The literal value of the space been designed.')
@@ -30,14 +30,14 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 				{ chatId }
 			);
 
-			const floorPlanUrl = ludwigChatTempAsset?.floorPlanUrl;
+			const floorPlanFile = ludwigChatTempAsset?.floorPlanFile;
 
-			if (floorPlanUrl) {
+			if (floorPlanFile) {
 				const { data: spaceProductCategoriesFromFloorPlan } =
 					await getSpaceProductCategoriesInFloorPlan({
 						spaceType: input.spaceType,
 						spaceProductCategories,
-						floorPlanUrl
+						floorPlanFile
 					});
 
 				if (spaceProductCategoriesFromFloorPlan)
@@ -46,7 +46,7 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 
 			return {
 				success: true,
-				message: `The product categories for this space - '${input.spaceType}' are: ${spaceProductCategories.join(',\n')}.`,
+				message: `The product categories for this space - '${input.spaceType}' are: ${spaceProductCategories.join(',\n')}. Please proceed with the design.`,
 				productCategories: spaceProductCategories,
 				chatId: toolCtxParams.chatId
 			};
@@ -57,7 +57,7 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 async function getSpaceProductCategoriesInFloorPlan(args: {
 	spaceType: SpaceType;
 	spaceProductCategories: ProductCategory[];
-	floorPlanUrl: string;
+	floorPlanFile: FloorPlanFile;
 }) {
 	const outputSchema = z.object({
 		productCategoriesInSpace: z
@@ -89,8 +89,9 @@ ${args.spaceProductCategories.join('\n')}
 							text: `Provide the list of product categories for this target space - "${args.spaceType}" in the attached floor plan.`
 						},
 						{
-							type: 'image',
-							image: args.floorPlanUrl
+							type: 'file',
+							data: args.floorPlanFile.url,
+							mediaType: args.floorPlanFile.mediaType
 						}
 					]
 				}

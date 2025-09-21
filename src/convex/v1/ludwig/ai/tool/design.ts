@@ -2,14 +2,13 @@ import { tool } from 'ai';
 import z from 'zod';
 import { internal } from '../../../../_generated/api';
 import { Id } from '../../../../_generated/dataModel';
-
 import { AiToolCtxParams } from '../../../../type';
 import { spaceTypes } from '../../../design/space';
 import { productCategories } from '../../../design/product/category';
 
 export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Create design',
+		description: 'Creates a design',
 		inputSchema: z
 			.object({
 				projectId: z.string().describe('The ID of the current project.'),
@@ -35,7 +34,8 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 			.strip(),
 		execute: async (input) => {
 			const { ctx, userId, workspaceId, chatId } = toolCtxParams;
-			const { projectId, ...otherInput } = input;
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { projectId, floorPlanUrl, inspirationImageUrl: _, ...otherInput } = input;
 
 			const ludwigChatTempAsset = await ctx.runQuery(
 				internal.v1.ludwig.internal.query.getLudwigChatTempAssetsByChatId,
@@ -43,7 +43,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 			);
 
 			const inspirationImageUrl = ludwigChatTempAsset?.inspoImageUrl;
-			const floorPlanUrl = ludwigChatTempAsset?.floorPlanUrl;
+			const floorPlanFile = ludwigChatTempAsset?.floorPlanFile;
 
 			if (!inspirationImageUrl)
 				return {
@@ -52,18 +52,18 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 						'Inspiration image url was not provided by the user. Did you forget to request for the inspiration image by calling the appropriate UI tool?'
 				};
 
-			if (input.floorPlanUrl && !floorPlanUrl)
+			if (floorPlanUrl && !floorPlanFile)
 				return {
 					success: false,
 					error:
 						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
 				};
 
-			if (floorPlanUrl)
+			if (floorPlanFile)
 				await ctx.runMutation(internal.v1.project.internal.mutation.updateProjectFloorPlans, {
 					projectId: projectId as Id<'projects'>,
 					userId,
-					newFloorPlanUrls: [floorPlanUrl]
+					floorPlanFiles: [floorPlanFile]
 				});
 
 			const newDesignId = await ctx.runMutation(internal.v1.design.internal.mutation.createDesign, {
@@ -74,7 +74,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 					workspaceId,
 					chatId,
 					inspirationImageUrl,
-					floorPlanUrl
+					floorPlanFile
 				}
 			});
 
@@ -101,7 +101,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 
 export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Update design',
+		description: 'Updates a design',
 		inputSchema: z
 			.object({
 				projectId: z.string().describe('The ID of the current project.'),
@@ -136,6 +136,11 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 		execute: async (input) => {
 			const { ctx, userId, chatId } = toolCtxParams;
 			const { designId, update } = input;
+			const {
+				floorPlanUrl,
+				inspirationImageUrl: providedInspirationImageUrl,
+				...otherDesignDataToUpdate
+			} = update;
 
 			const ludwigChatTempAsset = await ctx.runQuery(
 				internal.v1.ludwig.internal.query.getLudwigChatTempAssetsByChatId,
@@ -143,37 +148,37 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 			);
 
 			const inspirationImageUrl = ludwigChatTempAsset?.inspoImageUrl;
-			const floorPlanUrl = ludwigChatTempAsset?.floorPlanUrl;
+			const floorPlanFile = ludwigChatTempAsset?.floorPlanFile;
 
-			if (update.inspirationImageUrl && !inspirationImageUrl)
+			if (providedInspirationImageUrl && !inspirationImageUrl)
 				return {
 					success: false,
 					error:
 						'Inspiration image url was not provided by the user. Did you forget to request for the inspiration image by calling the appropriate UI tool?'
 				};
 
-			if (update.floorPlanUrl && !floorPlanUrl)
+			if (floorPlanUrl && !floorPlanFile)
 				return {
 					success: false,
 					error:
 						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
 				};
 
-			if (update.inspirationImageUrl) update.inspirationImageUrl = inspirationImageUrl;
-			if (update.floorPlanUrl) {
-				update.floorPlanUrl = floorPlanUrl;
-
+			if (floorPlanUrl)
 				await ctx.runMutation(internal.v1.project.internal.mutation.updateProjectFloorPlans, {
 					projectId: input.projectId as Id<'projects'>,
 					userId,
-					newFloorPlanUrls: [floorPlanUrl!]
+					floorPlanFiles: [floorPlanFile!]
 				});
-			}
 
 			await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
 				userId,
 				designId: designId as Id<'designs'>,
-				update
+				update: {
+					...otherDesignDataToUpdate,
+					inspirationImageUrl,
+					floorPlanFile
+				}
 			});
 
 			await ctx.runMutation(

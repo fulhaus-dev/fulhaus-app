@@ -23,6 +23,7 @@ export function useDesignPage() {
 			chatId: ludwigChatId!
 		}),
 		{
+			requiredArgsKeys: ['chatId'],
 			onData: (designProductsQuery) => {
 				state.designProducts = designProductsQuery.data.designProducts;
 				state.design = designProductsQuery.data.design ?? ({} as Doc<'designs'>);

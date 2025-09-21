@@ -53,11 +53,12 @@ export type LudwigProjectDetails = {
 
 export type LudwigDesignDetails = {
 	_id: Id<'designs'>;
+	chatId: Id<'chats'>;
 	name: string;
 	description: string;
 	spaceType: Doc<'designs'>['spaceType'];
 	inspirationImageUrl: string;
-	floorPlanUrl?: string;
+	floorPlanFile?: FloorPlanFile;
 	productCategories: Doc<'designs'>['productCategories'];
 };
 
@@ -75,10 +76,13 @@ export type UpdateProject = {
 export type SpaceType = Doc<'designs'>['spaceType'];
 export type ProductCategories = Doc<'designs'>['productCategories'];
 
+export type FloorPlanFile = Doc<'designs'>['floorPlanFile'];
+
 export type UpdateDesign = {
 	name?: string;
 	description?: string;
 	inspirationImageUrl?: string;
-	floorPlanUrl?: string;
+	floorPlanFileUrl?: string;
+	floorPlanFile?: FloorPlanFile;
 	productCategories?: ProductCategories;
 };

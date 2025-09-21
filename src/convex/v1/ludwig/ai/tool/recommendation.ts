@@ -8,7 +8,7 @@ import { LudwigRecommendationResponse } from '../../type';
 
 export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Generate furniture recommendations for a design',
+		description: 'Generates furniture recommendations for a design',
 		inputSchema: z
 			.object({
 				designId: z

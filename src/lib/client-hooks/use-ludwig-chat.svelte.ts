@@ -129,6 +129,7 @@ export function useLudwigChat() {
 			chatId: ludwigChatId
 		}),
 		{
+			requiredArgsKeys: ['workspaceId', 'chatId'],
 			onData: (response) => onStreamResponse(response.data.map((data) => data.stream)),
 			onError: (error) => {
 				state.loadingResponse = false;
@@ -154,7 +155,6 @@ export function useLudwigChat() {
 				state.activeToolLoadingLabel = toolLoadingLabels[chatResponseStream.toolName];
 
 			if (chatResponseStream.type === 'tool-output-available') {
-				console.log(chatResponseStream);
 				if (LUDWIG_UI_TOOL_NAMES.includes(chatResponseStream.output.toolName))
 					state.activeUiToolName = chatResponseStream.output.toolName as ActiveUiToolName;
 
@@ -225,6 +225,7 @@ export function useLudwigChat() {
 		const userPrompt = (predefinedPrompt ?? state.prompt) as string;
 		const userInspoImageUrl = inspoImageUrl ?? state.inspoImageUrl;
 		const userFloorPlanUrl = floorPlanUrl ?? state.floorPlanUrl;
+		let floorPlanMimeType: string | undefined = undefined;
 
 		const userMessage: ChatMessage = {
 			role: 'user',
@@ -246,6 +247,8 @@ export function useLudwigChat() {
 			}
 
 			const data = await response.json();
+
+			floorPlanMimeType = data.mediaType;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(userMessage.content as any[]).push({
@@ -277,7 +280,13 @@ export function useLudwigChat() {
 				chatId: ludwigChatId,
 				content: userMessage.content,
 				inspoImageUrl: userInspoImageUrl,
-				floorPlanUrl: userFloorPlanUrl
+				floorPlanFile:
+					floorPlanMimeType && userFloorPlanUrl
+						? {
+								url: userFloorPlanUrl,
+								mediaType: floorPlanMimeType
+							}
+						: undefined
 			})
 		);
 

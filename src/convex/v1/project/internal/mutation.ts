@@ -2,6 +2,7 @@ import { v } from 'convex/values';
 import { internalMutation } from '../../../_generated/server';
 import { vCreateProject, vUpdateProject } from '../validator';
 import projectModel from '../model';
+import { vFloorPlanFile } from '../../../validator';
 
 export const createProject = internalMutation({
 	args: {
@@ -25,13 +26,13 @@ export const updateProjectFloorPlans = internalMutation({
 	args: {
 		projectId: v.id('projects'),
 		userId: v.id('users'),
-		newFloorPlanUrls: v.array(v.string())
+		floorPlanFiles: v.array(vFloorPlanFile)
 	},
 	handler: async (ctx, args) =>
 		await projectModel.updateProjectFloorPlans(
 			ctx,
 			args.projectId,
 			args.userId,
-			args.newFloorPlanUrls
+			args.floorPlanFiles
 		)
 });

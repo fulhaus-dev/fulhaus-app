@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { useDesignAsset } from '$lib/client-hooks/use-design-asset.svelte';
-	import { useRouteQuery } from '$lib/client-hooks/use-route-query.svelte';
 	import DesignAssetUpload from '$lib/components/design/design-asset/design-asset-upload.svelte';
 	import ImageMasonry from '$lib/components/image-masonry.svelte';
 

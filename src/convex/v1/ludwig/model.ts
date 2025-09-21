@@ -1,10 +1,11 @@
 import { MutationCtx, QueryCtx } from '../../_generated/server';
 import { Id } from '../../_generated/dataModel';
+import { FloorPlanFile } from '../../type';
 
 async function createChatTempAsset(
 	ctx: MutationCtx,
 	chatId: Id<'chats'>,
-	assets: { inspoImageUrl?: string; floorPlanUrl?: string }
+	assets: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile }
 ) {
 	return await ctx.db.insert('ludwigChatTempAssets', {
 		chatId,
@@ -22,7 +23,7 @@ async function getChatTempAssetsByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
 async function updateChatTempAssetsByChatId(
 	ctx: MutationCtx,
 	ludwigChatTempAssetsId: Id<'ludwigChatTempAssets'>,
-	update: { inspoImageUrl?: string; floorPlanUrl?: string }
+	update: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile }
 ) {
 	return await ctx.db.patch(ludwigChatTempAssetsId, update);
 }
@@ -30,7 +31,7 @@ async function updateChatTempAssetsByChatId(
 async function setChatTempAssetByChatId(
 	ctx: MutationCtx,
 	chatId: Id<'chats'>,
-	assets: { inspoImageUrl?: string; floorPlanUrl?: string }
+	assets: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile }
 ) {
 	const ludwigChatTempAsset = await getChatTempAssetsByChatId(ctx, chatId);
 

@@ -17,6 +17,7 @@ export function useWorkspace() {
 			workspaceId: currentWorkspaceId
 		},
 		{
+			requiredArgsKeys: ['workspaceId'],
 			onData: (workspaceQuery) => {
 				state.currentWorkspace = workspaceQuery.data;
 			}

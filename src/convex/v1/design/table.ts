@@ -2,6 +2,7 @@ import { defineTable } from 'convex/server';
 import { v } from 'convex/values';
 import { vSpaceType } from './validator';
 import { vProductCategory } from './product/validator';
+import { vFloorPlanFile } from '../../validator';
 
 export const designTable = defineTable({
 	workspaceId: v.id('workspaces'),
@@ -11,7 +12,7 @@ export const designTable = defineTable({
 	description: v.string(),
 	spaceType: vSpaceType,
 	inspirationImageUrl: v.string(),
-	floorPlanUrl: v.optional(v.string()),
+	floorPlanFile: v.optional(vFloorPlanFile),
 	productCategories: v.array(vProductCategory),
 	renderedImageUrl: v.optional(v.string()),
 	createdById: v.id('users'),

@@ -6,6 +6,7 @@ import chatModel from '../chat/model';
 import { vChatUserContent, vChatUserMessage } from '../chat/validator';
 import { internal } from '../../_generated/api';
 import ludwigModel from './model';
+import { vFloorPlanFile } from '../../validator';
 
 export const streamLudwigChatResponse = mutation({
 	args: {
@@ -13,7 +14,7 @@ export const streamLudwigChatResponse = mutation({
 		chatId: v.optional(v.id('chats')),
 		content: vChatUserContent,
 		inspoImageUrl: v.optional(v.string()),
-		floorPlanUrl: v.optional(v.string())
+		floorPlanFile: v.optional(vFloorPlanFile)
 	},
 	handler: async (ctx, args) => {
 		const userId = await authorization.workspaceMemberIsAuthorizedToPerformFunction(
@@ -34,9 +35,9 @@ export const streamLudwigChatResponse = mutation({
 				inspoImageUrl: args.inspoImageUrl
 			});
 
-		if (args.floorPlanUrl)
+		if (args.floorPlanFile)
 			await ludwigModel.setChatTempAssetByChatId(ctx, chatId, {
-				floorPlanUrl: args.floorPlanUrl
+				floorPlanFile: args.floorPlanFile
 			});
 
 		const userMessage: Infer<typeof vChatUserMessage> = {

@@ -44,8 +44,7 @@ export const streamChatResponse = internalAction({
 			experimental_transform: smoothStream({
 				delayInMs: 20
 			}),
-			onFinish: (finish) => onFinish(ctx, finish, { userId, workspaceId, chatId }),
-			onError: (error) => console.log(error)
+			onFinish: (finish) => onFinish(ctx, finish, { userId, workspaceId, chatId })
 		});
 
 		const messageChunks = result.toUIMessageStream();

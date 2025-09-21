@@ -17,6 +17,7 @@ export function useDesignAsset() {
 			workspaceId: currentWorkspaceId
 		},
 		{
+			requiredArgsKeys: ['workspaceId'],
 			onData: (designAssetQuery) => {
 				state.assets = designAssetQuery.data;
 			}

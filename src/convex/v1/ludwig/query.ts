@@ -130,11 +130,12 @@ export const getLudwigChatDesignDetails = query({
 
 		const designDetails = {
 			_id: design?._id,
+			chatId: chat._id,
 			name: design?.name,
 			description: design?.description,
 			spaceType: design?.spaceType,
 			inspirationImageUrl: design?.inspirationImageUrl,
-			floorPlanUrl: design?.floorPlanUrl,
+			floorPlanFile: design?.floorPlanFile,
 			productCategories: design?.productCategories
 		};
 

@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { useDesignProduct } from '$lib/client-hooks/use-design-product.svelte';
+	import { useFileDownload } from '$lib/client-hooks/use-file-download.svelte';
 	import Button from '$lib/components/button.svelte';
+	import DesignAssetUploadDialog from '$lib/components/design/design-asset/design-asset-upload-dialog.svelte';
 	import DesignAssetViewerDialog from '$lib/components/design/design-asset/design-asset-viewer-dialog.svelte';
+	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import TextArea from '$lib/components/text-area.svelte';
 	import TextInput from '$lib/components/text-input.svelte';
 	import { productCategoryIcons } from '$lib/constants';
 	import type { SpaceType, UpdateDesign } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
-	import { ChevronsUpDownIcon, XIcon } from '@lucide/svelte';
+	import { ChevronsUpDownIcon, DownloadIcon, XIcon } from '@lucide/svelte';
 	import { Popover } from 'bits-ui';
 
 	const { spaceType, updates = $bindable() }: { spaceType: SpaceType; updates: UpdateDesign } =
@@ -28,6 +31,10 @@
 			productCategory.toLowerCase().includes(productCategorySearchValue.toLowerCase())
 		);
 	});
+
+	const isImageFloorPlan = $derived(updates.floorPlanFile?.mediaType.startsWith('image/'));
+
+	const { downloadFileInBrowser } = useFileDownload();
 </script>
 
 <div class="space-y-8">
@@ -85,6 +92,56 @@
 				<p class="w-full rounded-md bg-color-background/80 p-2">Change Inspiration Image</p>
 			</div>
 		</DesignAssetViewerDialog>
+	</div>
+
+	<div class="space-y-1.5">
+		<div class="flex items-center gap-x-4">
+			<h5 class="font-medium">Floor Plan</h5>
+
+			{#if !isImageFloorPlan && !!updates.floorPlanFileUrl}
+				<button
+					class="flex cursor-pointer items-center gap-x-1 text-xs text-blue-500 underline underline-offset-4"
+					type="button"
+					onclick={() =>
+						downloadFileInBrowser({
+							fileUrl: updates.floorPlanFileUrl!,
+							fileName: `${updates.name} Floor Plan`
+						})}
+				>
+					<span>View floor plan</span>
+
+					<IconTooltipButton content="Download floor plan">
+						<DownloadIcon class="size-4" />
+					</IconTooltipButton>
+				</button>
+			{/if}
+		</div>
+
+		<DesignAssetUploadDialog
+			class="w-full"
+			type="floorplan"
+			title="Upload floor plan"
+			accept=".jpg, .jpeg, .png, .pdf"
+			onUpload={(fileUrl) => (updates.floorPlanFileUrl = fileUrl)}
+		>
+			<div
+				class={cn('relative min-h-12 rounded-md', isImageFloorPlan && 'border border-color-border')}
+			>
+				{#if isImageFloorPlan}
+					<img
+						class="h-auto w-full rounded-md object-cover"
+						src={updates.floorPlanFileUrl}
+						alt="Inspiration"
+					/>
+				{/if}
+
+				<div class="flex items-end justify-center p-2 font-medium">
+					<p class="w-full rounded-md border border-color-border bg-color-background/80 p-2">
+						{updates.floorPlanFileUrl ? 'Change Floor Plan' : 'Add Floor Plan'}
+					</p>
+				</div>
+			</div>
+		</DesignAssetUploadDialog>
 	</div>
 </div>
 
