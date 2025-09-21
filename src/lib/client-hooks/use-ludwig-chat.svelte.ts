@@ -155,6 +155,8 @@ export function useLudwigChat() {
 				state.activeToolLoadingLabel = toolLoadingLabels[chatResponseStream.toolName];
 
 			if (chatResponseStream.type === 'tool-output-available') {
+				state.activeToolLoadingLabel = undefined;
+
 				if (LUDWIG_UI_TOOL_NAMES.includes(chatResponseStream.output.toolName))
 					state.activeUiToolName = chatResponseStream.output.toolName as ActiveUiToolName;
 
