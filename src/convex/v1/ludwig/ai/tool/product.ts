@@ -46,7 +46,7 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 
 			return {
 				success: true,
-				message: `Product categories for '${input.spaceType}' retrieved successfully`,
+				message: `The product categories for this space - '${input.spaceType}' are: ${spaceProductCategories.join(',\n')}.`,
 				productCategories: spaceProductCategories,
 				chatId: toolCtxParams.chatId
 			};

@@ -28,7 +28,7 @@ export type AiAgentOptions = {
 	model: LanguageModel;
 	systemPromptFileId: Id<'_storage'>;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	stopWhen: StopCondition<any>;
+	stopWhen?: StopCondition<any>;
 };
 
 export type AgentConfig = {
