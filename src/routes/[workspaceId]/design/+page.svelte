@@ -40,7 +40,7 @@
 		<div class="flex-1"></div>
 	</div>
 
-	<div class="flex h-full w-full gap-x-2 px-2">
+	<div class={cn('flex w-full gap-x-2 px-2', activeDesignView === 'canvas' && 'h-full')}>
 		{#if activeDesignView === 'product'}
 			<div class="min-h-full flex-1 border-r border-color-border p-2">
 				<DesignProductView {designProducts} />
