@@ -66,6 +66,10 @@ export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolC
 				)
 			);
 
+			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
+				chatId
+			});
+
 			return {
 				success: true,
 				message: 'Design furniture recommendations generated successfully',

@@ -15,6 +15,7 @@ export const designTable = defineTable({
 	floorPlanFile: v.optional(vFloorPlanFile),
 	productCategories: v.array(vProductCategory),
 	renderedImageUrl: v.optional(v.string()),
+	renderingImage: v.optional(v.boolean()),
 	publishedAt: v.optional(v.number()),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),

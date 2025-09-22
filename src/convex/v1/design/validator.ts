@@ -23,5 +23,7 @@ export const vUpdateDesign = v.object({
 	spaceType: v.optional(vSpaceType),
 	inspirationImageUrl: v.optional(v.string()),
 	floorPlanFile: v.optional(vFloorPlanFile),
-	productCategories: v.optional(v.array(vProductCategory))
+	productCategories: v.optional(v.array(vProductCategory)),
+	renderedImageUrl: v.optional(v.string()),
+	renderingImage: v.optional(v.boolean())
 });

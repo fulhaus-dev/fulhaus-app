@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { useDesignPage } from '$lib/client-hooks/use-design-page.svelte';
 	import Button from '$lib/components/button.svelte';
+	import DesignProductView from '$lib/components/design/design-product-view.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { Icon } from '@lucide/svelte';
+	import { ArmchairIcon, PaletteIcon, ShoppingCartIcon, SparklesIcon } from '@lucide/svelte';
+
+	type DesignView = 'product' | 'canvas';
+
+	let activeDesignView = $state<DesignView>('product');
 
 	const { designPage } = useDesignPage();
 
@@ -10,59 +15,81 @@
 	const designProducts = $derived(designPage.designProducts);
 </script>
 
-<section class="h-full w-full p-2">
-	<div class="h-full w-full rounded-md border border-color-border">
-		<div class="flex h-[2.4rem] items-center justify-between border-b border-color-border px-8">
-			<h4 class="text-sm font-medium">{design.name}</h4>
+<section class="relative -mt-px h-full w-full overflow-y-auto border-t border-color-border">
+	<div class="sticky top-0 z-2 flex h-[2.8rem] items-center bg-color-background/80 px-8">
+		<h4 class="flex-1 text-sm font-medium">{design.name}</h4>
+
+		<div class="flex flex-1 items-center justify-center">
+			<Button
+				class="h-[1.6rem] w-40 rounded-sm text-xs transition-all duration-300"
+				onclick={() =>
+					activeDesignView === 'product'
+						? (activeDesignView = 'canvas')
+						: (activeDesignView = 'product')}
+			>
+				{#if activeDesignView === 'product'}
+					<PaletteIcon class="size-4" />
+				{:else}
+					<ArmchairIcon class="size-4" />
+				{/if}
+
+				<span>{activeDesignView === 'product' ? 'Canvas View' : 'Product View'}</span>
+			</Button>
 		</div>
 
-		<div class="h-[calc(100%-2.4rem)] w-full overflow-y-auto">
-			<div class="mx-auto grid w-full max-w-[1200px] grid-cols-4 gap-2 py-20">
-				{#each designProducts as designProduct (designProduct._id)}
-					<div
-						class="relative h-80 w-full rounded-md border border-color-border-muted bg-color-background-surface"
-					>
-						<img
-							class="h-full w-full rounded-md object-cover"
-							src={designProduct.imageUrl}
-							alt={designProduct.name}
-						/>
+		<div class="flex-1"></div>
+	</div>
 
-						<div
-							class="absolute right-0 bottom-0 left-0 rounded-b-md bg-color-background/80 px-4 py-2 text-xs font-medium"
-						>
-							<h3 class="text-lg">{designProduct.category}</h3>
-							<p>
-								{designProduct.name}
-							</p>
-						</div>
+	<div class="flex h-full w-full gap-x-2 px-2">
+		{#if activeDesignView === 'product'}
+			<div class="min-h-full flex-1 border-r border-color-border p-2">
+				<DesignProductView {designProducts} />
+			</div>
+		{/if}
+
+		{#if activeDesignView === 'canvas'}
+			<div class="sticky top-[2.8rem] h-[calc(100%-2.8rem)] flex-1 pb-2">
+				<div class="h-full w-full rounded-md border border-color-border"></div>
+			</div>
+		{/if}
+
+		<div class="sticky top-[2.8rem] z-1 h-[calc(100%-2.8rem)] w-[24rem] pt-2">
+			<div class="space-y-4">
+				<div
+					class={cn(
+						'h-60 w-full rounded-md',
+						design.renderingImage &&
+							'flex animate-pulse items-center justify-center border border-color-border bg-color-disabled-background'
+					)}
+				>
+					<img
+						class={cn('h-full w-full rounded-md object-cover', design.renderingImage && 'hidden')}
+						src={design.renderedImageUrl ?? design.inspirationImageUrl}
+						alt={design.name}
+					/>
+
+					{#if design.renderingImage}
+						<p class="text-xs font-medium text-color-text-muted">
+							{`Generating ${design.name} render..`}.
+						</p>
+					{/if}
+				</div>
+
+				<div class="space-y-4 px-2">
+					<p class="text-sm">{design.description}</p>
+
+					<div class="space-y-2">
+						<Button>
+							<ShoppingCartIcon class="size-4" />
+							<span>Add all to Cart</span>
+						</Button>
+						<Button variant="outlined">
+							<SparklesIcon class="size-4" />
+							<span>Create new Design</span>
+						</Button>
 					</div>
-				{/each}
+				</div>
 			</div>
 		</div>
 	</div>
 </section>
-
-{#snippet TabButton({
-	label,
-	TabIcon,
-	active,
-	onclick
-}: {
-	label: string;
-	TabIcon: typeof Icon;
-	active: boolean;
-	onclick: () => void;
-})}
-	<Button
-		class={cn(
-			'h-[1.6rem] rounded-sm border-1 border-color-border text-xs ring-4 transition-colors duration-300',
-			!active && 'text-color-text-muted ring-2'
-		)}
-		variant={active ? 'filled' : 'outlined'}
-		{onclick}
-	>
-		<TabIcon class="size-4" />
-		<span>{label}</span>
-	</Button>
-{/snippet}
