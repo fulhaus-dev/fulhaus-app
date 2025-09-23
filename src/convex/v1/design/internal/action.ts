@@ -93,9 +93,10 @@ Your task is to generate a photorealistic rendered image of a design space based
 - The space name and description provided
 - The furniture/product images shown
 
-The orientation of the image MUST be Landscape.
-
 Create a cohesive, aesthetically pleasing room design that incorporates all the provided products in a natural and functional layout taking your design cue from the design name and description.
+
+**IMPORTANT**
+The orientation of the generated design image MUST be LANDSCAPE.
 `;
 
 	const designProductCategoriesImagePart: ImagePart[] = args.productImages.map((productImage) => ({
