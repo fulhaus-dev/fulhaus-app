@@ -7,19 +7,22 @@
 <div class="mx-auto grid w-full grid-cols-4 gap-2">
 	{#each designProducts as designProduct (designProduct._id)}
 		<div
-			class="flex h-80 w-full flex-col rounded-md border border-color-border-muted bg-color-background-surface"
+			class="flex w-full flex-col gap-y-4 rounded-md border border-color-border-muted bg-color-background p-4"
 		>
 			<img
-				class="h-60 w-full rounded-md object-cover"
+				class="h-64 w-full object-contain"
 				src={designProduct.imageUrl}
 				alt={designProduct.name}
 			/>
 
-			<div class="h-20 w-full rounded-b-md px-4 py-2 text-xs font-medium">
-				<h3 class="text-lg">{designProduct.category}</h3>
-				<p>
-					{designProduct.name}
-				</p>
+			<div class="flex w-full gap-x-4 rounded-b-md">
+				<div class="flex-1 text-xs font-medium">
+					<h3>{designProduct.category}</h3>
+					<p class="w-full truncate overflow-hidden text-ellipsis">
+						{designProduct.name}
+					</p>
+				</div>
+				<div class="h-fit"></div>
 			</div>
 		</div>
 	{/each}

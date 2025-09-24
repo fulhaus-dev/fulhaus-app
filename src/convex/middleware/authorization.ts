@@ -60,10 +60,18 @@ async function isWorkspaceChat(
 	return chat;
 }
 
+function authorizeProductOnboarding(poApiKey: string) {
+	if (poApiKey !== process.env.PRODUCT_ONBOARDING_API_KEY)
+		throw ServerError.Unauthorized('You are not a authorized to perform this action.');
+
+	return poApiKey;
+}
+
 const authorization = {
 	userIsAuthenticated,
 	userIsWorkspaceMember,
 	workspaceMemberIsAuthorizedToPerformFunction,
-	isWorkspaceChat
+	isWorkspaceChat,
+	authorizeProductOnboarding
 };
 export default authorization;

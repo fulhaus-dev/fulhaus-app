@@ -9,6 +9,8 @@ import { projectTable } from './v1/project/table';
 import { designTable } from './v1/design/table';
 import { ludwigChatTempAssetTable } from './v1/ludwig/table';
 import { designProductTable } from './v1/design/product/table';
+import { productTable } from './v1/product/table';
+import { productVendorTable } from './v1/product/vendor/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -23,5 +25,7 @@ export default defineSchema({
 	projects: projectTable,
 	designs: designTable,
 	ludwigChatTempAssets: ludwigChatTempAssetTable,
-	designProducts: designProductTable
+	designProducts: designProductTable,
+	productVendors: productVendorTable,
+	products: productTable
 });
