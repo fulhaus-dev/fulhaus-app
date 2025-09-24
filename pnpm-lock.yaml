@@ -25,7 +25,7 @@ importers:
         version: 3.888.0
       '@convex-dev/rate-limiter':
         specifier: ^0.2.12
-        version: 0.2.12(convex@1.27.1(react@19.1.1))(react@19.1.1)
+        version: 0.2.12(convex@1.27.3(react@19.1.1))(react@19.1.1)
       '@react-email/render':
         specifier: ^1.2.3
         version: 1.2.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -39,8 +39,8 @@ importers:
         specifier: ^2.9.6
         version: 2.9.6(@internationalized/date@3.9.0)(svelte@5.38.8)
       convex:
-        specifier: ^1.27.1
-        version: 1.27.1(react@19.1.1)
+        specifier: ^1.27.3
+        version: 1.27.3(react@19.1.1)
       dompurify:
         specifier: ^3.2.6
         version: 3.2.6
@@ -1513,8 +1513,8 @@ packages:
   confbox@0.2.2:
     resolution: {integrity: sha512-1NB+BKqhtNipMsov4xI/NnhCKp9XG9NamYp5PVm9klAT0fsrNPjaFICsCFhNhwZJKNh7zB/3q8qXz0E9oaMNtQ==}
 
-  convex@1.27.1:
-    resolution: {integrity: sha512-kep7JFn5Bil9/OUZUsL1bgoo0G9DmEf7stkBW67+NqP2FrzBt2TX8yz4V6oKLygzepGy90Ura2FtqXawYKXYIg==}
+  convex@1.27.3:
+    resolution: {integrity: sha512-Ebr9lPgXkL7JO5IFr3bG+gYvHskyJjc96Fx0BBNkJUDXrR/bd9/uI4q8QszbglK75XfDu068vR0d/HK2T7tB9Q==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -3059,9 +3059,9 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.0.1': {}
 
-  '@convex-dev/rate-limiter@0.2.12(convex@1.27.1(react@19.1.1))(react@19.1.1)':
+  '@convex-dev/rate-limiter@0.2.12(convex@1.27.3(react@19.1.1))(react@19.1.1)':
     dependencies:
-      convex: 1.27.1(react@19.1.1)
+      convex: 1.27.3(react@19.1.1)
     optionalDependencies:
       react: 19.1.1
 
@@ -4158,7 +4158,7 @@ snapshots:
 
   confbox@0.2.2: {}
 
-  convex@1.27.1(react@19.1.1):
+  convex@1.27.3(react@19.1.1):
     dependencies:
       esbuild: 0.25.4
       jwt-decode: 4.0.0

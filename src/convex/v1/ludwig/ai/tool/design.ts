@@ -17,18 +17,16 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 				spaceType: z
 					.enum(spaceTypes)
 					.describe(
-						'An literal value of the space type, that best represents the general classification of the space to be designed.'
+						'The space type to design, that best represents the general classification of the space to be designed.'
 					),
-				inspirationImageUrl: z
-					.url()
-					.describe('The exact inspiration image url provided by the user.'),
+				inspirationImageUrl: z.url().describe('The inspiration image url provided by the user.'),
 				floorPlanUrl: z
 					.optional(z.url())
-					.describe('The exact floor plan url provided by the user. If any'),
+					.describe('The floor plan url provided by the user. If any'),
 				productCategories: z
 					.array(z.enum(productCategories))
 					.describe(
-						'An array of literal furniture product categories for the space type to be designed.'
+						'The array of furniture product categories for the space to be designed. This comes from the result of calling the getProductCategoriesForDesign tool.'
 					)
 			})
 			.strip(),
@@ -116,18 +114,18 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 							.optional(z.enum(spaceTypes))
 
 							.describe(
-								'New literal value of the space type, that best represents the general classification of the space to be designed.'
+								'The new space type to design, that best represents the general classification of the space to be designed.'
 							),
 						inspirationImageUrl: z
 							.optional(z.url())
-							.describe('The new exact inspiration image url provided by the user.'),
+							.describe('The new inspiration image url provided by the user.'),
 						floorPlanUrl: z
 							.optional(z.url())
-							.describe('The new exact floor plan url provided by the user.'),
+							.describe('The new floor plan url provided by the user.'),
 						productCategories: z
 							.optional(z.array(z.enum(productCategories)))
 							.describe(
-								'New array of literal furniture product categories for the space type to be designed.'
+								'New array of furniture product categories for the space to be designed. This comes from the result of calling the getProductCategoriesForDesign tool.'
 							)
 					})
 					.strip()

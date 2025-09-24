@@ -65,7 +65,7 @@
 		"@sveltejs/adapter-node": "^5.3.2",
 		"ai": "^5.0.41",
 		"bits-ui": "^2.9.6",
-		"convex": "^1.27.1",
+		"convex": "^1.27.3",
 		"dompurify": "^3.2.6",
 		"image-size": "^2.0.2",
 		"jose": "^6.1.0",
