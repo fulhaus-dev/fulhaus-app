@@ -13,7 +13,7 @@ export function useDesignProduct(spaceType: SpaceType) {
 
 	onMount(async () => {
 		const { data: response } = await asyncTryCatch(() =>
-			convexClient.query(api.v1.design.product.query.getDesignProductCategoriesForSpace, {
+			convexClient.query(api.v1.product.query.getProductCategoriesForSpace, {
 				spaceType
 			})
 		);

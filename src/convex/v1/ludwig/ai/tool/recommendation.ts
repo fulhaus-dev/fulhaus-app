@@ -3,8 +3,6 @@ import z from 'zod';
 import { AiToolCtxParams } from '../../../../type';
 import { internal } from '../../../../_generated/api';
 import { Id } from '../../../../_generated/dataModel';
-import asyncFetch from '../../../../util/fetch';
-import { LudwigRecommendationResponse } from '../../type';
 
 export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
@@ -17,58 +15,20 @@ export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolC
 			})
 			.strip(),
 		execute: async (input) => {
-			const { ctx, workspaceId, chatId } = toolCtxParams;
+			const { ctx, userId } = toolCtxParams;
 
-			const design = await ctx.runQuery(internal.v1.design.internal.query.getDesignById, {
-				designId: input.designId as Id<'designs'>
-			});
-			if (!design)
-				return {
-					success: false,
-					error: 'The design with this ID was not found, did you forget to create the design first?'
-				};
-
-			const { response, error } = await asyncFetch.post(
-				process.env.LUDWIG_RECOMMENDATION_ENDPOINT!,
+			const { error } = await ctx.runAction(
+				internal.v1.design.internal.action.generateDesignFurnitureRecommendation,
 				{
-					body: JSON.stringify({
-						image_url: design.inspirationImageUrl,
-						room_name: design.spaceType,
-						categories: design.productCategories
-					})
+					designId: input.designId as Id<'designs'>,
+					userId
 				}
 			);
 			if (error)
 				return {
 					success: false,
-					error: 'Something went wrong while generating furniture recommendations',
-					message: error.message
+					error: error.message
 				};
-
-			const responseJson = (await response.json()) as LudwigRecommendationResponse;
-
-			const recommendations = responseJson.recommendations.data;
-
-			await Promise.all(
-				recommendations.map((recommendation) =>
-					ctx.runMutation(internal.v1.design.product.internal.mutation.createDesignProduct, {
-						create: {
-							workspaceId,
-							projectId: design.projectId,
-							chatId,
-							designId: design._id,
-							productId: recommendation.id,
-							name: recommendation.name,
-							imageUrl: recommendation.url,
-							category: recommendation.category
-						}
-					})
-				)
-			);
-
-			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
-				chatId
-			});
 
 			return {
 				success: true,

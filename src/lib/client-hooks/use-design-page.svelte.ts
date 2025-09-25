@@ -2,7 +2,8 @@ import { api } from '../../convex/_generated/api.js';
 import { useConvexQuerySubscription } from '$lib/client-hooks/convex.client.svelte.js';
 import { page } from '$app/state';
 import { QueryParams } from '$lib/enums.js';
-import type { Doc, Id } from '../../convex/_generated/dataModel.js';
+import type { Id } from '../../convex/_generated/dataModel.js';
+import type { Design, DesignProduct } from '$lib/types.js';
 
 export function useDesignPage() {
 	const ludwigChatId = $derived.by(
@@ -13,12 +14,12 @@ export function useDesignPage() {
 	);
 
 	const state = $state({
-		designProducts: [] as Doc<'designProducts'>[],
-		design: {} as Doc<'designs'>
+		designProducts: [] as DesignProduct[],
+		design: {} as Design
 	});
 
 	useConvexQuerySubscription(
-		api.v1.design.product.query.getDesignProductsByChatId,
+		api.v1.design.query.getDesignDataByChatId,
 		() => ({
 			chatId: ludwigChatId!
 		}),
@@ -26,7 +27,7 @@ export function useDesignPage() {
 			requiredArgsKeys: ['chatId'],
 			onData: (designProductsQuery) => {
 				state.designProducts = designProductsQuery.data.designProducts;
-				state.design = designProductsQuery.data.design ?? ({} as Doc<'designs'>);
+				state.design = designProductsQuery.data.design ?? ({} as Design);
 			}
 		}
 	);

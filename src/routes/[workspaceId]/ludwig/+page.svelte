@@ -10,6 +10,7 @@
 	import LudwigChatLoader from '$lib/components/ludwig/ludwig-chat-loader.svelte';
 	import LudwigChatFileInputDialog from '$lib/components/ludwig/ludwig-chat-file-input-dialog.svelte';
 	import ErrorText from '$lib/components/error-text.svelte';
+	import LudwigWorkspaceDesigns from '$lib/components/ludwig/ludwig-workspace-designs.svelte';
 
 	const { ludwigChat, chatAutoScroll, onSubmitLudwigChatMessage, sendLudwigChatMessage } =
 		useLudwigChat();
@@ -20,15 +21,16 @@
 	<LudwigStartChatBackground />
 {/if}
 
-<section use:chatAutoScroll class="relative h-full w-full overflow-y-scroll">
+<section use:chatAutoScroll class="relative h-full w-full space-y-12 overflow-y-scroll">
 	{#if ludwigChat.loading}
 		<FulhausLoader class="mx-auto mt-40 size-10" />
 	{/if}
 
 	<div
 		class={cn(
-			'mx-auto h-full w-full max-w-[48rem] opacity-100 transition-opacity duration-500',
-			ludwigChat.loading && 'opacity-0'
+			'mx-auto w-full max-w-[48rem] opacity-100 transition-opacity duration-500',
+			ludwigChat.loading && 'opacity-0',
+			hasMessages && 'h-full'
 		)}
 	>
 		{#if !hasMessages}
@@ -93,6 +95,10 @@
 			/>
 		</div>
 	</div>
+
+	{#if !hasMessages}
+		<LudwigWorkspaceDesigns />
+	{/if}
 </section>
 
 {#snippet LudwigChatUiToolInput({ type }: { type: 'inspo' | 'floorplan' })}

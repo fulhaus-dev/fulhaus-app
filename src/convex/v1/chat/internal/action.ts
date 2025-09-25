@@ -51,6 +51,8 @@ export const streamChatResponse = internalAction({
 		const messageChunks = result.toUIMessageStream();
 
 		for await (const chunk of messageChunks) {
+			console.log('chunk', chunk);
+
 			await ctx.runMutation(internal.v1.chat.internal.mutation.saveChatResponseStream, {
 				workspaceId,
 				chatId,
@@ -73,6 +75,19 @@ async function onFinish(
 	await deleteChatResponseStreams(ctx, { workspaceId, chatId });
 
 	for (const responseMessage of finish.response.messages) {
+		let { content } = responseMessage;
+
+		if (typeof content !== 'string') {
+			content = [...content].map((c) => {
+				return {
+					...c,
+					providerOptions: undefined
+				};
+			});
+		}
+
+		responseMessage.content = content;
+
 		await ctx.runMutation(internal.v1.chat.internal.mutation.saveChatAssistantResponse, {
 			workspaceId,
 			userId,

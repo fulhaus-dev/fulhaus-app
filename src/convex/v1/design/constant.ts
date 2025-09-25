@@ -1,4 +1,32 @@
-import { ProductCategory, SpaceType } from '../type';
+import { ProductCategory } from '../product/type';
+import { SpaceType } from './type';
+
+export const spaceTypes = [
+	'Attic',
+	'Basement',
+	'Bathroom',
+	'Bedroom',
+	'Classroom',
+	'Dining Room',
+	'Entryway',
+	'Event Space',
+	'Exercise Room',
+	'Kitchen',
+	'Laundry Room',
+	'Library',
+	'Living Room',
+	'Lobby',
+	'Locker Room',
+	'Lounge',
+	'Media Room',
+	'Medical Room',
+	'Meeting Room',
+	'Mudroom',
+	'Office',
+	'Outdoor Space',
+	'Spa',
+	'Walk-in Closet'
+] as const;
 
 export const spaceTypeProductCategories: Record<
 	SpaceType,

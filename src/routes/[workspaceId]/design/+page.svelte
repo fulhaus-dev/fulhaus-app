@@ -2,8 +2,9 @@
 	import { useDesignPage } from '$lib/client-hooks/use-design-page.svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignProductView from '$lib/components/design/design-product-view.svelte';
+	import DesignViewSidebar from '$lib/components/design/design-view-sidebar/design-view-sidebar.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { ArmchairIcon, PaletteIcon, ShoppingCartIcon, SparklesIcon } from '@lucide/svelte';
+	import { ArmchairIcon, PaletteIcon } from '@lucide/svelte';
 
 	type DesignView = 'product' | 'canvas';
 
@@ -40,10 +41,19 @@
 		<div class="flex-1"></div>
 	</div>
 
-	<div class={cn('flex w-full gap-x-2 px-2', activeDesignView === 'canvas' && 'h-full')}>
+	<div
+		class={cn(
+			'flex min-h-[calc(100%-2.8rem)]  w-full gap-x-2 px-2',
+			activeDesignView === 'canvas' && 'h-full'
+		)}
+	>
 		{#if activeDesignView === 'product'}
-			<div class="min-h-full flex-1 border-r border-color-border p-2">
-				<DesignProductView {designProducts} />
+			<div class="flex-1 border-r border-color-border p-2">
+				<DesignProductView
+					{designProducts}
+					generatingDesignFurnitureRecommendation={design.generatingFurnitureRecommendation ||
+						false}
+				/>
 			</div>
 		{/if}
 
@@ -54,42 +64,7 @@
 		{/if}
 
 		<div class="sticky top-[2.8rem] z-1 h-[calc(100%-2.8rem)] w-[24rem] pt-2">
-			<div class="space-y-4">
-				<div
-					class={cn(
-						'h-60 w-full rounded-md',
-						design.renderingImage &&
-							'flex animate-pulse items-center justify-center border border-color-border bg-color-disabled-background'
-					)}
-				>
-					<img
-						class={cn('h-full w-full rounded-md object-cover', design.renderingImage && 'hidden')}
-						src={design.renderedImageUrl ?? design.inspirationImageUrl}
-						alt={design.name}
-					/>
-
-					{#if design.renderingImage}
-						<p class="text-xs font-medium text-color-text-muted">
-							{`Generating ${design.name} render..`}.
-						</p>
-					{/if}
-				</div>
-
-				<div class="space-y-4 px-2">
-					<p class="text-sm">{design.description}</p>
-
-					<div class="space-y-2">
-						<Button>
-							<ShoppingCartIcon class="size-4" />
-							<span>Add all to Cart</span>
-						</Button>
-						<Button variant="outlined">
-							<SparklesIcon class="size-4" />
-							<span>Create new Design</span>
-						</Button>
-					</div>
-				</div>
-			</div>
+			<DesignViewSidebar {design} />
 		</div>
 	</div>
 </section>

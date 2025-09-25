@@ -63,3 +63,33 @@ export const vCreateProductFields = {
 };
 
 export const vCreateProduct = v.object(vCreateProductFields);
+
+export const vClientProduct = v.object({
+	_id: v.id('products'),
+	fhSku: v.string(),
+	brand: v.optional(v.string()),
+	name: v.string(),
+	description: v.string(),
+	pdpLink: v.optional(v.string()),
+	retailPrice: v.number(),
+	unitPerBox: v.number(),
+	stockQty: v.number(),
+	restockDate: v.optional(v.number()),
+	imageUrls: v.array(v.string()),
+	mainImageUrl: v.optional(v.string()),
+	ludwigImageUrl: v.string(),
+	currencyCode: vCurrencyCode,
+	dimension: v.optional(v.string()),
+	width: v.number(),
+	height: v.number(),
+	depth: v.number(),
+	dimensionUnit: v.literal('in'),
+	weight: v.number(),
+	weightUnit: v.literal('lb'),
+	colorNames: v.optional(v.array(v.string())),
+	hexColors: v.optional(v.array(v.string())),
+	materials: v.array(v.string()),
+	styles: v.array(vProductStyle),
+	category: v.string(),
+	stockDate: v.number()
+});

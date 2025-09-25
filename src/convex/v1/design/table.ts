@@ -1,8 +1,8 @@
 import { defineTable } from 'convex/server';
 import { v } from 'convex/values';
 import { vSpaceType } from './validator';
-import { vProductCategory } from './product/validator';
 import { vFloorPlanFile } from '../../validator';
+import { vProductCategory } from '../product/validator';
 
 export const designTable = defineTable({
 	workspaceId: v.id('workspaces'),
@@ -14,7 +14,9 @@ export const designTable = defineTable({
 	inspirationImageUrl: v.string(),
 	floorPlanFile: v.optional(vFloorPlanFile),
 	productCategories: v.array(vProductCategory),
+	productIds: v.optional(v.array(v.id('products'))),
 	renderedImageUrl: v.optional(v.string()),
+	generatingFurnitureRecommendation: v.optional(v.boolean()),
 	renderingImage: v.optional(v.boolean()),
 	publishedAt: v.optional(v.number()),
 	createdById: v.id('users'),
@@ -23,5 +25,6 @@ export const designTable = defineTable({
 	updatedAt: v.number(),
 	deletedAt: v.optional(v.number())
 })
+	.index('by_workspace_id', ['workspaceId'])
 	.index('by_project_id', ['projectId'])
 	.index('by_chat_id', ['chatId']);

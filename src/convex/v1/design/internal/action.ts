@@ -7,62 +7,159 @@ import { internal } from '../../../_generated/api';
 import { r2 } from '../../../util/r2';
 import file from '../../../util/file';
 import { Id } from '../../../_generated/dataModel';
+import asyncFetch from '../../../util/fetch';
+import { LudwigRecommendationResponse } from '../../ludwig/type';
+import date from '../../../util/date';
+
+export const generateDesignFurnitureRecommendation = internalAction({
+	args: {
+		designId: v.id('designs'),
+		userId: v.id('users')
+	},
+	handler: async (ctx, { designId, userId }) => {
+		await updateDesignStatus(ctx, designId, userId, {
+			generatingFurnitureRecommendation: true
+		});
+		const design = await ctx.runQuery(internal.v1.design.internal.query.getDesignById, {
+			designId
+		});
+		if (!design) {
+			await updateDesignStatus(ctx, designId, userId, {
+				generatingFurnitureRecommendation: false
+			});
+
+			return {
+				error: {
+					statusCode: 400,
+					message:
+						'The design with this ID was not found, did you forget to create the design first?'
+				}
+			};
+		}
+
+		const { response, error } = await asyncFetch.post(process.env.LUDWIG_RECOMMENDATION_ENDPOINT!, {
+			body: JSON.stringify({
+				image_url: design.inspirationImageUrl,
+				room_name: design.spaceType,
+				categories: design.productCategories
+			})
+		});
+		if (error) {
+			await updateDesignStatus(ctx, designId, userId, {
+				generatingFurnitureRecommendation: false
+			});
+
+			return { error };
+		}
+
+		const responseJson = (await response.json()) as LudwigRecommendationResponse;
+
+		const recommendations = responseJson.recommendations.data;
+
+		const products = await Promise.all(
+			recommendations.map((recommendation) =>
+				ctx.runQuery(internal.v1.product.internal.query.getProductByLudwigImageUrl, {
+					ludwigImageUrl: recommendation.url
+				})
+			)
+		);
+
+		const availableProducts = products.filter((product) => !!product);
+		if (!availableProducts) {
+			await updateDesignStatus(ctx, designId, userId, {
+				generatingFurnitureRecommendation: false
+			});
+
+			return {
+				error: {
+					statusCode: 404,
+					message:
+						'Could not generate furniture recommendation for the product categories in the design.'
+				}
+			};
+		}
+
+		await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
+			designId: design._id,
+			userId,
+			update: {
+				productIds: availableProducts.map((product) => product._id)
+			}
+		});
+
+		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
+			designId: design._id,
+			userId
+		});
+
+		await updateDesignStatus(ctx, designId, userId, {
+			generatingFurnitureRecommendation: false
+		});
+
+		return { data: designId };
+	}
+});
 
 export const generateDesignRender = internalAction({
 	args: {
-		chatId: v.id('chats')
+		designId: v.id('designs'),
+		userId: v.id('users')
 	},
-
-	handler: async (ctx, { chatId }) => {
-		const designProductData = await ctx.runQuery(
-			internal.v1.design.product.internal.query.getDesignProductsByChatId,
-			{ chatId }
-		);
-
-		const design = designProductData.design;
-		const designProducts = designProductData.designProducts;
-		if (!design || designProducts.length < 1) return;
-
-		await updateDesignStatus(ctx, design._id, design.createdById, {
+	handler: async (ctx, { designId, userId }) => {
+		await updateDesignStatus(ctx, designId, userId, {
 			renderingImage: true
 		});
+
+		const design = await ctx.runQuery(internal.v1.design.internal.query.getDesignById, {
+			designId
+		});
+		if (!design || (design.productIds ?? []).length < 1)
+			return await updateDesignStatus(ctx, designId, userId, {
+				renderingImage: false
+			});
+
+		const designProducts = await Promise.all(
+			design.productIds!.map((productId) =>
+				ctx.runQuery(internal.v1.product.internal.query.getProductById, { productId })
+			)
+		);
+
+		const availableDesignProducts = designProducts.filter((designProduct) => !!designProduct);
+		if (availableDesignProducts.length < 1)
+			return await updateDesignStatus(ctx, designId, userId, {
+				renderingImage: false
+			});
 
 		const { data: renderedImageFiles } = await getDesignRenderedImage({
 			designName: design.name,
 			designDescription: design.description,
-			productImages: designProducts.map((designProduct) => ({
+			productImages: availableDesignProducts.map((designProduct) => ({
 				category: designProduct.category,
-				url: designProduct.imageUrl,
+				url: designProduct.mainImageUrl ?? designProduct.ludwigImageUrl,
 				name: designProduct.name
 			})),
 			originalInspirationImageUrl: design.inspirationImageUrl
 		});
-
 		const renderedImageBase64 = renderedImageFiles?.[0]?.base64;
-
-		if (renderedImageBase64) {
-			const fileName = `rendered-design-${design._id.toString()}`;
-			const fileBlob = file.base64ToBlob(renderedImageBase64);
-
-			const { data: uploadData } = await r2.upload({
-				bucketName: process.env.R2_USER_RENDERED_DESIGN_IMG_BUCKET_NAME!,
-				name: fileName,
-				fileNameWithExt: `${fileName}.png`,
-				fileBlob,
-				bucketUrl: process.env.R2_USER_RENDERED_DESIGN_IMG_BUCKET_URL!
+		if (!renderedImageBase64)
+			return await updateDesignStatus(ctx, designId, userId, {
+				renderingImage: false
 			});
 
-			if (uploadData) {
-				await updateDesignStatus(ctx, design._id, design.createdById, {
-					renderingImage: false,
-					renderedImageUrl: uploadData.url
-				});
-				return;
-			}
-		}
+		const fileName = `rendered-design-${design._id.toString()}`;
+		const fileBlob = file.base64ToBlob(renderedImageBase64);
 
-		await updateDesignStatus(ctx, design._id, design.createdById, {
-			renderingImage: false
+		const { data: uploadData } = await r2.upload({
+			bucketName: process.env.R2_USER_RENDERED_DESIGN_IMG_BUCKET_NAME!,
+			name: fileName,
+			fileNameWithExt: `${fileName}.png`,
+			fileBlob,
+			bucketUrl: process.env.R2_USER_RENDERED_DESIGN_IMG_BUCKET_URL!
+		});
+
+		return await updateDesignStatus(ctx, designId, userId, {
+			renderingImage: false,
+			renderedImageUrl: uploadData?.url ? `${uploadData.url}?t=${date.now()}` : undefined
 		});
 	}
 });
@@ -71,7 +168,11 @@ async function updateDesignStatus(
 	ctx: ActionCtx,
 	designId: Id<'designs'>,
 	userId: Id<'users'>,
-	update: { renderingImage?: boolean; renderedImageUrl?: string }
+	update: {
+		generatingFurnitureRecommendation?: boolean;
+		renderingImage?: boolean;
+		renderedImageUrl?: string;
+	}
 ) {
 	await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
 		designId: designId,

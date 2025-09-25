@@ -61,8 +61,7 @@ async function isWorkspaceChat(
 }
 
 function authorizeProductOnboarding(poApiKey: string) {
-	if (poApiKey !== process.env.PRODUCT_ONBOARDING_API_KEY)
-		throw ServerError.Unauthorized('You are not a authorized to perform this action.');
+	if (poApiKey !== process.env.PRODUCT_ONBOARDING_API_KEY) throw ServerError.Unauthorized();
 
 	return poApiKey;
 }

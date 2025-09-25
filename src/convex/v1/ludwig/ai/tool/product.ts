@@ -1,12 +1,13 @@
 import { generateObject, tool } from 'ai';
 import { AiToolCtxParams, FloorPlanFile } from '../../../../type';
-import { spaceTypes } from '../../../design/space';
-import designProductModel from '../../../design/product/model';
+import { spaceTypes } from '../../../design/constant';
 import { internal } from '../../../../_generated/api';
-import { ProductCategory, SpaceType } from '../../../design/type';
+import { SpaceType } from '../../../design/type';
 import { asyncTryCatch } from '../../../../util/async';
 import { googleGemini2_5FlashLlm } from '../../../../config/google';
 import z from 'zod';
+import productModel from '../../../product/model';
+import { ProductCategory } from '../../../product/type';
 
 export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
@@ -19,9 +20,7 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 		execute: async (input) => {
 			const { ctx, chatId } = toolCtxParams;
 
-			const productCategories = designProductModel.getDesignProductCategoriesForSpace(
-				input.spaceType
-			);
+			const productCategories = productModel.getProductCategoriesForSpace(input.spaceType);
 
 			let spaceProductCategories = productCategories.recommended;
 
@@ -46,7 +45,7 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 
 			return {
 				success: true,
-				message: `These are the product categories for the space. Please proceed with the design, no user input required.`,
+				message: `These are the product categories for the space:\n ${spaceProductCategories.map((category) => `- ${category}`).join('\n')}.\n`,
 				productCategories: spaceProductCategories,
 				chatId: toolCtxParams.chatId
 			};

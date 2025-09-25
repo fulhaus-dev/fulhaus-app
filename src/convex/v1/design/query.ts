@@ -1,0 +1,34 @@
+import { v } from 'convex/values';
+import { query } from '../../_generated/server';
+import authorization from '../../middleware/authorization';
+import designModel from './model';
+import { SuccessData } from '../../response/success';
+
+export const getDesignDataByChatId = query({
+	args: {
+		chatId: v.id('chats')
+	},
+	handler: async (ctx, args) => {
+		await authorization.userIsAuthenticated(ctx);
+
+		const [design, designProducts] = await Promise.all([
+			designModel.getDesignByChatId(ctx, args.chatId),
+			designModel.getDesignProductsByChatId(ctx, args.chatId)
+		]);
+
+		return SuccessData({ design, designProducts });
+	}
+});
+
+export const getDesignsByWorkspaceId = query({
+	args: {
+		workspaceId: v.id('workspaces')
+	},
+	handler: async (ctx, args) => {
+		await authorization.userIsAuthenticated(ctx);
+
+		const designs = await designModel.getDesignsByWorkspaceId(ctx, args.workspaceId);
+
+		return SuccessData(designs);
+	}
+});

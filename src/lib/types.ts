@@ -88,3 +88,39 @@ export type UpdateDesign = {
 	floorPlanFile?: FloorPlanFile;
 	productCategories?: ProductCategories;
 };
+
+export type ProductStyle = Doc<'products'>['styles'][0];
+
+export type Design = Doc<'designs'>;
+
+export type DesignProduct = {
+	_id: Id<'products'>;
+	fhSku: string;
+	brand?: string;
+	name: string;
+	description: string;
+	pdpLink?: string;
+	retailPrice: number;
+	unitPerBox: number;
+	stockQty: number;
+	restockDate?: number;
+	imageUrls: string[];
+	mainImageUrl?: string;
+	ludwigImageUrl: string;
+	currencyCode: CurrencyCode;
+	dimension?: string;
+	width: number;
+	height: number;
+	depth: number;
+	dimensionUnit: 'in';
+	weight: number;
+	weightUnit: 'lb';
+	colorNames?: string[];
+	hexColors?: string[];
+	materials: string[];
+	styles: ProductStyle[];
+	category: string;
+	stockDate: number;
+};
+
+export type CurrencyCode = Doc<'products'>['currencyCode'];

@@ -1,5 +1,6 @@
-import { productCategories } from './product/category';
-import { spaceTypes } from './space';
+import { Infer } from 'convex/values';
+import { spaceTypes } from './constant';
+import { vUpdateDesign } from './validator';
 
 export type SpaceType = (typeof spaceTypes)[number];
-export type ProductCategory = (typeof productCategories)[number];
+export type UpdateDesign = Infer<typeof vUpdateDesign>;

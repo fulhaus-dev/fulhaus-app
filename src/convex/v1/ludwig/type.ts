@@ -1,4 +1,4 @@
-import { ProductCategory } from '../design/type';
+import { ProductCategory } from '../product/type';
 
 type LudwigRecommendationResponseData = {
 	id: string;

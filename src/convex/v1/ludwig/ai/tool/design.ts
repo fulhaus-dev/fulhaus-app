@@ -3,8 +3,8 @@ import z from 'zod';
 import { internal } from '../../../../_generated/api';
 import { Id } from '../../../../_generated/dataModel';
 import { AiToolCtxParams } from '../../../../type';
-import { spaceTypes } from '../../../design/space';
-import { productCategories } from '../../../design/product/category';
+import { spaceTypes } from '../../../design/constant';
+import { productCategories } from '../../../product/constant';
 
 export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
@@ -13,7 +13,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 			.object({
 				projectId: z.string().describe('The ID of the current project.'),
 				name: z.string().describe('A descriptive name for the design based on space type.'),
-				description: z.string().describe('A short, one-sentence description of the design.'),
+				description: z.string().describe('A detailed description of the design.'),
 				spaceType: z
 					.enum(spaceTypes)
 					.describe(
@@ -25,9 +25,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 					.describe('The floor plan url provided by the user. If any'),
 				productCategories: z
 					.array(z.enum(productCategories))
-					.describe(
-						'The array of furniture product categories for the space to be designed. This comes from the result of calling the getProductCategoriesForDesign tool.'
-					)
+					.describe('The array of furniture product categories for the space to be designed.')
 			})
 			.strip(),
 		execute: async (input) => {
@@ -124,9 +122,7 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 							.describe('The new floor plan url provided by the user.'),
 						productCategories: z
 							.optional(z.array(z.enum(productCategories)))
-							.describe(
-								'New array of furniture product categories for the space to be designed. This comes from the result of calling the getProductCategoriesForDesign tool.'
-							)
+							.describe('New array of furniture product categories for the space to be designed.')
 					})
 					.strip()
 			})
