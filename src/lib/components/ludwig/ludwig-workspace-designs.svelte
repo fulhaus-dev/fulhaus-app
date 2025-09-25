@@ -19,16 +19,16 @@
 	const workspaceDesigns = $derived(query.response?.data ?? []);
 </script>
 
-<div class="w-full p-4">
+<div class="sticky top-0 z-1 h-full w-full p-4">
 	<div class="min-h-screen w-full rounded-md bg-color-background p-8">
 		<div class="p-4">
 			<h2>Your Designs</h2>
 		</div>
 
-		<div class="grid grid-cols-1 gap-8 text-sm lg:grid-cols-3 2xl:grid-cols-5">
+		<div class="grid grid-cols-1 gap-4 text-sm lg:grid-cols-3 2xl:grid-cols-5">
 			{#each workspaceDesigns as workspaceDesign (workspaceDesign._id)}
 				<button
-					class="group relative flex cursor-pointer flex-col gap-y-4 text-start"
+					class="group relative flex cursor-pointer flex-col gap-y-4 rounded-md border-color-border-muted bg-color-background p-2 text-start hover:border"
 					type="button"
 					onclick={() =>
 						goto(
@@ -48,7 +48,7 @@
 					/>
 
 					<div class="px-2">
-						<h3 class="font-medium">{workspaceDesign.name}</h3>
+						<h3 class="text-lg font-medium">{workspaceDesign.name}</h3>
 						<p class="text-xs text-color-text-muted">
 							{workspaceDesign.description}
 						</p>
