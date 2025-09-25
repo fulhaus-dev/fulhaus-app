@@ -51,8 +51,6 @@ export const streamChatResponse = internalAction({
 		const messageChunks = result.toUIMessageStream();
 
 		for await (const chunk of messageChunks) {
-			console.log('chunk', chunk);
-
 			await ctx.runMutation(internal.v1.chat.internal.mutation.saveChatResponseStream, {
 				workspaceId,
 				chatId,
