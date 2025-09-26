@@ -14,7 +14,7 @@
 	<Sidebar />
 
 	<section class="h-full w-full flex-1">
-		<Navbar class="sticky top-0 h-[2.8rem]" />
+		<Navbar class="sticky top-0 z-1 h-[2.8rem]" />
 
 		<section class="h-[calc(100%-2.8rem)] w-full">
 			{@render children?.()}

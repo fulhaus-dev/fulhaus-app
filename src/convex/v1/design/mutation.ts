@@ -36,6 +36,15 @@ export const updateDesignById = mutation({
 					userId
 				}
 			);
+
+			return;
+		}
+
+		if (dataToUpdate.productIds) {
+			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
+				designId: args.designId,
+				userId
+			});
 		}
 	}
 });

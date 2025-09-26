@@ -50,6 +50,7 @@
 		{#if activeDesignView === 'product'}
 			<div class="flex-1 border-r border-color-border p-2">
 				<DesignProductView
+					designId={design._id}
 					{designProducts}
 					generatingDesignFurnitureRecommendation={design.generatingFurnitureRecommendation ||
 						false}

@@ -62,6 +62,7 @@ function useConvexQuerySubscription<Query extends FunctionReference<'query'>>(
 	const client = useConvexClient();
 
 	const state = $state({
+		loading: false,
 		response: undefined as FunctionReturnType<Query> | undefined,
 		error: undefined as Error | undefined
 	});
@@ -80,14 +81,18 @@ function useConvexQuerySubscription<Query extends FunctionReference<'query'>>(
 			unsubscribe = null;
 		}
 
+		state.loading = true;
+
 		unsubscribe = client.onUpdate(
 			query,
 			argsSnapshot,
 			(data) => {
+				state.loading = false;
 				state.response = data;
 				options?.onData?.(data);
 			},
 			(error) => {
+				state.loading = false;
 				state.error = error;
 				options?.onError?.(error);
 			}
@@ -104,9 +109,7 @@ function useConvexQuerySubscription<Query extends FunctionReference<'query'>>(
 		if (!requiredArgsKeys) return true;
 
 		for (const argKey of requiredArgsKeys) {
-			const hasRequiredArgsKeys = Object.keys(argsSnapshot).every((argKey) =>
-				requiredArgsKeys.includes(argKey)
-			);
+			const hasRequiredArgsKeys = requiredArgsKeys.every((key) => key in argsSnapshot);
 			if (!hasRequiredArgsKeys) return false;
 
 			const argsSnapshotValue = argsSnapshot[argKey];

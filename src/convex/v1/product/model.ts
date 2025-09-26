@@ -5,7 +5,8 @@ import { vCreateProduct } from './validator';
 import date from '../../util/date';
 import { SpaceType } from '../design/type';
 import { spaceTypeProductCategories } from '../design/constant';
-import { ClientProduct } from './type';
+import { productsToClientProducts } from './util';
+import { ProductCategory } from './type';
 
 async function createProduct(ctx: MutationCtx, args: Infer<typeof vCreateProduct>) {
 	return await ctx.db.insert('products', {
@@ -43,39 +44,33 @@ async function getProductsForClientByIds(ctx: QueryCtx, productIds: Id<'products
 	// TODO: Handle send products with active status
 	const products = await Promise.all(productIds.map((productId) => getProductById(ctx, productId)));
 
-	const availableProducts = products.filter((product) => !!product);
+	const clientProducts = productsToClientProducts(
+		products.filter((product) => product?.status === 'Active')
+	);
+	return clientProducts;
+}
 
-	const designProducts: ClientProduct[] = availableProducts.map((product) => ({
-		_id: product._id,
-		fhSku: product.fhSku,
-		brand: product.brand,
-		name: product.name,
-		description: product.description,
-		pdpLink: product.pdpLink,
-		retailPrice: product.msrp ?? product.tradePrice * 2,
-		unitPerBox: product.unitPerBox,
-		stockQty: product.stockQty,
-		restockDate: product.restockDate,
-		imageUrls: product.imageUrls,
-		mainImageUrl: product.mainImageUrl,
-		ludwigImageUrl: product.ludwigImageUrl,
-		currencyCode: product.currencyCode,
-		dimension: product.dimension,
-		width: product.width,
-		height: product.height,
-		depth: product.depth,
-		dimensionUnit: product.dimensionUnit,
-		weight: product.weight,
-		weightUnit: product.weightUnit,
-		colorNames: product.colorNames,
-		hexColors: product.hexColors,
-		materials: product.materials,
-		styles: product.styles,
-		category: product.category,
-		stockDate: product.stockDate
-	}));
+async function getClientProductsByCategory(
+	ctx: QueryCtx,
+	category: ProductCategory,
+	cursor?: string
+) {
+	const page = await ctx.db
+		.query('products')
+		.withIndex('by_category', (q) => q.eq('category', category).eq('status', 'Active'))
+		.paginate({
+			cursor: cursor ?? null,
+			numItems: 100
+		});
 
-	return designProducts;
+	const { page: products, isDone, continueCursor } = page;
+
+	const clientProducts = productsToClientProducts(products);
+	return {
+		clientProducts,
+		isDone,
+		continueCursor
+	};
 }
 
 const productModel = {
@@ -84,7 +79,8 @@ const productModel = {
 	getProductByPId,
 	getProductCategoriesForSpace,
 	getProductsForClientByIds,
-	getProductByLudwigImageUrl
+	getProductByLudwigImageUrl,
+	getClientProductsByCategory
 };
 
 export default productModel;

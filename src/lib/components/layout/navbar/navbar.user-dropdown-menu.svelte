@@ -40,7 +40,7 @@
 
 	<DropdownMenu.Portal>
 		<DropdownMenu.Content
-			class="min-w-52 rounded-md border border-color-border-muted bg-color-background text-sm shadow-xs shadow-color-shadow-muted"
+			class="z-50 min-w-52 rounded-md border border-color-border-muted bg-color-background text-sm shadow-xs shadow-color-shadow-muted"
 			align="end"
 			sideOffset={8}
 		>

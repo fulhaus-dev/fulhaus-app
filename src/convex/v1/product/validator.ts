@@ -90,6 +90,6 @@ export const vClientProduct = v.object({
 	hexColors: v.optional(v.array(v.string())),
 	materials: v.array(v.string()),
 	styles: v.array(vProductStyle),
-	category: v.string(),
+	category: vProductCategory,
 	stockDate: v.number()
 });

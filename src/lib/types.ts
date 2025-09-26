@@ -76,7 +76,7 @@ export type UpdateProject = {
 };
 
 export type SpaceType = Doc<'designs'>['spaceType'];
-export type ProductCategories = Doc<'designs'>['productCategories'];
+export type ProductCategory = Doc<'designs'>['productCategories'][0];
 
 export type FloorPlanFile = Doc<'designs'>['floorPlanFile'];
 
@@ -86,7 +86,8 @@ export type UpdateDesign = {
 	inspirationImageUrl?: string;
 	floorPlanFileUrl?: string;
 	floorPlanFile?: FloorPlanFile;
-	productCategories?: ProductCategories;
+	productCategories?: ProductCategory[];
+	productIds?: Id<'products'>[];
 };
 
 export type ProductStyle = Doc<'products'>['styles'][0];
@@ -119,7 +120,7 @@ export type DesignProduct = {
 	hexColors?: string[];
 	materials: string[];
 	styles: ProductStyle[];
-	category: string;
+	category: ProductCategory;
 	stockDate: number;
 };
 

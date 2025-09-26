@@ -1,16 +1,45 @@
 <script lang="ts">
+	import { useDesign } from '$lib/client-hooks/use-design.svelte';
+	import Button from '$lib/components/button.svelte';
+	import DesignProductSwapDialog from '$lib/components/design/design-product-swap/design-product-swap-dialog.svelte';
 	import LudwigLoader from '$lib/components/loaders/ludwig-loader.svelte';
 	import type { DesignProduct } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
+	import { RefreshCwIcon } from '@lucide/svelte';
+	import type { Id } from '../../../convex/_generated/dataModel';
 
 	type DesignProductViewProps = {
+		designId: Id<'designs'>;
 		designProducts: DesignProduct[];
 		generatingDesignFurnitureRecommendation: boolean;
 	};
 
-	const { designProducts, generatingDesignFurnitureRecommendation }: DesignProductViewProps =
-		$props();
+	const {
+		designId,
+		designProducts,
+		generatingDesignFurnitureRecommendation
+	}: DesignProductViewProps = $props();
+
+	const { updateDesign } = useDesign();
+
+	function handleUpdateDesignProductSwap({
+		productToSwap,
+		replacementProduct
+	}: {
+		productToSwap: DesignProduct;
+		replacementProduct: DesignProduct;
+	}) {
+		const replacementProductId = replacementProduct._id;
+		const currentDesignProductIds = designProducts.map((p) => p._id);
+		const productIdToSwapIndex = currentDesignProductIds.indexOf(productToSwap._id);
+
+		currentDesignProductIds[productIdToSwapIndex] = replacementProductId;
+
+		updateDesign(designId, {
+			productIds: currentDesignProductIds
+		});
+	}
 </script>
 
 <div class="@container min-h-full w-full">
@@ -19,27 +48,24 @@
 	>
 		{#each designProducts as designProduct (designProduct._id)}
 			<div
-				class="relative flex w-full flex-col gap-y-4 rounded-md border border-color-border-muted bg-color-background p-4"
+				class="relative w-full rounded-md border border-color-border-muted bg-color-background p-4"
 			>
-				<img
-					class={cn(
-						'h-64 w-full object-contain',
-						generatingDesignFurnitureRecommendation && 'animate-pulse'
-					)}
-					src={designProduct.ludwigImageUrl}
-					alt={designProduct.name}
-				/>
-
 				<div
-					class={cn(
-						'flex w-full gap-x-4 rounded-b-md',
-						generatingDesignFurnitureRecommendation && 'animate-pulse'
-					)}
+					class={cn('w-full space-y-4', generatingDesignFurnitureRecommendation && 'animate-pulse')}
 				>
-					<div class="flex-1 space-y-4 text-xs font-medium">
+					<img
+						class={cn(
+							'h-64 w-full object-contain',
+							generatingDesignFurnitureRecommendation && 'animate-pulse'
+						)}
+						src={designProduct.ludwigImageUrl}
+						alt={designProduct.name}
+					/>
+
+					<div class="flex-1 space-y-2 text-xs font-medium">
 						<div>
 							<h3>{designProduct.category}</h3>
-							<p class="w-full truncate">
+							<p class="w-full truncate hover:text-wrap">
 								{designProduct.name}
 							</p>
 						</div>
@@ -48,7 +74,22 @@
 							{number.toMoney(designProduct.retailPrice, designProduct.currencyCode)}
 						</h5>
 					</div>
-					<div class="h-fit"></div>
+
+					<div class="mt-8 flex items-center gap-x-4">
+						<DesignProductSwapDialog
+							class="w-full"
+							productToSwap={designProduct}
+							onSwap={(replacementProduct) =>
+								handleUpdateDesignProductSwap({ productToSwap: designProduct, replacementProduct })}
+						>
+							<Button class="h-10" variant="outlined">
+								<RefreshCwIcon />
+								<span>Swap</span>
+							</Button>
+						</DesignProductSwapDialog>
+
+						<Button class="h-10">Add to Cart</Button>
+					</div>
 				</div>
 
 				{#if generatingDesignFurnitureRecommendation}

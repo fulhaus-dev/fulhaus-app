@@ -63,7 +63,7 @@
 								{design?.name}
 							</h5>
 						</div>
-						<p class="text-xs text-color-text-muted">{design?.description}</p>
+						<!-- <p class="text-xs text-color-text-muted">{design?.description}</p> -->
 					</div>
 
 					<div class="flex items-center gap-x-4">

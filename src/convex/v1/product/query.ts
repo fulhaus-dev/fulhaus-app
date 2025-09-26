@@ -4,6 +4,8 @@ import { SuccessData } from '../../response/success';
 import { vSpaceType } from '../design/validator';
 import productModel from './model';
 import { v } from 'convex/values';
+import { vProductCategory } from './validator';
+import ServerError from '../../response/error';
 
 export const getPoProductByPId = query({
 	args: {
@@ -13,7 +15,10 @@ export const getPoProductByPId = query({
 	handler: async (ctx, args) => {
 		authorization.authorizeProductOnboarding(args.poApiKey);
 
-		return await productModel.getProductByPId(ctx, args.pId);
+		const product = await productModel.getProductByPId(ctx, args.pId);
+		if (!product) throw ServerError.NotFound('Product not found.');
+
+		return SuccessData(product);
 	}
 });
 
@@ -27,5 +32,23 @@ export const getProductCategoriesForSpace = query({
 		const productCategories = productModel.getProductCategoriesForSpace(args.spaceType);
 
 		return SuccessData(productCategories.all ?? []);
+	}
+});
+
+export const getClientProductsByCategory = query({
+	args: {
+		category: vProductCategory,
+		cursor: v.optional(v.string())
+	},
+	handler: async (ctx, args) => {
+		await authorization.userIsAuthenticated(ctx);
+
+		const clientProductPaginationResult = await productModel.getClientProductsByCategory(
+			ctx,
+			args.category,
+			args.cursor
+		);
+
+		return SuccessData(clientProductPaginationResult);
 	}
 });

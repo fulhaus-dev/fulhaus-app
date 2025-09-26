@@ -78,6 +78,7 @@ import type * as v1_product_mutation from "../v1/product/mutation.js";
 import type * as v1_product_query from "../v1/product/query.js";
 import type * as v1_product_table from "../v1/product/table.js";
 import type * as v1_product_type from "../v1/product/type.js";
+import type * as v1_product_util from "../v1/product/util.js";
 import type * as v1_product_validator from "../v1/product/validator.js";
 import type * as v1_product_vendor_model from "../v1/product/vendor/model.js";
 import type * as v1_product_vendor_mutation from "../v1/product/vendor/mutation.js";
@@ -194,6 +195,7 @@ declare const fullApi: ApiFromModules<{
   "v1/product/query": typeof v1_product_query;
   "v1/product/table": typeof v1_product_table;
   "v1/product/type": typeof v1_product_type;
+  "v1/product/util": typeof v1_product_util;
   "v1/product/validator": typeof v1_product_validator;
   "v1/product/vendor/model": typeof v1_product_vendor_model;
   "v1/product/vendor/mutation": typeof v1_product_vendor_mutation;
