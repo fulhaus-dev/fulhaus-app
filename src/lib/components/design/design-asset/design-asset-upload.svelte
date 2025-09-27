@@ -15,7 +15,7 @@
 	const { designAssetUpload, uploadFile, uploadUrl } = useDesignAssetUpload({ onUpload });
 </script>
 
-<div class="relative contents">
+<div class="relative">
 	{#if designAssetUpload.uploading}
 		<UploadingDesignAssetLoader />
 	{/if}

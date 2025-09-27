@@ -7,10 +7,12 @@
 
 <div
 	class={cn(
-		'absolute top-0 right-0 left-0 z-1 flex h-screen max-h-full flex-col items-center justify-center gap-y-2 bg-color-background/80 text-sm font-medium',
+		'absolute inset-0 z-1 flex flex-col items-center gap-y-2 bg-color-background/80 text-sm font-medium',
 		className
 	)}
 >
-	<RingLoader />
-	<p>Uploading</p>
+	<div class="sticky top-40 p-20 text-center">
+		<RingLoader class="mx-auto" />
+		<p>Uploading</p>
+	</div>
 </div>
