@@ -1,10 +1,11 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
 	import DesignRenderViewerDialog from '$lib/components/design/design-view-sidebar/design-render-viewer-dialog.svelte';
+	import DesignViewSidebarCartButton from '$lib/components/design/design-view-sidebar/design-view-sidebar-cart-button.svelte';
 	import LudwigLoader from '$lib/components/loaders/ludwig-loader.svelte';
 	import type { Design } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
-	import { ShoppingCartIcon, SparklesIcon } from '@lucide/svelte';
+	import { SparklesIcon } from '@lucide/svelte';
 
 	const { design }: { design: Design } = $props();
 </script>
@@ -42,10 +43,7 @@
 		<p class="text-sm">{design.description}</p>
 
 		<div class="space-y-2">
-			<Button>
-				<ShoppingCartIcon class="size-4" />
-				<span>Add all to Cart</span>
-			</Button>
+			<DesignViewSidebarCartButton productIds={design?.productIds ?? []} />
 			<Button variant="outlined">
 				<SparklesIcon class="size-4" />
 				<span>Create new Design</span>

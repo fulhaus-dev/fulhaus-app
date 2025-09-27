@@ -10,6 +10,7 @@ import { designTable } from './v1/design/table';
 import { ludwigChatTempAssetTable } from './v1/ludwig/table';
 import { productTable } from './v1/product/table';
 import { productVendorTable } from './v1/product/vendor/table';
+import { cartItemTable } from './v1/cart/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -25,5 +26,6 @@ export default defineSchema({
 	designs: designTable,
 	ludwigChatTempAssets: ludwigChatTempAssetTable,
 	productVendors: productVendorTable,
-	products: productTable
+	products: productTable,
+	cartItems: cartItemTable
 });

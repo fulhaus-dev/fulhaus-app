@@ -1,4 +1,3 @@
-import { stepCountIs } from 'ai';
 import { googleGemini2_5FlashChat } from '../../../config/google';
 import {
 	createDesignTool,
@@ -16,7 +15,7 @@ export const ludwigAgent: AgentConfig = {
 	options: {
 		model: googleGemini2_5FlashChat,
 		systemPromptFileId: process.env.LUDWIG_SYSTEM_PROMPT_FILE_ID! as Id<'_storage'>,
-		stopWhen: stepCountIs(10),
+		maxToolCallSteps: 20,
 		providerOptions: {
 			google: {
 				thinkingConfig: {

@@ -125,3 +125,14 @@ export type DesignProduct = {
 };
 
 export type CurrencyCode = Doc<'products'>['currencyCode'];
+
+export type CartItem = Doc<'cartItems'> & {
+	product: DesignProduct;
+};
+
+export type Cart = {
+	currencyCode: CurrencyCode;
+	items: CartItem[];
+};
+
+export type CartItemQuantityChangeType = 'increment' | 'decrement';

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import FulhausLogoWordmark from '$lib/components/fulhaus-logo-wordmark.svelte';
+	import CartPreviewIcon from '$lib/components/cart-preview-icon.svelte';
 	import NavbarUserDropdownMenu from '$lib/components/layout/navbar/navbar.user-dropdown-menu.svelte';
 	import Link from '$lib/components/link.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { CircleQuestionMarkIcon, ShoppingCartIcon, Icon } from '@lucide/svelte';
+	import { CircleQuestionMarkIcon, Icon } from '@lucide/svelte';
 
 	const { class: className = '' }: { class?: string } = $props();
 
@@ -25,13 +26,8 @@
 	</menu>
 
 	<menu class="flex flex-1 items-center justify-end gap-x-6">
-		<Link class="relative" href="/">
-			<p
-				class="bg-color-button-bg text-color-button-text absolute -top-1 -right-2 flex items-center justify-center rounded-full p-0.5 text-[8px] leading-none font-bold"
-			>
-				{'0'}
-			</p>
-			{@render NavbarIcon(ShoppingCartIcon)}
+		<Link href={`/${workspaceId}/cart`}>
+			<CartPreviewIcon />
 		</Link>
 		<Link href="/#">
 			{@render NavbarIcon(CircleQuestionMarkIcon)}

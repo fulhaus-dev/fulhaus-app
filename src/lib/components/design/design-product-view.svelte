@@ -8,6 +8,7 @@
 	import number from '$lib/utils/number';
 	import { RefreshCwIcon } from '@lucide/svelte';
 	import type { Id } from '../../../convex/_generated/dataModel';
+	import DesignProductCartButton from '$lib/components/design/design-product-cart-button.svelte';
 
 	type DesignProductViewProps = {
 		designId: Id<'designs'>;
@@ -88,7 +89,7 @@
 							</Button>
 						</DesignProductSwapDialog>
 
-						<Button class="h-10">Add to Cart</Button>
+						<DesignProductCartButton productId={designProduct._id} />
 					</div>
 				</div>
 

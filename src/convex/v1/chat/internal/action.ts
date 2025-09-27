@@ -4,6 +4,7 @@ import {
 	InferUIMessageChunk,
 	LanguageModelUsage,
 	smoothStream,
+	stepCountIs,
 	StepResult,
 	streamText,
 	ToolSet,
@@ -35,7 +36,7 @@ export const streamChatResponse = internalAction({
 
 		const agentTools = getAiAgentTools({ ctx, workspaceId, chatId, userId }, agentToolFnSet);
 
-		const { systemPromptFileId, ...otherAgentOptions } = agentOptions;
+		const { systemPromptFileId, maxToolCallSteps, ...otherAgentOptions } = agentOptions;
 
 		const promptBlob = await ctx.storage.get(systemPromptFileId);
 		const systemPrompt = await promptBlob?.text();
@@ -51,8 +52,9 @@ export const streamChatResponse = internalAction({
 			system: systemPrompt,
 			messages,
 			tools: agentTools,
+			stopWhen: stepCountIs(maxToolCallSteps),
 			experimental_transform: smoothStream({
-				delayInMs: 200
+				delayInMs: 100
 			}),
 			onFinish: async (finish) => onFinish(ctx, finish, { userId, workspaceId, chatId }),
 			onError: async () => await deleteChatResponseStreams(ctx, { workspaceId, chatId })
