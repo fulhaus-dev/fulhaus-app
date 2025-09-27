@@ -1,6 +1,16 @@
 import { v } from 'convex/values';
 import { ActionCtx, internalAction } from '../../../_generated/server';
-import { LanguageModelUsage, smoothStream, StepResult, streamText, ToolSet } from 'ai';
+import {
+	InferUIMessageChunk,
+	LanguageModelUsage,
+	smoothStream,
+	StepResult,
+	streamText,
+	ToolSet,
+	UIDataTypes,
+	UIMessage,
+	UITools
+} from 'ai';
 import { internal } from '../../../_generated/api';
 import { vChatMessage } from '../validator';
 import { getAiAgentTools } from '../util';
@@ -42,7 +52,7 @@ export const streamChatResponse = internalAction({
 			messages,
 			tools: agentTools,
 			experimental_transform: smoothStream({
-				delayInMs: 20
+				delayInMs: 200
 			}),
 			onFinish: async (finish) => onFinish(ctx, finish, { userId, workspaceId, chatId }),
 			onError: async () => await deleteChatResponseStreams(ctx, { workspaceId, chatId })
@@ -51,14 +61,44 @@ export const streamChatResponse = internalAction({
 		const messageChunks = result.toUIMessageStream();
 
 		for await (const chunk of messageChunks) {
+			const stream = getStream(chunk);
+			if (!stream) continue;
+
 			await ctx.runMutation(internal.v1.chat.internal.mutation.saveChatResponseStream, {
 				workspaceId,
 				chatId,
-				stream: chunk
+				stream
 			});
 		}
 	}
 });
+
+function getStream(chunk: InferUIMessageChunk<UIMessage<unknown, UIDataTypes, UITools>>) {
+	const { type } = chunk;
+
+	switch (type) {
+		case 'start':
+			return { type: 'start' };
+		case 'tool-input-start':
+			return {
+				type: 'tool-input-start',
+				toolName: chunk.toolName
+			};
+		case 'tool-output-available':
+			return {
+				type: 'tool-output-available',
+				toolName: (chunk.output as { toolName: string | undefined }).toolName
+			};
+		case 'text-delta':
+			return { type: 'text-delta', delta: chunk.delta };
+		case 'error':
+			return { type: 'error' };
+		case 'finish':
+			return { type: 'finish' };
+		default:
+			return null;
+	}
+}
 
 async function onFinish(
 	ctx: ActionCtx,

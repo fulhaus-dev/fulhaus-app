@@ -60,7 +60,7 @@ async function getClientProductsByCategory(
 		.withIndex('by_category', (q) => q.eq('category', category).eq('status', 'Active'))
 		.paginate({
 			cursor: cursor ?? null,
-			numItems: 100
+			numItems: 25
 		});
 
 	const { page: products, isDone, continueCursor } = page;

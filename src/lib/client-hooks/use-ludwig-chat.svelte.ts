@@ -149,16 +149,16 @@ export function useLudwigChat() {
 		state.isStreaming = true;
 
 		for (const chatResponseStream of chatResponseStreams) {
-			if (chatResponseStream.type !== 'start') state.loadingResponse = true;
+			if (chatResponseStream.type === 'start') state.loadingResponse = true;
 
 			if (chatResponseStream.type === 'tool-input-start')
 				state.activeToolLoadingLabel = toolLoadingLabels[chatResponseStream.toolName];
 
 			if (chatResponseStream.type === 'tool-output-available') {
-				if (LUDWIG_UI_TOOL_NAMES.includes(chatResponseStream.output.toolName))
-					state.activeUiToolName = chatResponseStream.output.toolName as ActiveUiToolName;
+				if (LUDWIG_UI_TOOL_NAMES.includes(chatResponseStream.toolName))
+					state.activeUiToolName = chatResponseStream.toolName as ActiveUiToolName;
 
-				if (chatResponseStream.output.toolName === 'generateDesignFurnitureRecommendation')
+				if (chatResponseStream.toolName === 'generateDesignFurnitureRecommendation')
 					state.recommendationsAvailable = true;
 			}
 
