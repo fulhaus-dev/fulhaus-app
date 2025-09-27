@@ -42,7 +42,8 @@ export function createProjectTool(toolCtxParams: AiToolCtxParams) {
 			return {
 				success: true,
 				message: 'Project created successfully',
-				projectId: newProjectId
+				projectId: newProjectId,
+				instruction: 'Project created successfully. Please proceed to the next step.'
 			};
 		}
 	});
@@ -83,7 +84,8 @@ export function updateProjectTool(toolCtxParams: AiToolCtxParams) {
 			return {
 				success: true,
 				message: 'Project updated successfully',
-				projectId
+				projectId,
+				instruction: 'Project updated successfully. Please proceed to the next step.'
 			};
 		}
 	});

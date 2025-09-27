@@ -62,6 +62,7 @@ import type * as v1_ludwig_ai_tool_product from "../v1/ludwig/ai/tool/product.js
 import type * as v1_ludwig_ai_tool_project from "../v1/ludwig/ai/tool/project.js";
 import type * as v1_ludwig_ai_tool_recommendation from "../v1/ludwig/ai/tool/recommendation.js";
 import type * as v1_ludwig_ai_tool_ui from "../v1/ludwig/ai/tool/ui.js";
+import type * as v1_ludwig_ai_util from "../v1/ludwig/ai/util.js";
 import type * as v1_ludwig_internal_mutation from "../v1/ludwig/internal/mutation.js";
 import type * as v1_ludwig_internal_query from "../v1/ludwig/internal/query.js";
 import type * as v1_ludwig_model from "../v1/ludwig/model.js";
@@ -179,6 +180,7 @@ declare const fullApi: ApiFromModules<{
   "v1/ludwig/ai/tool/project": typeof v1_ludwig_ai_tool_project;
   "v1/ludwig/ai/tool/recommendation": typeof v1_ludwig_ai_tool_recommendation;
   "v1/ludwig/ai/tool/ui": typeof v1_ludwig_ai_tool_ui;
+  "v1/ludwig/ai/util": typeof v1_ludwig_ai_util;
   "v1/ludwig/internal/mutation": typeof v1_ludwig_internal_mutation;
   "v1/ludwig/internal/query": typeof v1_ludwig_internal_query;
   "v1/ludwig/model": typeof v1_ludwig_model;

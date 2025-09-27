@@ -1,7 +1,7 @@
 import { v } from 'convex/values';
 import { spaceTypes } from './constant';
 import { vFloorPlanFile } from '../../validator';
-import { vProductCategory } from '../product/validator';
+import { vProductCategory, vProductStyle } from '../product/validator';
 
 export const vSpaceType = v.union(...spaceTypes.map((tag) => v.literal(tag)));
 
@@ -14,7 +14,8 @@ export const vCreateDesign = v.object({
 	spaceType: vSpaceType,
 	inspirationImageUrl: v.string(),
 	floorPlanFile: v.optional(vFloorPlanFile),
-	productCategories: v.array(vProductCategory)
+	productCategories: v.array(vProductCategory),
+	styles: v.array(vProductStyle)
 });
 
 export const vUpdateDesign = v.object({
@@ -26,6 +27,7 @@ export const vUpdateDesign = v.object({
 	productCategories: v.optional(v.array(vProductCategory)),
 	productIds: v.optional(v.array(v.id('products'))),
 	renderedImageUrl: v.optional(v.string()),
+	styles: v.optional(v.array(vProductStyle)),
 	renderingImage: v.optional(v.boolean()),
 	generatingFurnitureRecommendation: v.optional(v.boolean())
 });

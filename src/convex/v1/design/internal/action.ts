@@ -1,8 +1,5 @@
 import { v } from 'convex/values';
 import { ActionCtx, internalAction } from '../../../_generated/server';
-import { generateText, ImagePart } from 'ai';
-import { asyncTryCatch } from '../../../util/async';
-import { googleGemini2_5FlashImagePreviewImm } from '../../../config/google';
 import { internal } from '../../../_generated/api';
 import { r2 } from '../../../util/r2';
 import file from '../../../util/file';
@@ -10,6 +7,29 @@ import { Id } from '../../../_generated/dataModel';
 import asyncFetch from '../../../util/fetch';
 import { LudwigRecommendationResponse } from '../../ludwig/type';
 import date from '../../../util/date';
+import { getDesignRenderedImage, getDesignStylesFromRenderedImage } from '../../ludwig/ai/util';
+import { ProductStyle } from '../../product/type';
+
+export const generateDesignStyles = internalAction({
+	args: {
+		designId: v.id('designs'),
+		userId: v.id('users'),
+		renderedImageUrl: v.string()
+	},
+	handler: async (ctx, { designId, userId, renderedImageUrl }) => {
+		const { data: designStyles } = await getDesignStylesFromRenderedImage(renderedImageUrl);
+		if (!designStyles) return;
+
+		return await updateDesignStatus({
+			ctx,
+			designId,
+			userId,
+			update: {
+				styles: designStyles
+			}
+		});
+	}
+});
 
 export const generateDesignFurnitureRecommendation = internalAction({
 	args: {
@@ -17,15 +37,25 @@ export const generateDesignFurnitureRecommendation = internalAction({
 		userId: v.id('users')
 	},
 	handler: async (ctx, { designId, userId }) => {
-		await updateDesignStatus(ctx, designId, userId, {
-			generatingFurnitureRecommendation: true
+		await updateDesignStatus({
+			ctx,
+			designId,
+			userId,
+			update: {
+				generatingFurnitureRecommendation: true
+			}
 		});
 		const design = await ctx.runQuery(internal.v1.design.internal.query.getDesignById, {
 			designId
 		});
 		if (!design) {
-			await updateDesignStatus(ctx, designId, userId, {
-				generatingFurnitureRecommendation: false
+			await updateDesignStatus({
+				ctx,
+				designId,
+				userId,
+				update: {
+					generatingFurnitureRecommendation: false
+				}
 			});
 
 			return {
@@ -45,8 +75,13 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			})
 		});
 		if (error) {
-			await updateDesignStatus(ctx, designId, userId, {
-				generatingFurnitureRecommendation: false
+			await updateDesignStatus({
+				ctx,
+				designId,
+				userId,
+				update: {
+					generatingFurnitureRecommendation: false
+				}
 			});
 
 			return { error };
@@ -66,8 +101,13 @@ export const generateDesignFurnitureRecommendation = internalAction({
 
 		const availableProducts = products.filter((product) => !!product);
 		if (!availableProducts) {
-			await updateDesignStatus(ctx, designId, userId, {
-				generatingFurnitureRecommendation: false
+			await updateDesignStatus({
+				ctx,
+				designId,
+				userId,
+				update: {
+					generatingFurnitureRecommendation: false
+				}
 			});
 
 			return {
@@ -92,8 +132,13 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			userId
 		});
 
-		await updateDesignStatus(ctx, designId, userId, {
-			generatingFurnitureRecommendation: false
+		await updateDesignStatus({
+			ctx,
+			designId,
+			userId,
+			update: {
+				generatingFurnitureRecommendation: false
+			}
 		});
 
 		return { data: designId };
@@ -106,16 +151,26 @@ export const generateDesignRender = internalAction({
 		userId: v.id('users')
 	},
 	handler: async (ctx, { designId, userId }) => {
-		await updateDesignStatus(ctx, designId, userId, {
-			renderingImage: true
+		await updateDesignStatus({
+			ctx,
+			designId,
+			userId,
+			update: {
+				renderingImage: true
+			}
 		});
 
 		const design = await ctx.runQuery(internal.v1.design.internal.query.getDesignById, {
 			designId
 		});
 		if (!design || (design.productIds ?? []).length < 1)
-			return await updateDesignStatus(ctx, designId, userId, {
-				renderingImage: false
+			return await updateDesignStatus({
+				ctx,
+				designId,
+				userId,
+				update: {
+					renderingImage: false
+				}
 			});
 
 		const designProducts = await Promise.all(
@@ -126,8 +181,13 @@ export const generateDesignRender = internalAction({
 
 		const availableDesignProducts = designProducts.filter((designProduct) => !!designProduct);
 		if (availableDesignProducts.length < 1)
-			return await updateDesignStatus(ctx, designId, userId, {
-				renderingImage: false
+			return await updateDesignStatus({
+				ctx,
+				designId,
+				userId,
+				update: {
+					renderingImage: false
+				}
 			});
 
 		const { data: renderedImageFiles } = await getDesignRenderedImage({
@@ -142,8 +202,13 @@ export const generateDesignRender = internalAction({
 		});
 		const renderedImageBase64 = renderedImageFiles?.[0]?.base64;
 		if (!renderedImageBase64)
-			return await updateDesignStatus(ctx, designId, userId, {
-				renderingImage: false
+			return await updateDesignStatus({
+				ctx,
+				designId,
+				userId,
+				update: {
+					renderingImage: false
+				}
 			});
 
 		const fileName = `rendered-design-${design._id.toString()}`;
@@ -157,102 +222,46 @@ export const generateDesignRender = internalAction({
 			bucketUrl: process.env.R2_USER_RENDERED_DESIGN_IMG_BUCKET_URL!
 		});
 
-		return await updateDesignStatus(ctx, designId, userId, {
-			renderingImage: false,
-			renderedImageUrl: uploadData?.url ? `${uploadData.url}?t=${date.now()}` : undefined
+		const renderedImageUrl = uploadData?.url ? `${uploadData.url}?t=${date.now()}` : undefined;
+
+		if (renderedImageUrl)
+			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignStyles, {
+				designId,
+				userId,
+				renderedImageUrl
+			});
+
+		return await updateDesignStatus({
+			ctx,
+			designId,
+			userId,
+			update: {
+				renderingImage: false,
+				renderedImageUrl
+			}
 		});
 	}
 });
 
-async function updateDesignStatus(
-	ctx: ActionCtx,
-	designId: Id<'designs'>,
-	userId: Id<'users'>,
+async function updateDesignStatus({
+	ctx,
+	designId,
+	userId,
+	update
+}: {
+	ctx: ActionCtx;
+	designId: Id<'designs'>;
+	userId: Id<'users'>;
 	update: {
 		generatingFurnitureRecommendation?: boolean;
 		renderingImage?: boolean;
 		renderedImageUrl?: string;
-	}
-) {
+		styles?: ProductStyle[];
+	};
+}) {
 	await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
 		designId: designId,
 		userId: userId,
 		update
 	});
-}
-
-async function getDesignRenderedImage(args: {
-	designName: string;
-	designDescription: string;
-	productImages: { category: string; url: string; name: string }[];
-	originalInspirationImageUrl: string;
-}) {
-	const systemPrompt = `
-You are an expert interior designer and 3D visualization specialist.
-
-Your task is to generate a photorealistic rendered image of a design space based on:
-- The space name and description provided
-- The furniture/product images shown
-
-Create a cohesive, aesthetically pleasing room design that incorporates all the provided products in a natural and functional layout taking your design cue from the design name and description.
-
-**IMPORTANT**
-The orientation of the generated design image MUST be LANDSCAPE.
-`;
-
-	const designProductCategoriesImagePart: ImagePart[] = args.productImages.map((productImage) => ({
-		type: 'image',
-		image: productImage.url
-	}));
-
-	const productList = args.productImages
-		.map((productImage, index) => `${index + 1}. ${productImage.category} - ${productImage.name}`)
-		.join('\n');
-
-	const { data: result, error } = await asyncTryCatch(() =>
-		generateText({
-			model: googleGemini2_5FlashImagePreviewImm,
-			system: systemPrompt,
-			messages: [
-				{
-					role: 'user',
-					content: [
-						{
-							type: 'text',
-							text: `Generate a rendered image for this design:
-              
-              **Design Name**: ${args.designName}
-              
-              **Design Description**:${args.designDescription}
-              
-              **The ${args.productImages.length} Products to include (images attached below):**
-              ${productList}
-
-              The last image is the original inspiration image, should not be part of the design but should be used to guide the space aesthetics, like wall, floor etc.
-              
-              Please create a design based on the design name and description that naturally incorporates all these furniture pieces.`
-						},
-						...designProductCategoriesImagePart,
-						{
-							type: 'text',
-							text: 'This image is the original inspiration image, should not be part of the design but should be used to guide the space aesthetics, like wall, floor etc.'
-						},
-						{
-							type: 'image',
-							image: args.originalInspirationImageUrl
-						}
-					]
-				}
-			]
-		})
-	);
-
-	if (error)
-		return {
-			error
-		};
-
-	return {
-		data: result.files
-	};
 }

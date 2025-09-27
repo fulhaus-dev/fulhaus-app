@@ -4,7 +4,7 @@ import { internal } from '../../../../_generated/api';
 import { Id } from '../../../../_generated/dataModel';
 import { AiToolCtxParams } from '../../../../type';
 import { spaceTypes } from '../../../design/constant';
-import { productCategories } from '../../../product/constant';
+import { productCategories, productStyles } from '../../../product/constant';
 
 export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
@@ -25,7 +25,10 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 					.describe('The floor plan url provided by the user. If any'),
 				productCategories: z
 					.array(z.enum(productCategories))
-					.describe('The array of furniture product categories for the space to be designed.')
+					.describe('The array of furniture product categories for the space to be designed.'),
+				styles: z
+					.array(z.enum(productStyles))
+					.describe('The array of matching styles based on the inspiration image.')
 			})
 			.strip(),
 		execute: async (input) => {
@@ -89,7 +92,8 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 			return {
 				success: true,
 				message: 'Design created successfully',
-				designId: newDesignId
+				designId: newDesignId,
+				instruction: 'Design created successfully. Please proceed to the next step.'
 			};
 		}
 	});
@@ -122,7 +126,10 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 							.describe('The new floor plan url provided by the user.'),
 						productCategories: z
 							.optional(z.array(z.enum(productCategories)))
-							.describe('New array of furniture product categories for the space to be designed.')
+							.describe('New array of furniture product categories for the space to be designed.'),
+						styles: z
+							.array(z.enum(productStyles))
+							.describe('New array of matching styles based on the inspiration image.')
 					})
 					.strip()
 			})
@@ -185,7 +192,8 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 			return {
 				success: true,
 				message: 'Design updated successfully',
-				designId
+				designId,
+				instruction: 'Design updated successfully. Please proceed to the next step.'
 			};
 		}
 	});

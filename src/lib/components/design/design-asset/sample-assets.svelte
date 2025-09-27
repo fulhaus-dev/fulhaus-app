@@ -12,7 +12,7 @@
 </script>
 
 {#if designAssetUpload.uploading}
-	<UploadingDesignAssetLoader class="fixed" />
+	<UploadingDesignAssetLoader class="fixed z-50 h-screen w-screen" />
 {/if}
 
 <ImageMasonry images={sampleInspoImages} onSelect={(imageUrl) => uploadUrl(imageUrl, 'inspo')} />

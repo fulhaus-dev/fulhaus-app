@@ -2,7 +2,7 @@ import { defineTable } from 'convex/server';
 import { v } from 'convex/values';
 import { vSpaceType } from './validator';
 import { vFloorPlanFile } from '../../validator';
-import { vProductCategory } from '../product/validator';
+import { vProductCategory, vProductStyle } from '../product/validator';
 
 export const designTable = defineTable({
 	workspaceId: v.id('workspaces'),
@@ -18,6 +18,7 @@ export const designTable = defineTable({
 	renderedImageUrl: v.optional(v.string()),
 	generatingFurnitureRecommendation: v.optional(v.boolean()),
 	renderingImage: v.optional(v.boolean()),
+	styles: v.optional(v.array(vProductStyle)),
 	publishedAt: v.optional(v.number()),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),

@@ -24,7 +24,7 @@ let autoscroll: ReturnType<typeof autoScroll> | undefined;
 const toolLoadingLabels: Record<string, string> = {
 	createProject: 'Creating project...',
 	updateProject: 'Updating project...',
-	getProductCategoriesForDesign: 'Getting product categories...',
+	getProductCategoriesForDesign: 'Generating product categories...',
 	createDesign: 'Creating design...',
 	updateDesign: 'Updating design...',
 	generateDesignFurnitureRecommendation: 'Generating design furniture recommendation...'

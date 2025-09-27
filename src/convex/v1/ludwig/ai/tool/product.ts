@@ -1,26 +1,22 @@
-import { generateObject, tool } from 'ai';
-import { AiToolCtxParams, FloorPlanFile } from '../../../../type';
-import { spaceTypes } from '../../../design/constant';
+import { tool } from 'ai';
+import { AiToolCtxParams } from '../../../../type';
+import { spaceTypeProductCategories, spaceTypes } from '../../../design/constant';
 import { internal } from '../../../../_generated/api';
-import { SpaceType } from '../../../design/type';
-import { asyncTryCatch } from '../../../../util/async';
-import { googleGemini2_5FlashLlm } from '../../../../config/google';
 import z from 'zod';
-import productModel from '../../../product/model';
-import { ProductCategory } from '../../../product/type';
+import { getSpaceProductCategoriesInFloorPlan } from '../util';
 
 export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
 		description: 'Provides the product categories for the space to design',
 		inputSchema: z
 			.object({
-				spaceType: z.enum(spaceTypes).describe('The literal value of the space been designed.')
+				spaceType: z.enum(spaceTypes).describe('The space type to been designed.')
 			})
 			.strip(),
 		execute: async (input) => {
 			const { ctx, chatId } = toolCtxParams;
 
-			const productCategories = productModel.getProductCategoriesForSpace(input.spaceType);
+			const productCategories = spaceTypeProductCategories[input.spaceType];
 
 			let spaceProductCategories = productCategories.recommended;
 
@@ -44,66 +40,9 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 			}
 
 			return {
-				success: true,
-				message: `These are the product categories for the space:\n ${spaceProductCategories.map((category) => `- ${category}`).join('\n')}.\n`,
 				productCategories: spaceProductCategories,
-				chatId: toolCtxParams.chatId
+				instruction: 'Product categories retrieved successfully. Please proceed to the next step.'
 			};
 		}
 	});
-}
-
-async function getSpaceProductCategoriesInFloorPlan(args: {
-	spaceType: SpaceType;
-	spaceProductCategories: ProductCategory[];
-	floorPlanFile: FloorPlanFile;
-}) {
-	const outputSchema = z.object({
-		productCategoriesInSpace: z
-			.array(z.string())
-			.nullable()
-			.describe(`The list of product categories for the target space in the floor plan if any.`)
-	});
-
-	const systemPrompt = `
-You are an expert in analyzing a target space in a floor plan and finding only the items that match the provided product categories in a target space for interior design, within the provided floor plan without duplication or adding any other type of items. 
-
-Your SOLE task is to analyze the target space in the provided floor plan and return only the equivalent product categories from the provided Product Category List, without duplication or adding any other type of items.. 
-
-Product Category List: 
-${args.spaceProductCategories.join('\n')}
-`;
-
-	const { data, error } = await asyncTryCatch(() =>
-		generateObject({
-			model: googleGemini2_5FlashLlm,
-			system: systemPrompt,
-			schema: outputSchema,
-			messages: [
-				{
-					role: 'user',
-					content: [
-						{
-							type: 'text',
-							text: `Provide the list of product categories for this target space - "${args.spaceType}" in the attached floor plan.`
-						},
-						{
-							type: 'file',
-							data: args.floorPlanFile.url,
-							mediaType: args.floorPlanFile.mediaType
-						}
-					]
-				}
-			]
-		})
-	);
-
-	if (error)
-		return {
-			error
-		};
-
-	return {
-		data: data.object.productCategoriesInSpace as ProductCategory[]
-	};
 }
