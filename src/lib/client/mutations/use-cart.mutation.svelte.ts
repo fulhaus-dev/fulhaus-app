@@ -1,36 +1,16 @@
-import { api } from '../../convex/_generated/api.js';
-import {
-	useConvexClient,
-	useConvexQuerySubscription
-} from '$lib/client-hooks/convex.client.svelte.js';
-import type { CartItem, CurrencyCode } from '$lib/types.js';
-import type { Id } from '../../convex/_generated/dataModel.js';
+import { api } from '../../../convex/_generated/api.js';
+import type { Id } from '../../../convex/_generated/dataModel.js';
 import { page } from '$app/state';
 import { asyncTryCatch } from '$lib/utils/try-catch.js';
+import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js';
 
-export function useCart() {
+export function useCartMutation() {
 	const convexClient = useConvexClient();
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'> | undefined;
 
 	const state = $state({
-		cartItems: [] as CartItem[],
-		currencyCode: 'USD' as CurrencyCode,
 		error: undefined as string | undefined
 	});
-
-	useConvexQuerySubscription(
-		api.v1.cart.query.getCartByWorkspaceId,
-		() => ({
-			workspaceId: currentWorkspaceId!
-		}),
-		{
-			requiredArgsKeys: ['workspaceId'],
-			onData: (userQuery) => {
-				state.cartItems = userQuery.data.items;
-				state.currencyCode = userQuery.data.currencyCode;
-			}
-		}
-	);
 
 	async function saveCartItems(data: { productId: Id<'products'>; quantity: number }[]) {
 		if (!currentWorkspaceId) return;
@@ -76,7 +56,7 @@ export function useCart() {
 	}
 
 	return {
-		cart: state,
+		cartMutationState: state,
 		saveCartItems,
 		updateCartItem,
 		deleteCartItem

@@ -3,9 +3,9 @@
 	import ErrorText from '$lib/components/error-text.svelte';
 	import PinInput from '$lib/components/pin-input.svelte';
 	import TextInput from '$lib/components/text-input.svelte';
-	import { useAuth } from '$lib/client-hooks/use-auth.svelte';
 	import Link from '$lib/components/link.svelte';
 	import FulhausLogoWordmark from '$lib/components/fulhaus-logo-wordmark.svelte';
+	import { useAuthMutation } from '$lib/client/mutations/use-auth.mutation.svelte';
 
 	const {
 		auth,
@@ -13,7 +13,7 @@
 		onSubmitSendVerificationCode,
 		onSubmitSignInWithOtp,
 		onSubmitNewUserProfile
-	} = useAuth();
+	} = useAuthMutation();
 
 	const { emailError, otpError, firstNameError, lastNameError } = $derived(getInputErrors());
 </script>

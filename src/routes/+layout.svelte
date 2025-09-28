@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_CONVEX_URL } from '$env/static/public';
-	import { setupConvex } from '$lib/client-hooks/convex.client.svelte';
+	import { setupConvex } from '$lib/client/convex/use-convex-client.svelte';
 	import Navbar from '$lib/components/layout/navbar/navbar.svelte';
 	import Sidebar from '$lib/components/layout/sidebar/sidebar.svelte';
 	import '../app.css';

@@ -8,10 +8,10 @@
 	import Button from '$lib/components/button.svelte';
 	import { page } from '$app/state';
 	import { productCategoryIcons } from '$lib/constants';
-	import { useDesign } from '$lib/client-hooks/use-design.svelte';
-	import { useFileDownload } from '$lib/client-hooks/use-file-download.svelte';
+	import { useDesignMutation } from '$lib/client/mutations/use-design.mutation.svelte';
 	import { QueryParams } from '$lib/enums';
 	import { goto } from '$app/navigation';
+	import { useFileMutation } from '$lib/client/mutations/use-file.mutation.svelte';
 
 	type LudwigDesignDetailsProps = {
 		design?: LudwigDesignDetails;
@@ -24,8 +24,8 @@
 
 	let updates = $state<UpdateDesign>({});
 
-	const { updateDesign } = useDesign();
-	const { downloadFileInBrowser } = useFileDownload();
+	const { updateDesign } = useDesignMutation();
+	const { downloadFileInBrowser } = useFileMutation();
 
 	$effect(() => {
 		if (design)

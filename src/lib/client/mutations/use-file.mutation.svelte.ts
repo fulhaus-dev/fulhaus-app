@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation';
 import asyncFetch from '$lib/utils/async-fetch';
 
-export function useFileDownload() {
+export function useFileMutation() {
 	const state = $state({
 		downloading: false
 	});
@@ -48,6 +48,7 @@ export function useFileDownload() {
 	}
 
 	return {
+		fileState: state,
 		downloadFileInBrowser
 	};
 }

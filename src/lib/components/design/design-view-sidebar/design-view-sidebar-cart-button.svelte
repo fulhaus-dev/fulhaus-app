@@ -1,22 +1,24 @@
 <script lang="ts">
-	import { useCart } from '$lib/client-hooks/use-cart.svelte';
 	import Button from '$lib/components/button.svelte';
 	import type { Id } from '../../../../convex/_generated/dataModel';
 	import CartPreviewIcon from '$lib/components/cart-preview-icon.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import number from '$lib/utils/number';
+	import { useCartQuery } from '$lib/client/queries/use-cart.query.svelte';
+	import { useCartMutation } from '$lib/client/mutations/use-cart.mutation.svelte';
 
 	const workspaceId = page.data.activeWorkspaceId;
 
 	const { productIds }: { productIds: Id<'products'>[] } = $props();
 
-	const { cart, saveCartItems } = useCart();
+	const cartQuery = useCartQuery();
+	const { saveCartItems } = useCartMutation();
 
-	const hasCartItems = $derived(cart.cartItems.length > 0);
+	const hasCartItems = $derived(cartQuery.cartItems.length > 0);
 
 	const totalCart = $derived.by(() =>
-		cart.cartItems
+		cartQuery.cartItems
 			.map((cartItem) => cartItem.product.retailPrice * (cartItem.quantity ?? 0))
 			.reduce((a, b) => a + b, 0)
 	);
@@ -45,7 +47,7 @@
 		<div
 			class="scrollbar-thin h-[50vh] w-full overflow-y-auto rounded-md bg-color-background-surface p-8 pb-96"
 		>
-			{#each cart.cartItems as cartItem (cartItem._id)}
+			{#each cartQuery.cartItems as cartItem (cartItem._id)}
 				<div
 					class="flex h-10 w-full items-center gap-x-2 border-t border-color-border text-sm text-color-text-muted"
 				>
@@ -55,7 +57,7 @@
 					</div>
 
 					<h4 class="w-20 text-end font-medium">
-						{number.toMoney(cartItem.product.retailPrice, cart.currencyCode)}
+						{number.toMoney(cartItem.product.retailPrice, cartQuery.cartCurrencyCode)}
 					</h4>
 				</div>
 			{/each}
@@ -66,7 +68,7 @@
 				<p>Total</p>
 
 				<h4 class="text-end">
-					{number.toMoney(totalCart, cart.currencyCode)}
+					{number.toMoney(totalCart, cartQuery.cartCurrencyCode)}
 				</h4>
 			</div>
 		</div>

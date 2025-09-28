@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useDesignProduct } from '$lib/client-hooks/use-design-product.svelte';
-	import { useFileDownload } from '$lib/client-hooks/use-file-download.svelte';
+	import { useFileMutation } from '$lib/client/mutations/use-file.mutation.svelte';
+	import { useProductCategoriesBySpaceQuery } from '$lib/client/queries/use-product.query.svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignAssetUploadDialog from '$lib/components/design/design-asset/design-asset-upload-dialog.svelte';
 	import DesignAssetViewerDialog from '$lib/components/design/design-asset/design-asset-viewer-dialog.svelte';
@@ -18,10 +18,10 @@
 
 	let productCategorySearchValue = $state('');
 
-	const { designProduct } = useDesignProduct(spaceType);
+	const productCategoriesBySpaceQuery = useProductCategoriesBySpaceQuery(spaceType);
 
 	const filteredProductCategories = $derived.by(() => {
-		const availableProductCategories = designProduct.spaceProductCategories.filter(
+		const availableProductCategories = productCategoriesBySpaceQuery.categories.filter(
 			(productCategory) => !updates.productCategories?.includes(productCategory)
 		);
 
@@ -34,7 +34,7 @@
 
 	const isImageFloorPlan = $derived(updates.floorPlanFile?.mediaType.startsWith('image/'));
 
-	const { downloadFileInBrowser } = useFileDownload();
+	const { downloadFileInBrowser } = useFileMutation();
 </script>
 
 <div class="space-y-8">

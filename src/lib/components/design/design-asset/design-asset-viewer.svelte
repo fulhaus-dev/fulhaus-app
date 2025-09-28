@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { useRouteQuery } from '$lib/client-hooks/use-route-query.svelte';
+	import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte';
 	import DesignAssetUploadDialog from '$lib/components/design/design-asset/design-asset-upload-dialog.svelte';
 	import PinterestAssets from '$lib/components/design/design-asset/pinterest-assets.svelte';
 	import SampleAssets from '$lib/components/design/design-asset/sample-assets.svelte';
@@ -39,14 +39,14 @@
 
 	let searchMode = $state(false);
 
-	const routeQuery = useRouteQuery();
+	const { appendQueryToRoute } = useRouteMutation();
 
 	function getTabValue() {
 		return page.url.searchParams.get(QueryParams.ACTIVE_DESIGN_ASSET_TAB) ?? 'sample';
 	}
 
 	function setTabValue(newValue: string) {
-		routeQuery.append(`${QueryParams.ACTIVE_DESIGN_ASSET_TAB}=${newValue}`);
+		appendQueryToRoute(`${QueryParams.ACTIVE_DESIGN_ASSET_TAB}=${newValue}`);
 	}
 </script>
 

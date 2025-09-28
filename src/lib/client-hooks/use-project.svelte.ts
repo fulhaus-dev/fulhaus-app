@@ -1,5 +1,5 @@
 import { page } from '$app/state';
-import { useConvexClient } from '$lib/client-hooks/convex.client.svelte.js';
+import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte';
 import type { UpdateProject } from '$lib/types';
 import { asyncTryCatch } from '$lib/utils/try-catch';
 import { api } from '../../convex/_generated/api';

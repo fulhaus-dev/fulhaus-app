@@ -4,8 +4,8 @@ import type { QueryParams } from '$lib/enums';
 import { tick } from 'svelte';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
 
-export function useRouteQuery() {
-	function append(
+export function useRouteMutation() {
+	function appendQueryToRoute(
 		queryString: `${QueryParams}=${string}` | `${QueryParams}=${string}&${QueryParams}=${string}`,
 		options: Parameters<typeof goto>[1] = {}
 	) {
@@ -31,6 +31,6 @@ export function useRouteQuery() {
 	}
 
 	return {
-		append
+		appendQueryToRoute
 	};
 }

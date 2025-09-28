@@ -42,12 +42,13 @@
 	<div class="space-y-4 px-2">
 		<p class="text-sm">{design.description}</p>
 
-		<div class="space-y-2">
-			<DesignViewSidebarCartButton productIds={design?.productIds ?? []} />
+		<div class="space-y-4">
 			<Button variant="outlined">
 				<SparklesIcon class="size-4" />
-				<span>Create new Design</span>
+				<span>Regenerate</span>
 			</Button>
+
+			<DesignViewSidebarCartButton productIds={design?.productIds ?? []} />
 		</div>
 	</div>
 </div>

@@ -1,9 +1,9 @@
 import { api } from '../../convex/_generated/api.js';
 import type { Id } from '../../convex/_generated/dataModel.js';
-import { useConvexQuerySubscription } from '$lib/client-hooks/convex.client.svelte.js';
 import { page } from '$app/state';
 import type { LudwigDesignDetailsResponse } from '$lib/types.js';
 import { QueryParams } from '$lib/enums.js';
+import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte.js';
 
 export function useLudwigChatDesign() {
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'>;

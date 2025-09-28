@@ -1,20 +1,20 @@
 /* eslint-disable svelte/no-navigation-without-resolve */
-import { api } from '../../convex/_generated/api.js';
+import { api } from '../../../convex/_generated/api.js';
 import { asyncTryCatch } from '$lib/utils/try-catch.js';
 import error from '$lib/utils/error.js';
 import z from 'zod';
 import asyncFetch from '$lib/utils/async-fetch.js';
 import { goto } from '$app/navigation';
-import type { Id } from '../../convex/_generated/dataModel.js';
-import { useConvexClient } from '$lib/client-hooks/convex.client.svelte.js';
+import type { Id } from '../../../convex/_generated/dataModel.js';
 import { page } from '$app/state';
 import { QueryParams } from '$lib/enums.js';
+import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js';
 
 type AuthStep = 'email' | 'otp' | 'name';
 
 const OTP_LENGTH = 6;
 
-export function useAuth() {
+export function useAuthMutation() {
 	const convexClient = useConvexClient();
 
 	const redirectUrl = page.url.searchParams.get(QueryParams.AUTH_REDIRECT_URL) ?? '/';

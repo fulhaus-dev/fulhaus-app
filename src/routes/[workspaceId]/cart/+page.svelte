@@ -1,17 +1,19 @@
 <script lang="ts">
-	import { useCart } from '$lib/client-hooks/use-cart.svelte';
+	import { useCartMutation } from '$lib/client/mutations/use-cart.mutation.svelte';
+	import { useCartQuery } from '$lib/client/queries/use-cart.query.svelte';
 	import Button from '$lib/components/button.svelte';
 	import type { CartItem, CartItemQuantityChangeType } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
 	import { Icon, MinusIcon, MoveLeftIcon, PlusIcon, Trash2Icon } from '@lucide/svelte';
 
-	const { cart, updateCartItem, deleteCartItem } = useCart();
+	const cartQuery = useCartQuery();
+	const { updateCartItem, deleteCartItem } = useCartMutation();
 
-	const hasCartItems = $derived(cart.cartItems.length > 0);
+	const hasCartItems = $derived(cartQuery.cartItems.length > 0);
 
 	const subTotal = $derived.by(() =>
-		cart.cartItems
+		cartQuery.cartItems
 			.map((cartItem) => cartItem.product.retailPrice * (cartItem.quantity ?? 0))
 			.reduce((a, b) => a + b, 0)
 	);
@@ -54,7 +56,7 @@
 				<div
 					class="h-fit flex-1 divide-y divide-color-border rounded-md border border-color-border"
 				>
-					{#each cart.cartItems as cartItem (cartItem._id)}
+					{#each cartQuery.cartItems as cartItem (cartItem._id)}
 						<div class="flex justify-between p-4">
 							<div class="flex gap-x-4">
 								<div class="h-36 w-36 rounded-md bg-color-background-surface p-2">
@@ -87,7 +89,7 @@
 
 							<div class="flex flex-col justify-between py-2">
 								<h4 class="text-lg font-medium">
-									{number.toMoney(cartItem.product.retailPrice, cart.currencyCode)}
+									{number.toMoney(cartItem.product.retailPrice, cartQuery.cartCurrencyCode)}
 								</h4>
 
 								<Button
@@ -112,14 +114,17 @@
 						<div class="space-y-2">
 							{@render OrderSummaryAmount(
 								'Subtotal',
-								`${number.toMoney(subTotal, cart.currencyCode)}`
+								`${number.toMoney(subTotal, cartQuery.cartCurrencyCode)}`
 							)}
 							{@render OrderSummaryAmount('Shipping', 'Calculated at checkout', 'info')}
 							{@render OrderSummaryAmount('Tax', 'Calculated at checkout', 'info')}
 
 							<div class="h-px bg-color-border-muted"></div>
 
-							{@render OrderSummaryAmount('Total', `${number.toMoney(total, cart.currencyCode)}`)}
+							{@render OrderSummaryAmount(
+								'Total',
+								`${number.toMoney(total, cartQuery.cartCurrencyCode)}`
+							)}
 						</div>
 
 						<div class="mt-8 space-y-2">

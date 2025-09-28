@@ -2,8 +2,8 @@
 	import FileUpload from '$lib/components/file-upload.svelte';
 	import type { ComponentProps } from 'svelte';
 	import type { DesignAssetFileType } from '$lib/types';
-	import { useDesignAssetUpload } from '$lib/client-hooks/use-design-asset-upload.svelte';
 	import UploadingDesignAssetLoader from '$lib/components/design/design-asset/uploading-design-asset-loader.svelte';
+	import { useDesignAssetMutation } from '$lib/client/mutations/use-design-asset.mutation.svelte';
 
 	type DesignAssetUploadProps = {
 		type: DesignAssetFileType;
@@ -12,17 +12,18 @@
 
 	const { type, onUpload, ...otherDesignAssetUploadProps }: DesignAssetUploadProps = $props();
 
-	const { designAssetUpload, uploadFile, uploadUrl } = useDesignAssetUpload({ onUpload });
+	const { designAssetMutationState, uploadDesignAssetFile, uploadDesignAssetUrl } =
+		useDesignAssetMutation({ onUpload });
 </script>
 
 <div class="relative">
-	{#if designAssetUpload.uploading}
+	{#if designAssetMutationState.uploading}
 		<UploadingDesignAssetLoader />
 	{/if}
 
 	<FileUpload
 		{...otherDesignAssetUploadProps}
-		onUploadFile={(files) => uploadFile(files[0], type)}
-		onUploadUrl={(url) => uploadUrl(url, type)}
+		onUploadFile={(files) => uploadDesignAssetFile(files[0], type)}
+		onUploadUrl={(url) => uploadDesignAssetUrl(url, type)}
 	/>
 </div>

@@ -1,12 +1,12 @@
 import { page } from '$app/state';
-import { useConvexClient } from '$lib/client-hooks/convex.client.svelte.js';
+import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte';
 import type { UpdateDesign } from '$lib/types';
 import asyncFetch from '$lib/utils/async-fetch';
 import { asyncTryCatch } from '$lib/utils/try-catch';
-import { api } from '../../convex/_generated/api';
-import type { Id } from '../../convex/_generated/dataModel';
+import { api } from '../../../convex/_generated/api';
+import type { Id } from '../../../convex/_generated/dataModel';
 
-export function useDesign() {
+export function useDesignMutation() {
 	const convexClient = useConvexClient();
 	const activeWorkspaceId = page.params.workspaceId;
 
@@ -46,7 +46,7 @@ export function useDesign() {
 	}
 
 	return {
-		design: state,
+		designState: state,
 		updateDesign
 	};
 }

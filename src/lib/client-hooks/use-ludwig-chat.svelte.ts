@@ -1,10 +1,5 @@
-import {
-	useConvexClient,
-	useConvexQuerySubscription
-} from '$lib/client-hooks/convex.client.svelte.js';
 import { page } from '$app/state';
 import { asyncTryCatch } from '$lib/utils/try-catch.js';
-import { useRouteQuery } from '$lib/client-hooks/use-route-query.svelte.js';
 import { QueryParams } from '$lib/enums.js';
 import { onDestroy } from 'svelte';
 import type { ChatMessage, ChatMessageDoc, ChatUser } from '$lib/types.js';
@@ -15,6 +10,9 @@ import { api } from '../../convex/_generated/api';
 import asyncFetch from '$lib/utils/async-fetch';
 import { LUDWIG_UI_TOOL_NAMES } from '$lib/constants';
 import { goto } from '$app/navigation';
+import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte';
+import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte';
+import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte';
 
 type ChatUsersMetadata = Record<string, ChatUser>;
 type ActiveUiToolName = (typeof LUDWIG_UI_TOOL_NAMES)[number];
@@ -32,7 +30,7 @@ const toolLoadingLabels: Record<string, string> = {
 
 export function useLudwigChat() {
 	const convexClient = useConvexClient();
-	const routeQuery = useRouteQuery();
+	const { appendQueryToRoute } = useRouteMutation();
 	const userId = page.data.currentUserId;
 	if (!userId) throw new Error('No user ID found');
 
@@ -298,7 +296,7 @@ export function useLudwigChat() {
 			return;
 		}
 
-		if (!ludwigChatId) routeQuery.append(`${QueryParams.LUDWIG_CHAT_ID}=${response.data.chatId}`);
+		if (!ludwigChatId) appendQueryToRoute(`${QueryParams.LUDWIG_CHAT_ID}=${response.data.chatId}`);
 	}
 
 	async function onSubmitLudwigChatMessage(event: Event) {

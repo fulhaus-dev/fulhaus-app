@@ -3,7 +3,7 @@
 	import SidebarDesignDetails from '$lib/components/layout/sidebar/sidebar.design-details.svelte';
 	import { QueryParams } from '$lib/enums';
 	import { cn } from '$lib/utils/cn';
-	import { ChevronsLeftIcon, MessageCircleIcon, MoveRightIcon, PlusIcon } from '@lucide/svelte';
+	import { ChevronsLeftIcon, MessageCircleIcon, PlusIcon } from '@lucide/svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useLudwigChatDesign } from '$lib/client-hooks/use-ludwig-chat-design.svelte';
 	import type { Id } from '../../../../convex/_generated/dataModel';

@@ -1,16 +1,18 @@
 <script lang="ts">
-	import { useCart } from '$lib/client-hooks/use-cart.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { CircleMinusIcon, CirclePlusIcon, Icon } from '@lucide/svelte';
 	import type { Id } from '../../../convex/_generated/dataModel';
 	import type { CartItemQuantityChangeType } from '$lib/types';
+	import { useCartMutation } from '$lib/client/mutations/use-cart.mutation.svelte';
+	import { useCartQuery } from '$lib/client/queries/use-cart.query.svelte';
 
 	const { productId }: { productId: Id<'products'> } = $props();
 
-	const { cart, saveCartItems, updateCartItem, deleteCartItem } = useCart();
+	const cartQuery = useCartQuery();
+	const { saveCartItems, updateCartItem, deleteCartItem } = useCartMutation();
 
 	const currentProductCartItem = $derived.by(() =>
-		cart.cartItems.find((cartItem) => cartItem.productId === productId)
+		cartQuery.cartItems.find((cartItem) => cartItem.productId === productId)
 	);
 
 	const cartProductQty = $derived(currentProductCartItem?.quantity ?? 0);

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useDesignPage } from '$lib/client-hooks/use-design-page.svelte';
+	import { useDesignQuery } from '$lib/client/queries/use-design.query.svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignProductView from '$lib/components/design/design-product-view.svelte';
 	import DesignViewSidebar from '$lib/components/design/design-view-sidebar/design-view-sidebar.svelte';
@@ -10,10 +10,10 @@
 
 	let activeDesignView = $state<DesignView>('product');
 
-	const { designPage } = useDesignPage();
+	const designQuery = useDesignQuery();
 
-	const design = $derived(designPage.design);
-	const designProducts = $derived(designPage.designProducts);
+	const design = $derived(designQuery.design);
+	const designProducts = $derived(designQuery.designProducts);
 </script>
 
 <section class="relative -mt-px h-full w-full overflow-y-auto border-t border-color-border">

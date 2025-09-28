@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { useDesign } from '$lib/client-hooks/use-design.svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignProductSwapDialog from '$lib/components/design/design-product-swap/design-product-swap-dialog.svelte';
 	import LudwigLoader from '$lib/components/loaders/ludwig-loader.svelte';
@@ -9,6 +8,7 @@
 	import { RefreshCwIcon } from '@lucide/svelte';
 	import type { Id } from '../../../convex/_generated/dataModel';
 	import DesignProductCartButton from '$lib/components/design/design-product-cart-button.svelte';
+	import { useDesignMutation } from '$lib/client/mutations/use-design.mutation.svelte';
 
 	type DesignProductViewProps = {
 		designId: Id<'designs'>;
@@ -22,7 +22,7 @@
 		generatingDesignFurnitureRecommendation
 	}: DesignProductViewProps = $props();
 
-	const { updateDesign } = useDesign();
+	const { updateDesign } = useDesignMutation();
 
 	function handleUpdateDesignProductSwap({
 		productToSwap,

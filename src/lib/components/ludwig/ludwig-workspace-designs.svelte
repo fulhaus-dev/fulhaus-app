@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { useConvexQuerySubscription } from '$lib/client-hooks/convex.client.svelte';
+	import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte';
 	import { QueryParams } from '$lib/enums';
 	import { api } from '../../../convex/_generated/api';
 	import type { Id } from '../../../convex/_generated/dataModel';

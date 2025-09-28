@@ -1,13 +1,13 @@
 import type { DesignAssetFileType } from '$lib/types';
 import asyncFetch from '$lib/utils/async-fetch';
 
-export function useDesignAssetUpload(args?: { onUpload?: (url: string) => void }) {
+export function useDesignAssetMutation(args?: { onUpload?: (url: string) => void }) {
 	const state = $state({
 		uploading: false,
 		error: undefined as string | undefined
 	});
 
-	async function uploadFile(file: File, type: DesignAssetFileType) {
+	async function uploadDesignAssetFile(file: File, type: DesignAssetFileType) {
 		state.uploading = true;
 
 		const formData = new FormData();
@@ -34,7 +34,7 @@ export function useDesignAssetUpload(args?: { onUpload?: (url: string) => void }
 		state.uploading = false;
 	}
 
-	async function uploadUrl(url: string, type: DesignAssetFileType) {
+	async function uploadDesignAssetUrl(url: string, type: DesignAssetFileType) {
 		state.uploading = true;
 
 		const { response, error: uploadError } = await asyncFetch.post('/api/design-asset/upload/url', {
@@ -55,8 +55,8 @@ export function useDesignAssetUpload(args?: { onUpload?: (url: string) => void }
 	}
 
 	return {
-		designAssetUpload: state,
-		uploadFile,
-		uploadUrl
+		designAssetMutationState: state,
+		uploadDesignAssetFile,
+		uploadDesignAssetUrl
 	};
 }

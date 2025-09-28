@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useConvexQuerySubscription } from '$lib/client-hooks/convex.client.svelte';
+	import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte';
 	import Button from '$lib/components/button.svelte';
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import type { DesignProduct, ProductCategory } from '$lib/types';
