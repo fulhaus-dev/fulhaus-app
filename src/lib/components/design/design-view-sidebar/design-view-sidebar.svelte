@@ -23,7 +23,10 @@
 			renderImage={{ src: design.renderedImageUrl ?? design.inspirationImageUrl, alt: design.name }}
 		>
 			<img
-				class={cn('h-auto w-full rounded-md object-cover', design.renderingImage && 'hidden')}
+				class={cn(
+					'h-auto max-h-96 w-full rounded-md object-cover',
+					design.renderingImage && 'hidden'
+				)}
 				src={design.renderedImageUrl ?? design.inspirationImageUrl}
 				alt={design.name}
 			/>
