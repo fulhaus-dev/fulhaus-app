@@ -5,7 +5,6 @@ import {
 	updateDesignTool
 } from './tool/design';
 import { getProductCategoriesForDesignTool } from './tool/product';
-import { createProjectTool, updateProjectTool } from './tool/project';
 import { generateDesignFurnitureRecommendationTool } from './tool/recommendation';
 import uiTools from './tool/ui';
 import { AgentConfig } from '../../../type';
@@ -26,8 +25,6 @@ export const ludwigAgent: AgentConfig = {
 		}
 	},
 	toolFnSet: {
-		createProject: createProjectTool,
-		updateProject: updateProjectTool,
 		...uiTools,
 		getProductCategoriesForDesign: getProductCategoriesForDesignTool,
 		createDesign: createDesignTool,

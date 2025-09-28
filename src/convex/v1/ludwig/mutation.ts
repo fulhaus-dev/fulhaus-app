@@ -54,7 +54,8 @@ export const streamLudwigChatResponse = mutation({
 
 		const chatContext = await chatModel.getChatContext(ctx, {
 			workspaceId,
-			chatId
+			chatId,
+			floorPlanUrl: args.floorPlanFile?.url
 		});
 
 		await ctx.scheduler.runAfter(0, internal.v1.chat.internal.action.streamChatResponse, {

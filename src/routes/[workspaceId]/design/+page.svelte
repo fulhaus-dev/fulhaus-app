@@ -1,8 +1,11 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { useDesignQuery } from '$lib/client/queries/use-design.query.svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignProductView from '$lib/components/design/design-product-view.svelte';
 	import DesignViewSidebar from '$lib/components/design/design-view-sidebar/design-view-sidebar.svelte';
+	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
 	import { cn } from '$lib/utils/cn';
 	import { ArmchairIcon, PaletteIcon } from '@lucide/svelte';
 
@@ -14,9 +17,27 @@
 
 	const design = $derived(designQuery.design);
 	const designProducts = $derived(designQuery.designProducts);
+
+	const hasDesignProducts = $derived(designProducts.length > 0);
 </script>
 
-<section class="relative -mt-px h-full w-full overflow-y-auto border-t border-color-border">
+{#if !hasDesignProducts}
+	<div class="mx-auto mt-40 w-fit space-y-4 text-lg text-color-text-muted">
+		<NoDesignIcon />
+		<p>This design does not exist<br />or has been updated</p>
+
+		<Button class="w-fit" onclick={() => goto(`/${page.params.workspaceId}/ludwig`)}>
+			Create a New Design
+		</Button>
+	</div>
+{/if}
+
+<section
+	class={cn(
+		'relative -mt-px h-full w-full overflow-y-auto border-t border-color-border opacity-0',
+		hasDesignProducts && 'opacity-100'
+	)}
+>
 	<div class="sticky top-0 z-2 flex h-[2.8rem] items-center bg-color-background/80 px-8">
 		<h4 class="flex-1 text-sm font-medium">{design.name}</h4>
 

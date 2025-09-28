@@ -5,7 +5,6 @@ import date from '../../util/date';
 import { vChatMessage, vChatResponseStream, vLlmUsage } from './validator';
 import array from '../../util/array';
 import userModel from '../user/model';
-import projectModel from '../project/model';
 import designModel from '../design/model';
 
 async function createChat(
@@ -138,7 +137,6 @@ async function updateChatById(
 	ctx: MutationCtx,
 	chatId: Id<'chats'>,
 	args: {
-		projectId?: Id<'projects'>;
 		designId?: Id<'designs'>;
 	}
 ) {
@@ -150,9 +148,10 @@ async function getChatContext(
 	args: {
 		workspaceId: Id<'workspaces'>;
 		chatId: Id<'chats'>;
+		floorPlanUrl?: string;
 	}
 ) {
-	const { workspaceId, chatId } = args;
+	const { workspaceId, chatId, floorPlanUrl } = args;
 
 	const [chat, chatMessages] = await Promise.all([
 		getChatById(ctx, chatId),
@@ -162,26 +161,16 @@ async function getChatContext(
 		})
 	]);
 
-	const chatProjectId = chat?.projectId;
 	const chatDesignId = chat?.designId;
 
 	const contextParts = [];
 
-	const [chatProject, chatProjectDesigns, currentChatDesign] = await Promise.all([
-		chatProjectId ? projectModel.getProjectById(ctx, chatProjectId) : Promise.resolve(null),
-		chatProjectId ? designModel.getProjectDesigns(ctx, chatProjectId) : Promise.resolve([]),
-		chatDesignId ? designModel.getDesignById(ctx, chatDesignId) : Promise.resolve(null)
+	const [currentChatDesign, existingDesignsWithFloorPlanUrl] = await Promise.all([
+		chatDesignId ? designModel.getDesignById(ctx, chatDesignId) : Promise.resolve(null),
+		floorPlanUrl
+			? designModel.getExistingDesignsWithFloorPlanUrl(ctx, floorPlanUrl)
+			: Promise.resolve([])
 	]);
-
-	if (chatProject) {
-		contextParts.push(`**Current Project ID:** ${chatProject._id}\n`);
-		contextParts.push(`**Current Project Name:** ${chatProject.name}\n`);
-		contextParts.push(`**Current Project Description:** ${chatProject.description}\n`);
-		contextParts.push(`**Current Project Summary:** ${chatProject.summary}\n`);
-		contextParts.push(
-			`**Project Has Existing Floor Plans:** ${(chatProject.floorPlanFiles ?? []).length > 0}\n\n`
-		);
-	}
 
 	if (currentChatDesign) {
 		contextParts.push(`**Current Design ID:** ${currentChatDesign._id}\n`);
@@ -196,10 +185,14 @@ async function getChatContext(
 		);
 	}
 
-	if (chatProjectDesigns.length > 0)
-		contextParts.push(
-			`**Current Project Designed Spaces:** ${chatProjectDesigns.map((design) => design.spaceType).join(', ')}\n\n`
-		);
+	if (existingDesignsWithFloorPlanUrl.length > 0) {
+		contextParts.push(`**Existing Designs and spaces using the same Floor Plan:**\n\n`);
+		for (const [index, design] of existingDesignsWithFloorPlanUrl.entries()) {
+			contextParts.push(`**${index}:**\n`);
+			contextParts.push(`**Design Name:** ${design.name}\n`);
+			contextParts.push(`**Design Space Type:** ${design.spaceType}\n\n`);
+		}
+	}
 
 	return {
 		chatMessages,

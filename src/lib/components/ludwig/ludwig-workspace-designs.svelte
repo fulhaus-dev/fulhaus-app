@@ -1,25 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte';
+	import { useWorkspaceDesignsQuery } from '$lib/client/queries/use-design.query.svelte';
 	import { QueryParams } from '$lib/enums';
-	import { api } from '../../../convex/_generated/api';
-	import type { Id } from '../../../convex/_generated/dataModel';
+	import { cn } from '$lib/utils/cn';
 
-	const { query } = useConvexQuerySubscription(
-		api.v1.design.query.getDesignsByWorkspaceId,
-		() => ({
-			workspaceId: page.params.workspaceId as Id<'workspaces'>
-		}),
-		{
-			requiredArgsKeys: ['workspaceId']
-		}
-	);
+	const workspaceDesignsQuery = useWorkspaceDesignsQuery();
 
-	const workspaceDesigns = $derived.by(() => (query.response?.data ?? []).toReversed());
+	const workspaceDesigns = $derived.by(() => workspaceDesignsQuery.workspaceDesigns.toReversed());
 </script>
 
-<div class="w-full px-4">
+<div class={cn('hidden w-full px-4', workspaceDesigns.length > 0 && 'block')}>
 	<div class="sticky top-0 z-4 rounded-t-md bg-color-background px-12 pt-8 pb-4">
 		<h2>Your Designs</h2>
 	</div>

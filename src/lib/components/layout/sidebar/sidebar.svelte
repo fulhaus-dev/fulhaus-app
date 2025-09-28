@@ -5,10 +5,11 @@
 	import { cn } from '$lib/utils/cn';
 	import { ChevronsLeftIcon, MessageCircleIcon, PlusIcon } from '@lucide/svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useLudwigChatDesign } from '$lib/client-hooks/use-ludwig-chat-design.svelte';
 	import type { Id } from '../../../../convex/_generated/dataModel';
-	import SidebarProjectDropdownMenu from '$lib/components/layout/sidebar/sidebar.project-dropdown-menu.svelte';
+	import SidebarWorkspaceDropdownMenu from '$lib/components/layout/sidebar/sidebar.workspace-dropdown-menu.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
+	import { useDesignQuery } from '$lib/client/queries/use-design.query.svelte';
+	import { useCurrentWorkspaceQuery } from '$lib/client/queries/use-workspace.query.svelte';
 
 	const { class: className = '', ...otherSidebarProps }: HTMLAttributes<HTMLElement> = $props();
 
@@ -16,19 +17,17 @@
 		| Id<'chats'>
 		| undefined;
 
-	const { ludwigDesignDetails } = useLudwigChatDesign();
+	const currentWorkspaceQuery = useCurrentWorkspaceQuery();
+	const designQuery = useDesignQuery();
 
-	const projectDetails = $derived.by(() => ludwigDesignDetails.designData.projectDetails);
-	const designDetails = $derived.by(() => ludwigDesignDetails.designData.designDetails);
-
-	const canOpen = $derived(!!currentChatId && !!projectDetails?._id);
+	const canOpen = $derived(!!currentChatId && !!designQuery.design?._id);
 
 	let manuallyCollapsed = $state(false);
 </script>
 
 <aside
 	class={cn(
-		'h-full overflow-x-hidden border-r border-color-border bg-color-background opacity-100 transition-all duration-300 ease-in-out',
+		'relative z-40 h-full overflow-x-hidden border-r border-color-border bg-color-background opacity-100 transition-all duration-300 ease-in-out',
 		className,
 		manuallyCollapsed ? 'w-12' : 'w-96',
 		!canOpen && 'w-0 opacity-0'
@@ -53,22 +52,16 @@
 			manuallyCollapsed && 'w-full px-0'
 		)}
 	>
-		{#if projectDetails}
-			<SidebarProjectDropdownMenu
+		{#if currentWorkspaceQuery.currentWorkspace}
+			<SidebarWorkspaceDropdownMenu
 				class={cn('flex-1 text-start', manuallyCollapsed && 'hidden')}
-				ludwigProjectDetails={projectDetails}
+				currentWorkspace={currentWorkspaceQuery.currentWorkspace}
 			/>
 		{/if}
 
 		<div
 			class={cn('flex w-fit items-center justify-center gap-x-2', manuallyCollapsed && 'w-full')}
 		>
-			<Tooltip class={cn('px-1', manuallyCollapsed && 'hidden')} content="Start New Project">
-				<button type="button">
-					<PlusIcon />
-				</button>
-			</Tooltip>
-
 			<Tooltip
 				class={cn(
 					'flex h-full cursor-pointer items-center justify-center px-1',
@@ -118,7 +111,10 @@
 		</div> -->
 
 		<div class="h-full w-full">
-			<SidebarDesignDetails design={designDetails} />
+			<SidebarDesignDetails
+				design={designQuery.design}
+				hasProducts={(designQuery.designProducts ?? []).length > 0}
+			/>
 		</div>
 	</div>
 {/snippet}

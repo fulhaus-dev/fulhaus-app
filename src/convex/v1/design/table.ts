@@ -6,12 +6,12 @@ import { vProductCategory, vProductStyle } from '../product/validator';
 
 export const designTable = defineTable({
 	workspaceId: v.id('workspaces'),
-	projectId: v.id('projects'),
 	chatId: v.id('chats'),
 	name: v.string(),
 	description: v.string(),
 	spaceType: vSpaceType,
 	inspirationImageUrl: v.string(),
+	floorPlanUrl: v.optional(v.string()),
 	floorPlanFile: v.optional(vFloorPlanFile),
 	productCategories: v.array(vProductCategory),
 	productIds: v.optional(v.array(v.id('products'))),
@@ -27,5 +27,5 @@ export const designTable = defineTable({
 	deletedAt: v.optional(v.number())
 })
 	.index('by_workspace_id', ['workspaceId'])
-	.index('by_project_id', ['projectId'])
-	.index('by_chat_id', ['chatId']);
+	.index('by_chat_id', ['chatId'])
+	.index('by_floor_plan_url', ['floorPlanUrl']);

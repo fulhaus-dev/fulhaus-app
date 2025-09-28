@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { LudwigDesignDetails, UpdateDesign } from '$lib/types';
+	import type { Design, UpdateDesign } from '$lib/types';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
 	import { CopyIcon, DownloadIcon, MoveRightIcon, PencilLineIcon, RssIcon } from '@lucide/svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
@@ -13,11 +13,12 @@
 	import { goto } from '$app/navigation';
 	import { useFileMutation } from '$lib/client/mutations/use-file.mutation.svelte';
 
-	type LudwigDesignDetailsProps = {
-		design?: LudwigDesignDetails;
+	type SidebarDesignDetailsProps = {
+		design?: Design;
+		hasProducts: boolean;
 	};
 
-	const { design }: LudwigDesignDetailsProps = $props();
+	const { design, hasProducts }: SidebarDesignDetailsProps = $props();
 	const hasDesign = $derived(!!design?._id);
 
 	let inEditMode = $state(false);
@@ -29,7 +30,6 @@
 
 	$effect(() => {
 		if (design)
-			// if (design && (design.chatId !== currentChatId || Object.keys(updates).length < 1))
 			updates = {
 				name: design.name,
 				description: design.description,
@@ -202,7 +202,7 @@
 					</Button>
 				{/if}
 
-				{#if page.route.id === '/[workspaceId]/ludwig' && design?.chatId && design.hasProducts}
+				{#if page.route.id === '/[workspaceId]/ludwig' && design?.chatId && hasProducts}
 					<Button
 						class={cn(inEditMode && 'hidden')}
 						onclick={() =>

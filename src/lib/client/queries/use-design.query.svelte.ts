@@ -40,3 +40,29 @@ export function useDesignQuery() {
 
 	return designQuery;
 }
+
+export function useWorkspaceDesignsQuery() {
+	const { query } = useConvexQuerySubscription(
+		api.v1.design.query.getDesignsByWorkspaceId,
+		() => ({
+			workspaceId: page.params.workspaceId as Id<'workspaces'>
+		}),
+		{
+			requiredArgsKeys: ['workspaceId']
+		}
+	);
+
+	const workspaceDesignsQuery = $state({
+		get loading() {
+			return query.loading;
+		},
+		get error() {
+			return query.error;
+		},
+		get workspaceDesigns() {
+			return query.response?.data ?? [];
+		}
+	});
+
+	return workspaceDesignsQuery;
+}

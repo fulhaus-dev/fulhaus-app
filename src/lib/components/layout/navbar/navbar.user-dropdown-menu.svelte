@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { useUser } from '$lib/client-hooks/use-user.svelte';
+	import { useUserQuery } from '$lib/client/queries/use-user.query.svelte';
 	import { useAuthMutation } from '$lib/client/mutations/use-auth.mutation.svelte';
 	import Avatar from '$lib/components/avatar.svelte';
 	import FulhausLoader from '$lib/components/loaders/fulhaus-loader.svelte';
@@ -15,10 +15,11 @@
 	} from '@lucide/svelte';
 	import { DropdownMenu } from 'bits-ui';
 
-	const { user } = useUser();
+	const userQuery = useUserQuery();
+	const userProfile = $derived(userQuery.userProfile);
 	const { auth, onLogout } = useAuthMutation();
 
-	const isLoggedIn = $derived(!!user.profile._id);
+	const isLoggedIn = $derived(!!userProfile._id);
 </script>
 
 {#if auth.loggingOut}
@@ -48,8 +49,8 @@
 				<DropdownMenu.Group class="flex gap-x-2 p-4">
 					{@render UserAvatar()}
 					<div class="flex-1">
-						<h5 class="font-semibold">{user.profile?.fullName}</h5>
-						<p class="text-xs text-color-text-muted">{user.profile?.email}</p>
+						<h5 class="font-semibold">{userProfile?.fullName}</h5>
+						<p class="text-xs text-color-text-muted">{userProfile?.email}</p>
 					</div>
 				</DropdownMenu.Group>
 
@@ -71,9 +72,9 @@
 {#snippet UserAvatar()}
 	<Avatar
 		class="size-6 text-[10px]"
-		src={user.profile?.imageUrl}
-		alt={user.profile?.fullName}
-		fullName={user.profile?.fullName}
+		src={userProfile?.imageUrl}
+		alt={userProfile?.fullName}
+		fullName={userProfile?.fullName}
 	/>
 {/snippet}
 

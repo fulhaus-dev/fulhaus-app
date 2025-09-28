@@ -12,6 +12,7 @@ async function createDesign(
 ) {
 	return await ctx.db.insert('designs', {
 		...args,
+		floorPlanUrl: args.floorPlanFile?.url,
 		createdById: userId,
 		updatedById: userId,
 		createdAt: date.now(),
@@ -21,13 +22,6 @@ async function createDesign(
 
 async function getDesignById(ctx: QueryCtx, designId: Id<'designs'>) {
 	return await ctx.db.get(designId);
-}
-
-async function getProjectDesigns(ctx: QueryCtx, projectId: Id<'projects'>) {
-	return await ctx.db
-		.query('designs')
-		.withIndex('by_project_id', (q) => q.eq('projectId', projectId))
-		.take(100);
 }
 
 async function getDesignByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
@@ -50,7 +44,13 @@ async function updateDesignById(
 	userId: Id<'users'>,
 	args: Infer<typeof vUpdateDesign>
 ) {
-	return await ctx.db.patch(designId, { ...args, updatedById: userId, updatedAt: date.now() });
+	if (args.floorPlanFile) args.floorPlanUrl = args.floorPlanFile?.url;
+
+	return await ctx.db.patch(designId, {
+		...args,
+		updatedById: userId,
+		updatedAt: date.now()
+	});
 }
 
 async function getDesignProductsByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
@@ -60,14 +60,21 @@ async function getDesignProductsByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
 	return await productModel.getProductsForClientByIds(ctx, design.productIds);
 }
 
+async function getExistingDesignsWithFloorPlanUrl(ctx: QueryCtx, floorPlanUrl: string) {
+	return await ctx.db
+		.query('designs')
+		.withIndex('by_floor_plan_url', (q) => q.eq('floorPlanUrl', floorPlanUrl))
+		.take(100);
+}
+
 const designModel = {
 	createDesign,
 	getDesignById,
-	getProjectDesigns,
 	getDesignByChatId,
 	getDesignsByWorkspaceId,
 	updateDesignById,
-	getDesignProductsByChatId
+	getDesignProductsByChatId,
+	getExistingDesignsWithFloorPlanUrl
 };
 
 export default designModel;

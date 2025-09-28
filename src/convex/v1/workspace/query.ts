@@ -13,6 +13,29 @@ export const getWorkspaceById = query({
 		const workspace = await workspaceModel.getWorkspaceById(ctx, workspaceId);
 		if (!workspace) throw ServerError.NotFound('Workspace does not exist.');
 
-		return SuccessData(workspace);
+		return SuccessData({
+			_id: workspace._id,
+			name: workspace.name,
+			logoUrl: workspace.logoUrl,
+			members: workspace.members
+		});
+	}
+});
+
+export const getUserWorkspaces = query({
+	handler: async (ctx) => {
+		const userId = await authorization.userIsAuthenticated(ctx);
+
+		const userWorkspaces = await workspaceModel.getUserWorkspaces(ctx, userId);
+
+		const userClientWorkspaces = userWorkspaces
+			.filter((userWorkspace) => !!userWorkspace)
+			.map((userWorkspace) => ({
+				_id: userWorkspace._id,
+				name: userWorkspace.name,
+				logoUrl: userWorkspace.logoUrl
+			}));
+
+		return SuccessData(userClientWorkspaces);
 	}
 });

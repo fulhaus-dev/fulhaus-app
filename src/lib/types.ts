@@ -45,12 +45,6 @@ export type ChatUser = {
 
 export type DesignAssetFileType = Doc<'workspaceAssets'>['type'];
 
-export type LudwigProjectDetails = {
-	_id: Id<'projects'>;
-	name: string;
-	description: string;
-};
-
 export type LudwigDesignDetails = {
 	_id: Id<'designs'>;
 	chatId: Id<'chats'>;
@@ -62,11 +56,6 @@ export type LudwigDesignDetails = {
 	productCategories: Doc<'designs'>['productCategories'];
 	publishedAt?: number;
 	hasProducts: boolean;
-};
-
-export type LudwigDesignDetailsResponse = {
-	projectDetails?: LudwigProjectDetails;
-	designDetails?: LudwigDesignDetails;
 };
 
 export type UpdateProject = {
@@ -136,3 +125,12 @@ export type Cart = {
 };
 
 export type CartItemQuantityChangeType = 'increment' | 'decrement';
+
+export type Workspace = {
+	_id: Id<'workspaces'>;
+	name: string;
+	logoUrl?: string;
+	members: Id<'users'>[];
+};
+
+export type UserWorkspace = Omit<Workspace, 'members'>;

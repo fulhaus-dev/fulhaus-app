@@ -36,26 +36,8 @@ function provideFloorPlanUiTool(toolCtxParams: AiToolCtxParams) {
 	});
 }
 
-function selectFromExistingFloorPlansUiTool(toolCtxParams: AiToolCtxParams) {
-	return tool({
-		description: 'Displays a UI to the user to select from existing floor plans.',
-		inputSchema: z.object({}),
-		execute: async () => {
-			return {
-				success: true,
-				message:
-					'The UI for the user the select existing floor plans has been displayed. End your turn after you have informed the user to select from existing floor plans (if you have not already, do not repeat information) and wait for the user to select from existing floor plans, before you proceed.',
-				chatId: toolCtxParams.chatId,
-				uiType: 'Select from existing Floor Plans',
-				toolName: 'selectFromExistingFloorPlansUI'
-			};
-		}
-	});
-}
-
 const ludwigUiTools = {
 	provideInspirationImageUI: provideInspirationImageUiTool,
-	provideFloorPlanUI: provideFloorPlanUiTool,
-	selectFromExistingFloorPlansUI: selectFromExistingFloorPlansUiTool
+	provideFloorPlanUI: provideFloorPlanUiTool
 };
 export default ludwigUiTools;

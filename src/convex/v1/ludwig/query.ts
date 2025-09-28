@@ -4,8 +4,6 @@ import { SuccessData } from '../../response/success';
 import authorization from '../../middleware/authorization';
 import chatModel from '../chat/model';
 import ludwigUiTools from './ai/tool/ui';
-import projectModel from '../project/model';
-import designModel from '../design/model';
 
 export const getLudwigChatMessages = query({
 	args: {
@@ -94,56 +92,5 @@ export const getLudwigChatResponseStreams = query({
 		});
 
 		return SuccessData(chatResponseStreams);
-	}
-});
-
-export const getLudwigChatDesignDetails = query({
-	args: {
-		workspaceId: v.id('workspaces'),
-		chatId: v.optional(v.id('chats'))
-	},
-	handler: async (ctx, args) => {
-		if (!args.chatId) return SuccessData({});
-
-		await Promise.all([
-			authorization.workspaceMemberIsAuthorizedToPerformFunction(
-				ctx,
-				args.workspaceId,
-				'getDesign'
-			),
-			authorization.isWorkspaceChat(ctx, args.workspaceId, args.chatId)
-		]);
-
-		const chat = await chatModel.getChatById(ctx, args.chatId);
-		if (!chat) return SuccessData({});
-
-		const [project, design] = await Promise.all([
-			chat.projectId ? projectModel.getProjectById(ctx, chat.projectId) : Promise.resolve(null),
-			chat.designId ? designModel.getDesignByChatId(ctx, chat._id) : Promise.resolve(null)
-		]);
-
-		const projectDetails = {
-			_id: project?._id,
-			name: project?.name,
-			description: project?.description
-		};
-
-		const designDetails = {
-			_id: design?._id,
-			chatId: chat._id,
-			name: design?.name,
-			description: design?.description,
-			spaceType: design?.spaceType,
-			inspirationImageUrl: design?.inspirationImageUrl,
-			floorPlanFile: design?.floorPlanFile,
-			productCategories: design?.productCategories,
-			publishedAt: design?.publishedAt,
-			hasProducts: (design?.productIds ?? []).length > 0
-		};
-
-		return SuccessData({
-			projectDetails,
-			designDetails
-		});
 	}
 });

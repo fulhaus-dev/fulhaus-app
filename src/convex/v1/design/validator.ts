@@ -7,12 +7,12 @@ export const vSpaceType = v.union(...spaceTypes.map((tag) => v.literal(tag)));
 
 export const vCreateDesign = v.object({
 	workspaceId: v.id('workspaces'),
-	projectId: v.id('projects'),
 	chatId: v.id('chats'),
 	name: v.string(),
 	description: v.string(),
 	spaceType: vSpaceType,
 	inspirationImageUrl: v.string(),
+	floorPlanUrl: v.optional(v.string()),
 	floorPlanFile: v.optional(vFloorPlanFile),
 	productCategories: v.array(vProductCategory),
 	styles: v.array(vProductStyle)
@@ -23,6 +23,7 @@ export const vUpdateDesign = v.object({
 	description: v.optional(v.string()),
 	spaceType: v.optional(vSpaceType),
 	inspirationImageUrl: v.optional(v.string()),
+	floorPlanUrl: v.optional(v.string()),
 	floorPlanFile: v.optional(vFloorPlanFile),
 	productCategories: v.optional(v.array(vProductCategory)),
 	productIds: v.optional(v.array(v.id('products'))),

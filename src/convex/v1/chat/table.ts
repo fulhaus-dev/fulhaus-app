@@ -4,7 +4,6 @@ import { vChatMessage, vLlmUsage } from './validator';
 
 export const chatTable = defineTable({
 	workspaceId: v.id('workspaces'),
-	projectId: v.optional(v.id('projects')),
 	designId: v.optional(v.id('designs')),
 	createdById: v.id('users'),
 	createdAt: v.number()

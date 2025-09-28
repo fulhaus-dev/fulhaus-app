@@ -13,17 +13,17 @@
 <div class="space-y-4">
 	<div
 		class={cn(
-			'h-60 w-full rounded-md',
+			'w-full rounded-md',
 			design.renderingImage &&
-				'flex animate-pulse items-center justify-center border border-color-border bg-color-disabled-background'
+				'flex h-60 animate-pulse items-center justify-center border border-color-border bg-color-disabled-background'
 		)}
 	>
 		<DesignRenderViewerDialog
-			class="h-full w-full cursor-pointer"
+			class="w-full cursor-pointer"
 			renderImage={{ src: design.renderedImageUrl ?? design.inspirationImageUrl, alt: design.name }}
 		>
 			<img
-				class={cn('h-full w-full rounded-md object-cover', design.renderingImage && 'hidden')}
+				class={cn('h-auto w-full rounded-md object-cover', design.renderingImage && 'hidden')}
 				src={design.renderedImageUrl ?? design.inspirationImageUrl}
 				alt={design.name}
 			/>

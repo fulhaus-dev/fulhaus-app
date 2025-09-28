@@ -35,7 +35,6 @@ export const deleteChatResponseStreams = internalMutation({
 export const updateChatById = internalMutation({
 	args: {
 		chatId: v.id('chats'),
-		projectId: v.optional(v.id('projects')),
 		designId: v.optional(v.id('designs'))
 	},
 	handler: async (ctx, args) => {

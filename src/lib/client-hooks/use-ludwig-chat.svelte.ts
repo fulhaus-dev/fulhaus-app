@@ -3,7 +3,7 @@ import { asyncTryCatch } from '$lib/utils/try-catch.js';
 import { QueryParams } from '$lib/enums.js';
 import { onDestroy } from 'svelte';
 import type { ChatMessage, ChatMessageDoc, ChatUser } from '$lib/types.js';
-import { useUser } from '$lib/client-hooks/use-user.svelte.js';
+import { useUserQuery } from '$lib/client/queries/use-user.query.svelte.js';
 import autoScroll from '$lib/dom-actions/auto-scroll.js';
 import type { Doc, Id } from '../../convex/_generated/dataModel';
 import { api } from '../../convex/_generated/api';
@@ -20,8 +20,6 @@ type ActiveUiToolName = (typeof LUDWIG_UI_TOOL_NAMES)[number];
 let autoscroll: ReturnType<typeof autoScroll> | undefined;
 
 const toolLoadingLabels: Record<string, string> = {
-	createProject: 'Creating project...',
-	updateProject: 'Updating project...',
 	getProductCategoriesForDesign: 'Generating product categories...',
 	createDesign: 'Creating design...',
 	updateDesign: 'Updating design...',
@@ -34,7 +32,7 @@ export function useLudwigChat() {
 	const userId = page.data.currentUserId;
 	if (!userId) throw new Error('No user ID found');
 
-	const { user } = useUser();
+	const userQuery = useUserQuery();
 
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'>;
 	const ludwigChatId = $derived.by(
@@ -52,8 +50,8 @@ export function useLudwigChat() {
 		usersMetadata: {
 			[userId]: {
 				userId,
-				fullName: user?.profile?.fullName,
-				imageUrl: user?.profile?.imageUrl
+				fullName: userQuery?.userProfile?.fullName,
+				imageUrl: userQuery?.userProfile?.imageUrl
 			}
 		} as ChatUsersMetadata,
 		activeUiToolName: undefined as ActiveUiToolName | undefined,
