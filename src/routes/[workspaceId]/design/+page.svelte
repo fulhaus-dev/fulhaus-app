@@ -5,6 +5,7 @@
 	import Button from '$lib/components/button.svelte';
 	import DesignProductView from '$lib/components/design/design-product-view.svelte';
 	import DesignViewSidebar from '$lib/components/design/design-view-sidebar/design-view-sidebar.svelte';
+	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
 	import { cn } from '$lib/utils/cn';
 	import { ArmchairIcon, PaletteIcon } from '@lucide/svelte';
@@ -21,7 +22,11 @@
 	const hasDesignProducts = $derived(designProducts.length > 0);
 </script>
 
-{#if !hasDesignProducts}
+{#if designQuery.loading}
+	<RingLoader class="mx-auto mt-40" />
+{/if}
+
+{#if !designQuery.loading && !hasDesignProducts}
 	<div class="mx-auto mt-40 w-fit space-y-4 text-lg text-color-text-muted">
 		<NoDesignIcon />
 		<p>This design does not exist<br />or has been updated</p>

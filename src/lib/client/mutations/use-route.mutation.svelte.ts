@@ -4,11 +4,12 @@ import type { QueryParams } from '$lib/enums';
 import { tick } from 'svelte';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
 
+export type QueryString =
+	| `${QueryParams}=${string}`
+	| `${QueryParams}=${string}&${QueryParams}=${string}`;
+
 export function useRouteMutation() {
-	function appendQueryToRoute(
-		queryString: `${QueryParams}=${string}` | `${QueryParams}=${string}&${QueryParams}=${string}`,
-		options: Parameters<typeof goto>[1] = {}
-	) {
+	function appendQueryToRoute(queryString: QueryString, options: Parameters<typeof goto>[1] = {}) {
 		const params = new SvelteURLSearchParams(page.url.searchParams);
 
 		const queryStringArray = queryString.split('&');
@@ -30,7 +31,30 @@ export function useRouteMutation() {
 		});
 	}
 
+	function removeQueryFromRoute(
+		queryParams: QueryParams[],
+		options: Parameters<typeof goto>[1] = {}
+	) {
+		const params = new SvelteURLSearchParams(page.url.searchParams);
+
+		queryParams.forEach((param) => {
+			params.delete(param);
+		});
+
+		tick().then(() => {
+			try {
+				// eslint-disable-next-line svelte/no-navigation-without-resolve
+				goto(`?${params.toString()}`, options);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			} catch (_) {
+				// eslint-disable-next-line svelte/no-navigation-without-resolve
+				setTimeout(() => goto(`?${params.toString()}`, options), 100);
+			}
+		});
+	}
+
 	return {
-		appendQueryToRoute
+		appendQueryToRoute,
+		removeQueryFromRoute
 	};
 }

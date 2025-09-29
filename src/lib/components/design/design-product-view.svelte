@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
-	import DesignProductSwapDialog from '$lib/components/design/design-product-swap/design-product-swap-dialog.svelte';
+	import DesignProductSwapDialog from '$lib/components/design/design-product-swap/design-product-swap.dialog.svelte';
 	import LudwigLoader from '$lib/components/loaders/ludwig-loader.svelte';
 	import type { DesignProduct } from '$lib/types';
 	import { cn } from '$lib/utils/cn';

@@ -44,9 +44,15 @@ importers:
       convex:
         specifier: ^1.27.3
         version: 1.27.3(react@19.1.1)
+      convex-helpers:
+        specifier: ^0.1.104
+        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.3(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11)
       dompurify:
         specifier: ^3.2.6
         version: 3.2.6
+      i:
+        specifier: ^0.3.7
+        version: 0.3.7
       image-size:
         specifier: ^2.0.2
         version: 2.0.2
@@ -59,6 +65,9 @@ importers:
       mime:
         specifier: ^4.1.0
         version: 4.1.0
+      npm:
+        specifier: ^11.6.1
+        version: 11.6.1
       resend:
         specifier: ^6.0.3
         version: 6.0.3(@react-email/render@1.2.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -1516,6 +1525,28 @@ packages:
   confbox@0.2.2:
     resolution: {integrity: sha512-1NB+BKqhtNipMsov4xI/NnhCKp9XG9NamYp5PVm9klAT0fsrNPjaFICsCFhNhwZJKNh7zB/3q8qXz0E9oaMNtQ==}
 
+  convex-helpers@0.1.104:
+    resolution: {integrity: sha512-7CYvx7T3K6n+McDTK4ZQaQNNGBzq5aWezpjzsKbOxPXx7oNcTP9wrpef3JxeXWFzkByJv5hRCjseh9B7eNJ7Ig==}
+    hasBin: true
+    peerDependencies:
+      '@standard-schema/spec': ^1.0.0
+      convex: ^1.24.0
+      hono: ^4.0.5
+      react: ^17.0.2 || ^18.0.0 || ^19.0.0
+      typescript: ^5.5
+      zod: ^3.22.4 || ^4.0.15
+    peerDependenciesMeta:
+      '@standard-schema/spec':
+        optional: true
+      hono:
+        optional: true
+      react:
+        optional: true
+      typescript:
+        optional: true
+      zod:
+        optional: true
+
   convex@1.27.3:
     resolution: {integrity: sha512-Ebr9lPgXkL7JO5IFr3bG+gYvHskyJjc96Fx0BBNkJUDXrR/bd9/uI4q8QszbglK75XfDu068vR0d/HK2T7tB9Q==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
@@ -1780,6 +1811,10 @@ packages:
   htmlparser2@8.0.2:
     resolution: {integrity: sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==}
 
+  i@0.3.7:
+    resolution: {integrity: sha512-FYz4wlXgkQwIPqhzC5TdNMLSE5+GS1IIDJZY/1ZiEPCT2S3COUVZeT5OW4BmW4r5LHLQuOosSwsvnroG9GR59Q==}
+    engines: {node: '>=0.4'}
+
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -2033,6 +2068,78 @@ packages:
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
+
+  npm@11.6.1:
+    resolution: {integrity: sha512-7iDSHDoup6uMQJ37yWrhfqcbMhF0UEfGRap6Nv+aKQcrIJXlCi2cKbj75WBmiHlcwsQCy/U0zEwDZdAx6H/Vaw==}
+    engines: {node: ^20.17.0 || >=22.9.0}
+    hasBin: true
+    bundledDependencies:
+      - '@isaacs/string-locale-compare'
+      - '@npmcli/arborist'
+      - '@npmcli/config'
+      - '@npmcli/fs'
+      - '@npmcli/map-workspaces'
+      - '@npmcli/package-json'
+      - '@npmcli/promise-spawn'
+      - '@npmcli/redact'
+      - '@npmcli/run-script'
+      - '@sigstore/tuf'
+      - abbrev
+      - archy
+      - cacache
+      - chalk
+      - ci-info
+      - cli-columns
+      - fastest-levenshtein
+      - fs-minipass
+      - glob
+      - graceful-fs
+      - hosted-git-info
+      - ini
+      - init-package-json
+      - is-cidr
+      - json-parse-even-better-errors
+      - libnpmaccess
+      - libnpmdiff
+      - libnpmexec
+      - libnpmfund
+      - libnpmorg
+      - libnpmpack
+      - libnpmpublish
+      - libnpmsearch
+      - libnpmteam
+      - libnpmversion
+      - make-fetch-happen
+      - minimatch
+      - minipass
+      - minipass-pipeline
+      - ms
+      - node-gyp
+      - nopt
+      - normalize-package-data
+      - npm-audit-report
+      - npm-install-checks
+      - npm-package-arg
+      - npm-pick-manifest
+      - npm-profile
+      - npm-registry-fetch
+      - npm-user-validate
+      - p-map
+      - pacote
+      - parse-conflict-json
+      - proc-log
+      - qrcode-terminal
+      - read
+      - semver
+      - spdx-expression-parse
+      - ssri
+      - supports-color
+      - tar
+      - text-table
+      - tiny-relative-date
+      - treeverse
+      - validate-npm-package-name
+      - which
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -4161,6 +4268,15 @@ snapshots:
 
   confbox@0.2.2: {}
 
+  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.3(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11):
+    dependencies:
+      convex: 1.27.3(react@19.1.1)
+    optionalDependencies:
+      '@standard-schema/spec': 1.0.0
+      react: 19.1.1
+      typescript: 5.9.2
+      zod: 4.1.11
+
   convex@1.27.3(react@19.1.1):
     dependencies:
       esbuild: 0.25.4
@@ -4474,6 +4590,8 @@ snapshots:
       domutils: 3.2.2
       entities: 4.5.0
 
+  i@0.3.7: {}
+
   ignore@5.3.2: {}
 
   ignore@7.0.5: {}
@@ -4662,6 +4780,8 @@ snapshots:
   nanoid@3.3.11: {}
 
   natural-compare@1.4.0: {}
+
+  npm@11.6.1: {}
 
   optionator@0.9.4:
     dependencies:

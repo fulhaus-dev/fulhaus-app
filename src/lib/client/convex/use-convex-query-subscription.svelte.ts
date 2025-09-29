@@ -8,6 +8,7 @@ export function useConvexQuerySubscription<Query extends FunctionReference<'quer
 	args: FunctionArgs<Query> | (() => FunctionArgs<Query>),
 	options?: {
 		requiredArgsKeys?: string[];
+		debounceDelay?: number;
 		onLoading?: (value: boolean) => void;
 		onData?: (data: FunctionReturnType<Query>) => void;
 		onError?: (error: Error) => void;
@@ -16,7 +17,7 @@ export function useConvexQuerySubscription<Query extends FunctionReference<'quer
 	const client = useConvexClient();
 
 	const state = $state({
-		loading: false,
+		loading: true,
 		response: undefined as FunctionReturnType<Query> | undefined,
 		error: undefined as Error | undefined
 	});
@@ -30,30 +31,41 @@ export function useConvexQuerySubscription<Query extends FunctionReference<'quer
 		const canSubscribe = checkCanSubscribe(argsSnapshot, options?.requiredArgsKeys);
 		if (!canSubscribe) return;
 
-		if (unsubscribe) {
-			unsubscribe();
-			unsubscribe = null;
-		}
-
 		state.loading = true;
 		options?.onLoading?.(true);
 
-		unsubscribe = client.onUpdate(
-			query,
-			argsSnapshot,
-			(data) => {
-				state.response = data;
-				state.loading = false;
-				options?.onData?.(data);
-				options?.onLoading?.(false);
-			},
-			(error) => {
-				state.error = error;
-				state.loading = false;
-				options?.onError?.(error);
-				options?.onLoading?.(false);
+		const debounceDelay = options?.debounceDelay ?? 0;
+
+		let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined;
+		if (timeoutId) clearTimeout(timeoutId);
+
+		timeoutId = setTimeout(() => {
+			if (unsubscribe) {
+				unsubscribe();
+				unsubscribe = null;
 			}
-		);
+
+			unsubscribe = client.onUpdate(
+				query,
+				argsSnapshot,
+				(data) => {
+					state.response = data;
+					state.loading = false;
+					options?.onData?.(data);
+					options?.onLoading?.(false);
+				},
+				(error) => {
+					state.error = error;
+					state.loading = false;
+					options?.onError?.(error);
+					options?.onLoading?.(false);
+				}
+			);
+		}, debounceDelay);
+
+		return () => {
+			if (timeoutId) clearTimeout(timeoutId);
+		};
 	});
 
 	function getArgsSnapshot(args: Record<string, Value> | (() => Record<string, Value>)) {

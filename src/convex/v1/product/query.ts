@@ -4,7 +4,7 @@ import { SuccessData } from '../../response/success';
 import { vSpaceType } from '../design/validator';
 import productModel from './model';
 import { v } from 'convex/values';
-import { vProductCategory } from './validator';
+import { vProductCategory, vProductFilter } from './validator';
 import ServerError from '../../response/error';
 
 export const getPoProductByPId = query({
@@ -35,18 +35,18 @@ export const getProductCategoriesForSpace = query({
 	}
 });
 
-export const getClientProductsByCategory = query({
+export const getClientProductsByCategoryWithFilters = query({
 	args: {
 		category: vProductCategory,
-		cursor: v.optional(v.string())
+		cursor: v.optional(v.string()),
+		productFilter: v.optional(vProductFilter)
 	},
 	handler: async (ctx, args) => {
 		await authorization.userIsAuthenticated(ctx);
 
-		const clientProductPaginationResult = await productModel.getClientProductsByCategory(
+		const clientProductPaginationResult = await productModel.getClientProductsByCategoryWithFilters(
 			ctx,
-			args.category,
-			args.cursor
+			args
 		);
 
 		return SuccessData(clientProductPaginationResult);

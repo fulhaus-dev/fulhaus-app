@@ -4,7 +4,7 @@
 	import { Dialog } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 	import Button from '$lib/components/button.svelte';
-	import DesignProducts from '$lib/components/design/design-product-swap/design-products.svelte';
+	import DesignProductSwapProductsByCategory from '$lib/components/design/design-product-swap/design-product-swap.products-by-category.svelte';
 
 	type DesignProductSwapDialogProps = {
 		children: Snippet;
@@ -64,12 +64,10 @@
 			</div>
 
 			{#if isOpen}
-				<div class="flex-1 overflow-y-auto px-2 pt-2 pb-64">
-					<DesignProducts
-						productToSwapCategory={productToSwap.category}
-						onSelectProduct={(p) => (replacementProduct = p)}
-					/>
-				</div>
+				<DesignProductSwapProductsByCategory
+					productToSwapCategory={productToSwap.category}
+					onSelectProduct={(p) => (replacementProduct = p)}
+				/>
 			{/if}
 
 			{#if !!replacementProduct}
@@ -93,7 +91,7 @@
 </Dialog.Root>
 
 {#snippet ProductPreview(args: { src?: string; alt?: string })}
-	<div class="flex size-24 items-center justify-center rounded-md border border-color-border p-1">
+	<div class="flex size-16 items-center justify-center rounded-md border border-color-border p-1">
 		{#if args.src && args.alt}
 			<img class="h-full w-full rounded-md object-contain" src={args.src} alt={args.alt} />
 		{/if}

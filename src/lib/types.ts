@@ -1,5 +1,7 @@
 import type { Value } from 'convex/values';
 import type { Doc, Id } from '../convex/_generated/dataModel';
+import type z from 'zod';
+import type { zProductFilter } from '$lib/zod-schemas';
 
 type ErrorDetails = Record<string, Value>;
 
@@ -134,3 +136,5 @@ export type Workspace = {
 };
 
 export type UserWorkspace = Omit<Workspace, 'members'>;
+
+export type ProductFilter = z.infer<typeof zProductFilter>;

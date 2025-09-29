@@ -5,8 +5,10 @@ import { vCreateProduct } from './validator';
 import date from '../../util/date';
 import { SpaceType } from '../design/type';
 import { spaceTypeProductCategories } from '../design/constant';
-import { productsToClientProducts } from './util';
-import { ProductCategory } from './type';
+import { filterClientProducts, productsToClientProducts } from './util';
+import { ClientProduct, ProductCategory, ProductFilter } from './type';
+import { paginator } from 'convex-helpers/server/pagination';
+import schema from '../../schema';
 
 async function createProduct(ctx: MutationCtx, args: Infer<typeof vCreateProduct>) {
 	return await ctx.db.insert('products', {
@@ -53,19 +55,64 @@ async function getProductsForClientByIds(ctx: QueryCtx, productIds: Id<'products
 async function getClientProductsByCategory(
 	ctx: QueryCtx,
 	category: ProductCategory,
-	cursor?: string
+	cursor?: string,
+	numItems: number = 25
 ) {
-	const page = await ctx.db
+	const page = await paginator(ctx.db, schema)
 		.query('products')
 		.withIndex('by_category', (q) => q.eq('category', category).eq('status', 'Active'))
 		.paginate({
 			cursor: cursor ?? null,
-			numItems: 25
+			numItems
 		});
 
 	const { page: products, isDone, continueCursor } = page;
 
 	const clientProducts = productsToClientProducts(products);
+
+	return {
+		clientProducts,
+		isDone,
+		continueCursor
+	};
+}
+
+async function getClientProductsByCategoryWithFilters(
+	ctx: QueryCtx,
+	args: {
+		category: ProductCategory;
+		cursor?: string;
+		numItems?: number;
+		productFilter?: ProductFilter;
+	}
+) {
+	const { category, cursor, numItems = 25, productFilter } = args;
+
+	const clientProducts: ClientProduct[] = [];
+	let isDone = false;
+	let continueCursor = cursor;
+	let newNumItems = numItems;
+
+	while (clientProducts.length < numItems && !isDone) {
+		const clientProductPaginationResult = await getClientProductsByCategory(
+			ctx,
+			category,
+			continueCursor,
+			newNumItems
+		);
+
+		const filteredClientProducts = filterClientProducts(
+			clientProductPaginationResult.clientProducts,
+			productFilter
+		);
+
+		clientProducts.push(...filteredClientProducts);
+
+		newNumItems = numItems - clientProducts.length;
+		isDone = clientProductPaginationResult.isDone;
+		continueCursor = clientProductPaginationResult.continueCursor;
+	}
+
 	return {
 		clientProducts,
 		isDone,
@@ -80,7 +127,8 @@ const productModel = {
 	getProductCategoriesForSpace,
 	getProductsForClientByIds,
 	getProductByLudwigImageUrl,
-	getClientProductsByCategory
+	getClientProductsByCategory,
+	getClientProductsByCategoryWithFilters
 };
 
 export default productModel;

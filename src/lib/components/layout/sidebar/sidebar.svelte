@@ -3,7 +3,7 @@
 	import SidebarDesignDetails from '$lib/components/layout/sidebar/sidebar.design-details.svelte';
 	import { QueryParams } from '$lib/enums';
 	import { cn } from '$lib/utils/cn';
-	import { ChevronsLeftIcon, MessageCircleIcon, PlusIcon } from '@lucide/svelte';
+	import { ChevronsLeftIcon, MessageCircleIcon } from '@lucide/svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Id } from '../../../../convex/_generated/dataModel';
 	import SidebarWorkspaceDropdownMenu from '$lib/components/layout/sidebar/sidebar.workspace-dropdown-menu.svelte';
