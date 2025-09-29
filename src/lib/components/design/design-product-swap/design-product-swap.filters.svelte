@@ -94,7 +94,7 @@
 		</div>
 
 		<Button
-			class="size-6 rounded-sm border-color-border p-px text-color-text-muted ring-0"
+			class="size-6 rounded-sm border-color-border bg-color-background p-px text-color-text-muted ring-0"
 			variant="outlined"
 		>
 			<ArrowDownWideNarrowIcon class="size-full" />
