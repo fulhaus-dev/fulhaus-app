@@ -52,3 +52,23 @@ export const getClientProductsByCategoryWithFilters = query({
 		return SuccessData(clientProductPaginationResult);
 	}
 });
+
+export const getProductBrandsByCategory = query({
+	args: {
+		category: vProductCategory,
+		paginationOptions: v.optional(
+			v.object({ cursor: v.optional(v.string()), numItems: v.optional(v.number()) })
+		)
+	},
+	handler: async (ctx, args) => {
+		await authorization.userIsAuthenticated(ctx);
+
+		const productBrands = await productModel.getProductBrandsByCategory(
+			ctx,
+			args.category,
+			args.paginationOptions
+		);
+
+		return SuccessData(productBrands);
+	}
+});

@@ -118,7 +118,7 @@ export function filterClientProducts(
 
 	if (productFilter.brand)
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.brand === productFilter.brand
+			(product) => product.brand === decodeURIComponent(productFilter.brand!)
 		);
 
 	return filteredClientProducts;

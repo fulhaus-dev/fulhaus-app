@@ -1,6 +1,6 @@
 import { MutationCtx, QueryCtx } from '../../_generated/server';
 import { Infer } from 'convex/values';
-import { Id } from '../../_generated/dataModel';
+import { Doc, Id } from '../../_generated/dataModel';
 import { vCreateProduct } from './validator';
 import date from '../../util/date';
 import { SpaceType } from '../design/type';
@@ -120,6 +120,53 @@ async function getClientProductsByCategoryWithFilters(
 	};
 }
 
+async function getProductBrandsByCategory(
+	ctx: QueryCtx,
+	category: ProductCategory,
+	paginationOptions?: { cursor?: string; numItems?: number }
+) {
+	const { cursor, numItems = 25 } = paginationOptions ?? {};
+
+	const brands: (string | undefined)[] = [];
+
+	let doc: Doc<'products'> | null = null;
+	let lastUniqueBrand = cursor;
+
+	if (!lastUniqueBrand)
+		doc = await ctx.db
+			.query('products')
+			.withIndex('by_category_brand', (q) => q.eq('category', category))
+			.order('desc')
+			.first();
+
+	if (lastUniqueBrand) await getUniqueBrand();
+
+	while (brands.length < numItems && doc !== null) {
+		brands.push(doc.brand);
+		lastUniqueBrand = doc.brand;
+
+		await getUniqueBrand();
+	}
+
+	async function getUniqueBrand() {
+		doc = await ctx.db
+			.query('products')
+			.withIndex('by_category_brand', (q) =>
+				q.eq('category', category).lt('brand', lastUniqueBrand)
+			)
+			.order('desc')
+			.first();
+	}
+
+	const uniqueBrands = brands.filter((brand) => brand !== undefined);
+
+	return {
+		brands: uniqueBrands,
+		cursor: uniqueBrands.slice(-1)?.[0],
+		isDone: doc === null
+	};
+}
+
 const productModel = {
 	createProduct,
 	getProductById,
@@ -128,7 +175,8 @@ const productModel = {
 	getProductsForClientByIds,
 	getProductByLudwigImageUrl,
 	getClientProductsByCategory,
-	getClientProductsByCategoryWithFilters
+	getClientProductsByCategoryWithFilters,
+	getProductBrandsByCategory
 };
 
 export default productModel;

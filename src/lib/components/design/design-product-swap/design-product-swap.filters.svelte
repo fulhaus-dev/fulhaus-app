@@ -17,6 +17,7 @@
 	import Checkbox from '$lib/components/checkbox.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { cn } from '$lib/utils/cn';
+	import { useProductBrandsByCategoryQuery } from '$lib/client/queries/use-product.query.svelte';
 
 	type UpdateRouteProductFilterQuery = {
 		productFilterQueryString?: ProductFilterQueryString;
@@ -45,6 +46,16 @@
 	const { productToSwapCategory }: { productToSwapCategory: ProductCategory } = $props();
 
 	const { updateRouteQuery } = useRouteMutation();
+
+	let cursor = $state<string | undefined>(undefined);
+	const productBrandsByCategoryQuery = useProductBrandsByCategoryQuery(
+		productToSwapCategory,
+		() => cursor
+	);
+
+	const productBrands = $derived(productBrandsByCategoryQuery.productBrands.brands ?? []);
+	const currentCursor = $derived(productBrandsByCategoryQuery.productBrands.cursor);
+	const hasMoreBrands = $derived(productBrandsByCategoryQuery.productBrands.isDone);
 
 	let priceFilters = $state<PriceFilters>({});
 	let dimensionFilters = $state<DimensionFilters>({});
@@ -169,7 +180,11 @@
 			{@render PriceFilter()}
 			{@render DimensionFilter()}
 			{@render WeightFilter()}
-			{@render BrandFilter()}
+
+			{#if productBrands.length > 0}
+				{@render BrandFilter()}
+			{/if}
+
 			<Button
 				class={cn('ml-4 text-xs font-medium text-color-text-muted', aFilterIsOpen && 'opacity-20')}
 				variant="text"
@@ -431,7 +446,29 @@
 		bind:open={openBrandFilter}
 		{aFilterIsOpen}
 	>
-		<div class="w-fit space-y-4"></div>
+		<div>
+			<div class="scrollbar-thin h-80 space-y-4 overflow-y-auto p-4">
+				{#each productBrands as productBrand, index (`${index}-${productBrand}`)}
+					{@render CheckBoxFilter({
+						id: `${index}-${productBrand}`,
+						label: `${productBrand.toUpperCase()}`,
+						checked: parsedProductFilters.brand === encodeURIComponent(productBrand),
+						onchange: (checked) => {
+							openBrandFilter = false;
+
+							if (checked)
+								updateRouteProductFilterQuery({
+									productFilterQueryString: `brand-${encodeURIComponent(productBrand)}`
+								});
+							else
+								updateRouteProductFilterQuery({
+									productFilterKeysToRemove: ['brand']
+								});
+						}
+					})}
+				{/each}
+			</div>
+		</div>
 	</DesignProductSwapFilterPopover>
 {/snippet}
 

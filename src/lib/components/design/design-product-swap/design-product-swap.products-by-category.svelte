@@ -99,8 +99,13 @@
 				</button>
 
 				<div class="space-y-4 px-2">
-					<div>
-						<p class="truncate text-xs font-medium hover:text-wrap">{product.name}</p>
+					<div class="space-y-2">
+						<div>
+							<p class="truncate text-xs font-medium hover:text-wrap">{product.name}</p>
+							<p class="text-[9px] font-semibold text-color-text-placeholder">
+								{product.brand?.toUpperCase()}
+							</p>
+						</div>
 						<h4 class="font-semibold">
 							{number.toMoney(product.retailPrice, product.currencyCode)}
 						</h4>
