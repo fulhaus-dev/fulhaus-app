@@ -9,6 +9,7 @@
 	import type { Id } from '../../../convex/_generated/dataModel';
 	import DesignProductCartButton from '$lib/components/design/design-product-cart-button.svelte';
 	import { useDesignMutation } from '$lib/client/mutations/use-design.mutation.svelte';
+	import DesignProductSwapProductDetailDialog from '$lib/components/design/design-product-swap/design-product-swap-product-detail.dialog.svelte';
 
 	type DesignProductViewProps = {
 		designId: Id<'designs'>;
@@ -54,14 +55,23 @@
 				<div
 					class={cn('w-full space-y-4', generatingDesignFurnitureRecommendation && 'animate-pulse')}
 				>
-					<img
-						class={cn(
-							'h-64 w-full object-contain',
-							generatingDesignFurnitureRecommendation && 'animate-pulse'
-						)}
-						src={designProduct.ludwigImageUrl}
-						alt={designProduct.name}
-					/>
+					<div class="group relative">
+						<img
+							class={cn(
+								'h-64 w-full object-contain group-hover:opacity-50',
+								generatingDesignFurnitureRecommendation && 'animate-pulse'
+							)}
+							src={designProduct.ludwigImageUrl}
+							alt={designProduct.name}
+						/>
+						<DesignProductSwapProductDetailDialog product={designProduct}>
+							<p
+								class="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-color-action-background px-2 py-1 text-xs font-medium text-color-action-text group-hover:block"
+							>
+								View Details
+							</p>
+						</DesignProductSwapProductDetailDialog>
+					</div>
 
 					<div class="flex-1 space-y-2 text-xs font-medium">
 						<div>

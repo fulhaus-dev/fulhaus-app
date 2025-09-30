@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte';
-	import Button from '$lib/components/button.svelte';
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import type { DesignProduct, ProductCategory } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
@@ -12,6 +11,8 @@
 	import { parseProductFilters } from '$lib/components/design/design-product-swap/design-product-swap.utils';
 	import { page } from '$app/state';
 	import { SofaIcon } from '@lucide/svelte';
+	import DesignProductSwapProductDetailDialog from '$lib/components/design/design-product-swap/design-product-swap-product-detail.dialog.svelte';
+	import DesignProductSwapAvailabilityInfo from '$lib/components/design/design-product-swap/design-product-swap.availability-info.svelte';
 
 	let getProductsByCategoryPaginationCursor = $state<string>();
 
@@ -117,11 +118,17 @@
 							product.stockQty < 1 && !!product.restockDate && 'items-start'
 						)}
 					>
-						{@render AvailabilityInfo({
-							stockQty: product.stockQty,
-							restockDate: product.restockDate
-						})}
-						<Button class="font-medium underline underline-offset-2" variant="text">Details</Button>
+						<DesignProductSwapAvailabilityInfo
+							stockQty={product.stockQty}
+							restockDate={product.restockDate}
+						/>
+
+						<DesignProductSwapProductDetailDialog
+							{product}
+							class="cursor-pointer font-medium underline underline-offset-2"
+						>
+							Details
+						</DesignProductSwapProductDetailDialog>
 					</div>
 				</div>
 			</div>
@@ -132,24 +139,3 @@
 		<RingLoader class="mx-auto mt-4" />
 	{/if}
 </div>
-
-{#snippet AvailabilityInfo({ stockQty, restockDate }: { stockQty: number; restockDate?: number })}
-	<div>
-		<p
-			class={cn(
-				'rounded-full border px-2 text-[10px] font-medium',
-				stockQty < 1 && 'border-color-error-border bg-color-error-background text-color-error-text',
-				stockQty > 0 &&
-					'border-color-warning-border bg-color-warning-background text-color-warning-text',
-				stockQty > 10 &&
-					'border-color-success-border bg-color-success-background text-color-success-text'
-			)}
-		>
-			{stockQty > 10 ? 'In stock' : stockQty > 0 ? 'Low stock' : 'Out of stock'}
-		</p>
-
-		{#if stockQty < 1 && restockDate}
-			<p>{new Date(restockDate).toLocaleDateString('en-US')}</p>
-		{/if}
-	</div>
-{/snippet}
