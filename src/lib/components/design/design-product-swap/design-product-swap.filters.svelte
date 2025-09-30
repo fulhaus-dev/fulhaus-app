@@ -171,14 +171,17 @@
 			{@render WeightFilter()}
 			{@render BrandFilter()}
 			<Button
-				class="ml-4 text-xs font-medium text-color-text-muted"
+				class={cn('ml-4 text-xs font-medium text-color-text-muted', aFilterIsOpen && 'opacity-20')}
 				variant="text"
 				onclick={clearFilters}>Clear filters</Button
 			>
 		</div>
 
 		<Button
-			class="size-6 rounded-sm border-color-border bg-color-background p-px text-color-text-muted ring-0"
+			class={cn(
+				'size-6 rounded-sm border-color-border bg-color-background p-px text-color-text-muted ring-0',
+				aFilterIsOpen && 'opacity-20'
+			)}
 			variant="outlined"
 		>
 			<ArrowDownWideNarrowIcon class="size-full" />
