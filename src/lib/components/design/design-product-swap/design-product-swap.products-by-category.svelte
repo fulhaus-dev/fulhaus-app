@@ -26,7 +26,7 @@
 		page.url.searchParams.get(QueryParams.PRODUCT_FILTERS) ?? ''
 	) as ProductFilterQueryString;
 
-	const parsedProductFilters = $derived(parseProductFilters(productFilters));
+	const parsedProductFilters = $derived.by(() => parseProductFilters(productFilters));
 
 	const { query } = useConvexQuerySubscription(
 		api.v1.product.query.getClientProductsByCategoryWithFilters,
@@ -41,19 +41,31 @@
 		}
 	);
 
-	const loadingProductsByCategory = $derived(query.loading);
 	const productsByCategory = $derived(query.response?.data.clientProducts ?? []);
 	const getClientProductsByCategoryPaginationContinueCursor = $derived(
 		query.response?.data.continueCursor
 	);
+	const hasCursor = $derived(
+		getClientProductsByCategoryPaginationContinueCursor !== undefined ||
+			getProductsByCategoryPaginationCursor !== undefined
+	);
+	const isSameCursor = $derived(
+		getClientProductsByCategoryPaginationContinueCursor === getProductsByCategoryPaginationCursor
+	);
+	const loadingProductsByCategory = $derived(query.loading && (!hasCursor || !isSameCursor));
+	const loadingPaginatedProductsByCategory = $derived(query.loading && hasCursor && isSameCursor);
 </script>
 
 <div class="relative flex-1 overflow-y-auto pb-64">
-	<div class="sticky top-0 z-1 bg-color-background-surface p-2 shadow shadow-color-shadow">
+	<div class="sticky top-0 z-4 bg-color-background-surface p-2 shadow shadow-color-shadow">
 		<DesignProductSwapFilters {productToSwapCategory} />
 	</div>
 
-	{#if !loadingProductsByCategory && productsByCategory.length < 1}
+	{#if loadingProductsByCategory}
+		<RingLoader class="mx-auto mt-8" />
+	{/if}
+
+	{#if !loadingProductsByCategory && !loadingPaginatedProductsByCategory && productsByCategory.length < 1}
 		<div class="flex w-full flex-col items-center justify-center gap-y-4 px-2 pt-8 text-sm">
 			<SofaIcon class="size-8 text-color-text-muted" />
 			<p>No products matching your search/filter criteria</p>
@@ -63,7 +75,7 @@
 	<div
 		class={cn(
 			'hidden w-full grid-cols-3 gap-x-2 gap-y-12 px-2 pt-2',
-			productsByCategory.length > 0 && 'grid'
+			!loadingProductsByCategory && productsByCategory.length > 0 && 'grid'
 		)}
 	>
 		{#each productsByCategory as product (product._id)}
@@ -111,8 +123,8 @@
 		{/each}
 	</div>
 
-	{#if loadingProductsByCategory}
-		<RingLoader class="mx-auto" />
+	{#if loadingPaginatedProductsByCategory}
+		<RingLoader class="mx-auto mt-4" />
 	{/if}
 </div>
 

@@ -1,3 +1,4 @@
+import number from '../../util/number';
 import { ClientProduct, Product, ProductCategory, ProductFilter } from './type';
 
 export function productsToClientProducts(products: (Product | null)[]) {
@@ -38,8 +39,10 @@ export function productsToClientProducts(products: (Product | null)[]) {
 
 export function filterClientProducts(
 	clientProducts: ClientProduct[],
-	productFilter: ProductFilter = {}
+	productFilter?: ProductFilter
 ) {
+	if (!productFilter) return clientProducts;
+
 	let filteredClientProducts = clientProducts;
 
 	if (productFilter.category)
@@ -52,69 +55,70 @@ export function filterClientProducts(
 			product.name.toLowerCase().includes((productFilter.name ?? '').toLowerCase())
 		);
 
+	if (productFilter.availability === 'In Stock')
+		filteredClientProducts = filteredClientProducts.filter((product) => product.stockQty >= 1);
+
+	if (productFilter.availability === 'Low Stock')
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.stockQty >= 1 && product.stockQty <= 10
+		);
+
+	if (productFilter.availability === 'Out of Stock')
+		filteredClientProducts = filteredClientProducts.filter((product) => product.stockQty <= 0);
+
+	if (number.isNumber(productFilter.minPrice))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.retailPrice >= productFilter.minPrice!
+		);
+
+	if (number.isNumber(productFilter.maxPrice))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.retailPrice <= productFilter.maxPrice!
+		);
+
+	if (number.isNumber(productFilter.maxWidth))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.width <= productFilter.maxWidth!
+		);
+
+	if (number.isNumber(productFilter.minWidth))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.width >= productFilter.minWidth!
+		);
+
+	if (number.isNumber(productFilter.minHeight))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.height >= productFilter.minHeight!
+		);
+
+	if (number.isNumber(productFilter.maxHeight))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.height <= productFilter.maxHeight!
+		);
+
+	if (number.isNumber(productFilter.minDepth))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.depth >= productFilter.minDepth!
+		);
+
+	if (number.isNumber(productFilter.maxDepth))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.depth <= productFilter.maxDepth!
+		);
+
+	if (number.isNumber(productFilter.minWeight))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.weight >= productFilter.minWeight!
+		);
+
+	if (number.isNumber(productFilter.maxWeight))
+		filteredClientProducts = filteredClientProducts.filter(
+			(product) => product.weight <= productFilter.maxWeight!
+		);
+
 	if (productFilter.brand)
 		filteredClientProducts = filteredClientProducts.filter(
 			(product) => product.brand === productFilter.brand
-		);
-
-	if (productFilter.maxWidth)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.width <= (productFilter.maxWidth ?? 0)
-		);
-
-	if (productFilter.minWidth)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.width >= (productFilter.minWidth ?? 0)
-		);
-
-	if (productFilter.maxHeight)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.height <= (productFilter.maxHeight ?? 0)
-		);
-
-	if (productFilter.minHeight)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.height >= (productFilter.minHeight ?? 0)
-		);
-
-	if (productFilter.maxDepth)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.depth <= (productFilter.maxDepth ?? 0)
-		);
-
-	if (productFilter.minDepth)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.depth >= (productFilter.minDepth ?? 0)
-		);
-
-	if (productFilter.maxWeight)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.weight <= (productFilter.maxWeight ?? 0)
-		);
-
-	if (productFilter.minWeight)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.weight >= (productFilter.minWeight ?? 0)
-		);
-
-	if (productFilter.maxRetailPrice)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.retailPrice <= (productFilter.maxRetailPrice ?? 0)
-		);
-
-	if (productFilter.minRetailPrice)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.retailPrice >= (productFilter.minRetailPrice ?? 0)
-		);
-
-	if (productFilter.maxStock)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.stockQty <= (productFilter.maxStock ?? 0)
-		);
-
-	if (productFilter.minStock)
-		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.stockQty >= (productFilter.minStock ?? 0)
 		);
 
 	return filteredClientProducts;

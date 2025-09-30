@@ -30,6 +30,7 @@ import type * as util_error from "../util/error.js";
 import type * as util_fetch from "../util/fetch.js";
 import type * as util_file from "../util/file.js";
 import type * as util_generator from "../util/generator.js";
+import type * as util_number from "../util/number.js";
 import type * as util_object from "../util/object.js";
 import type * as util_r2 from "../util/r2.js";
 import type * as v1_auth_email_otp from "../v1/auth/email/otp.js";
@@ -147,6 +148,7 @@ declare const fullApi: ApiFromModules<{
   "util/fetch": typeof util_fetch;
   "util/file": typeof util_file;
   "util/generator": typeof util_generator;
+  "util/number": typeof util_number;
   "util/object": typeof util_object;
   "util/r2": typeof util_r2;
   "v1/auth/email/otp": typeof v1_auth_email_otp;

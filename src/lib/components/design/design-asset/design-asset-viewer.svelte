@@ -39,14 +39,14 @@
 
 	let searchMode = $state(false);
 
-	const { appendQueryToRoute } = useRouteMutation();
+	const { updateRouteQuery } = useRouteMutation();
 
 	function getTabValue() {
 		return page.url.searchParams.get(QueryParams.ACTIVE_DESIGN_ASSET_TAB) ?? 'sample';
 	}
 
 	function setTabValue(newValue: string) {
-		appendQueryToRoute(`${QueryParams.ACTIVE_DESIGN_ASSET_TAB}=${newValue}`);
+		updateRouteQuery({ queryString: `${QueryParams.ACTIVE_DESIGN_ASSET_TAB}=${newValue}` });
 	}
 </script>
 

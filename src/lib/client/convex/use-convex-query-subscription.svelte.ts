@@ -25,14 +25,13 @@ export function useConvexQuerySubscription<Query extends FunctionReference<'quer
 	let unsubscribe: (() => void) | null = null;
 
 	$effect(() => {
+		handleLoadingState(true);
+
 		const argsSnapshot = getArgsSnapshot(args);
-		if (!argsSnapshot) return;
+		if (!argsSnapshot) return handleLoadingState(false);
 
 		const canSubscribe = checkCanSubscribe(argsSnapshot, options?.requiredArgsKeys);
-		if (!canSubscribe) return;
-
-		state.loading = true;
-		options?.onLoading?.(true);
+		if (!canSubscribe) return handleLoadingState(false);
 
 		const debounceDelay = options?.debounceDelay ?? 0;
 
@@ -50,15 +49,13 @@ export function useConvexQuerySubscription<Query extends FunctionReference<'quer
 				argsSnapshot,
 				(data) => {
 					state.response = data;
-					state.loading = false;
 					options?.onData?.(data);
-					options?.onLoading?.(false);
+					return handleLoadingState(false);
 				},
 				(error) => {
 					state.error = error;
-					state.loading = false;
 					options?.onError?.(error);
-					options?.onLoading?.(false);
+					return handleLoadingState(false);
 				}
 			);
 		}, debounceDelay);
@@ -67,6 +64,11 @@ export function useConvexQuerySubscription<Query extends FunctionReference<'quer
 			if (timeoutId) clearTimeout(timeoutId);
 		};
 	});
+
+	function handleLoadingState(loading: boolean) {
+		state.loading = loading;
+		options?.onLoading?.(loading);
+	}
 
 	function getArgsSnapshot(args: Record<string, Value> | (() => Record<string, Value>)) {
 		if (typeof args === 'function') args = args();

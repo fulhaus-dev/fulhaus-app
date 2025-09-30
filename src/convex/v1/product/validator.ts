@@ -17,12 +17,6 @@ export const vProductCategory = v.union(
 	...productCategories.map((category) => v.literal(category))
 );
 
-export const vProductAvailability = v.union(
-	v.literal('In Stock'),
-	v.literal('Low Stock'),
-	v.literal('Out of Stock')
-);
-
 export const vCreateProductFields = {
 	vendorId: v.id('productVendors'),
 	ownerId: v.optional(v.id('workspaces')),
@@ -42,7 +36,6 @@ export const vCreateProductFields = {
 	shippingPrice: v.optional(v.number()),
 	unitPerBox: v.number(),
 	stockQty: v.number(),
-	// availability: vProductAvailability,
 	restockDate: v.optional(v.number()),
 	imageUrls: v.array(v.string()),
 	mainImageUrl: v.optional(v.string()),
@@ -81,7 +74,6 @@ export const vClientProduct = v.object({
 	retailPrice: v.number(),
 	unitPerBox: v.number(),
 	stockQty: v.number(),
-	// availability: vProductAvailability,
 	restockDate: v.optional(v.number()),
 	imageUrls: v.array(v.string()),
 	mainImageUrl: v.optional(v.string()),
@@ -102,11 +94,18 @@ export const vClientProduct = v.object({
 	stockDate: v.number()
 });
 
+const vProductAvailability = v.union(
+	v.literal('In Stock'),
+	v.literal('Low Stock'),
+	v.literal('Out of Stock')
+);
+
 export const vProductFilter = v.object({
 	category: v.optional(vProductCategory),
-	// availability: v.optional(vProductAvailability),
 	name: v.optional(v.string()),
-	brand: v.optional(v.string()),
+	availability: v.optional(vProductAvailability),
+	minPrice: v.optional(v.number()),
+	maxPrice: v.optional(v.number()),
 	minWidth: v.optional(v.number()),
 	maxWidth: v.optional(v.number()),
 	minHeight: v.optional(v.number()),
@@ -115,9 +114,5 @@ export const vProductFilter = v.object({
 	maxDepth: v.optional(v.number()),
 	minWeight: v.optional(v.number()),
 	maxWeight: v.optional(v.number()),
-	minRetailPrice: v.optional(v.number()),
-	maxRetailPrice: v.optional(v.number()),
-	minStock: v.optional(v.number()),
-	maxStock: v.optional(v.number()),
-	vendorId: v.optional(v.id('productVendors'))
+	brand: v.optional(v.string())
 });

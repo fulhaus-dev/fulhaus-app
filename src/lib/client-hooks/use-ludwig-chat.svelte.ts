@@ -28,7 +28,7 @@ const toolLoadingLabels: Record<string, string> = {
 
 export function useLudwigChat() {
 	const convexClient = useConvexClient();
-	const { appendQueryToRoute } = useRouteMutation();
+	const { updateRouteQuery } = useRouteMutation();
 	const userId = page.data.currentUserId;
 	if (!userId) throw new Error('No user ID found');
 
@@ -294,7 +294,8 @@ export function useLudwigChat() {
 			return;
 		}
 
-		if (!ludwigChatId) appendQueryToRoute(`${QueryParams.LUDWIG_CHAT_ID}=${response.data.chatId}`);
+		if (!ludwigChatId)
+			updateRouteQuery({ queryString: `${QueryParams.LUDWIG_CHAT_ID}=${response.data.chatId}` });
 	}
 
 	async function onSubmitLudwigChatMessage(event: Event) {

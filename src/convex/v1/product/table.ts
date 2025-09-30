@@ -12,4 +12,5 @@ export const productTable = defineTable({
 	.index('by_product_id', ['pId', 'status'])
 	.index('by_fh_sku', ['fhSku', 'status'])
 	.index('by_category', ['category', 'status'])
+	.index('by_category_price', ['category', 'tradePrice', 'status'])
 	.index('by_ludwig_image_url', ['ludwigImageUrl']);

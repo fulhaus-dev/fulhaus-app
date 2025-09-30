@@ -18,6 +18,7 @@ export function parseProductFilters(productFilterQueryString: ProductFilterQuery
 
 export function stringifyProductFilters(productFilter: ProductFilter) {
 	return Object.entries(productFilter)
+		.filter(([, value]) => value !== undefined)
 		.map(([key, value]) => `${key}-${value}`)
 		.join(',');
 }
