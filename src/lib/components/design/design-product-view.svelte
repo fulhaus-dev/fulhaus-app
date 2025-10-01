@@ -5,11 +5,12 @@
 	import type { DesignProduct } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
-	import { RefreshCwIcon } from '@lucide/svelte';
+	import { PlusIcon, RefreshCwIcon, TrashIcon } from '@lucide/svelte';
 	import type { Id } from '../../../convex/_generated/dataModel';
 	import DesignProductCartButton from '$lib/components/design/design-product-cart-button.svelte';
 	import { useDesignMutation } from '$lib/client/mutations/use-design.mutation.svelte';
-	import DesignProductSwapProductDetailDialog from '$lib/components/design/design-product-swap/design-product-swap-product-detail.dialog.svelte';
+	import ProductDetailDialog from '$lib/components/product/product.detail-dialog.svelte';
+	import ProductGridDialog from '$lib/components/product/product.grid-dialog.svelte';
 
 	type DesignProductViewProps = {
 		designId: Id<'designs'>;
@@ -23,7 +24,7 @@
 		generatingDesignFurnitureRecommendation
 	}: DesignProductViewProps = $props();
 
-	const { updateDesign } = useDesignMutation();
+	const { updateDesign, addNewProductToDesign, removeProductFromDesign } = useDesignMutation();
 
 	function handleUpdateDesignProductSwap({
 		productToSwap,
@@ -64,13 +65,31 @@
 							src={designProduct.ludwigImageUrl}
 							alt={designProduct.name}
 						/>
-						<DesignProductSwapProductDetailDialog product={designProduct}>
-							<p
-								class="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-color-action-background px-2 py-1 text-xs font-medium text-color-action-text group-hover:block"
+
+						<div
+							class="absolute top-1/2 left-1/2 z-1 hidden -translate-x-1/2 -translate-y-1/2 flex-col gap-y-12 group-hover:flex"
+						>
+							<ProductDetailDialog product={designProduct}>
+								<p
+									class=" cursor-pointer rounded-full bg-color-action-background px-2 py-1 text-xs font-medium text-color-action-text"
+								>
+									View Details
+								</p>
+							</ProductDetailDialog>
+
+							<Button
+								class="gap-x-1 rounded-full border border-color-error-border bg-color-error-background px-2 py-1 text-xs text-color-error-text"
+								variant="text"
+								onclick={() =>
+									removeProductFromDesign(designId, {
+										productId: designProduct._id,
+										productCategory: designProduct.category
+									})}
 							>
-								View Details
-							</p>
-						</DesignProductSwapProductDetailDialog>
+								<TrashIcon class="size-3" />
+								<span>Remove</span>
+							</Button>
+						</div>
 					</div>
 
 					<div class="flex-1 space-y-2 text-xs font-medium">
@@ -78,6 +97,9 @@
 							<h3>{designProduct.category}</h3>
 							<p class="w-full truncate hover:text-wrap">
 								{designProduct.name}
+							</p>
+							<p class="text-[10px] text-color-text-placeholder">
+								{designProduct.brand?.toUpperCase()}
 							</p>
 						</div>
 
@@ -113,5 +135,17 @@
 				{/if}
 			</div>
 		{/each}
+
+		<ProductGridDialog
+			class="relative flex h-full min-h-80 w-full flex-col items-center justify-center rounded-md border border-color-border-muted bg-color-background p-4 text-color-text-placeholder"
+			onSelectProduct={(product) =>
+				addNewProductToDesign(designId, {
+					productId: product._id,
+					productCategory: product.category
+				})}
+		>
+			<PlusIcon class="size-12 " />
+			<p>Add another product</p>
+		</ProductGridDialog>
 	</div>
 </div>

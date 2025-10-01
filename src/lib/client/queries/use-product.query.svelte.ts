@@ -28,8 +28,8 @@ export function useProductCategoriesBySpaceQuery(spaceType: SpaceType) {
 	return productCategoriesBySpaceQuery;
 }
 
-export function useProductBrandsByCategoryQuery(
-	category: ProductCategory,
+export function useProductBrandsQuery(
+	category: ProductCategory | undefined,
 	cursor: () => string | undefined
 ) {
 	type ProductBrandsResponse = {
@@ -38,17 +38,14 @@ export function useProductBrandsByCategoryQuery(
 		isDone: boolean;
 	};
 
-	const { query } = useConvexQuerySubscription(
-		api.v1.product.query.getProductBrandsByCategory,
-		() => ({
-			category,
-			paginationOptions: {
-				cursor: cursor()
-			}
-		})
-	);
+	const { query } = useConvexQuerySubscription(api.v1.product.query.getProductBrands, () => ({
+		category,
+		paginationOptions: {
+			cursor: cursor()
+		}
+	}));
 
-	const productBrandsByCategoryQuery = $state({
+	const productBrandsQuery = $state({
 		get loading() {
 			return query.loading;
 		},
@@ -60,5 +57,5 @@ export function useProductBrandsByCategoryQuery(
 		}
 	});
 
-	return productBrandsByCategoryQuery;
+	return productBrandsQuery;
 }

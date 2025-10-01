@@ -1,23 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte';
-	import type {
-		ProductFilterKey,
-		ProductFilterQueryString
-	} from '$lib/components/design/design-product-swap/design-product-swap.types';
 	import {
 		parseProductFilters,
 		stringifyProductFilters
-	} from '$lib/components/design/design-product-swap/design-product-swap.utils';
+	} from '$lib/components/product/product.utils';
 	import TextInput from '$lib/components/text-input.svelte';
 	import { QueryParams } from '$lib/enums';
-	import type { ProductCategory } from '$lib/types';
+	import type { ProductCategory, ProductFilterKey, ProductFilterQueryString } from '$lib/types';
 	import { ArrowDownWideNarrowIcon, SearchIcon } from '@lucide/svelte';
-	import DesignProductSwapFilterPopover from '$lib/components/design/design-product-swap/design-product-swap.filter-popover.svelte';
 	import Checkbox from '$lib/components/checkbox.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { useProductBrandsByCategoryQuery } from '$lib/client/queries/use-product.query.svelte';
+	import { useProductBrandsQuery } from '$lib/client/queries/use-product.query.svelte';
+	import ProductFilterPopover from '$lib/components/product/product.filter-popover.svelte';
 
 	type UpdateRouteProductFilterQuery = {
 		productFilterQueryString?: ProductFilterQueryString;
@@ -43,19 +39,16 @@
 		maxWeight?: number;
 	};
 
-	const { productToSwapCategory }: { productToSwapCategory: ProductCategory } = $props();
+	const { productCategory }: { productCategory?: ProductCategory } = $props();
 
 	const { updateRouteQuery } = useRouteMutation();
 
 	let cursor = $state<string | undefined>(undefined);
-	const productBrandsByCategoryQuery = useProductBrandsByCategoryQuery(
-		productToSwapCategory,
-		() => cursor
-	);
+	const productBrandsQuery = useProductBrandsQuery(productCategory, () => cursor);
 
-	const productBrands = $derived(productBrandsByCategoryQuery.productBrands.brands ?? []);
-	const currentCursor = $derived(productBrandsByCategoryQuery.productBrands.cursor);
-	const hasMoreBrands = $derived(productBrandsByCategoryQuery.productBrands.isDone);
+	const productBrands = $derived(productBrandsQuery.productBrands.brands ?? []);
+	const currentCursor = $derived(productBrandsQuery.productBrands.cursor);
+	const hasMoreBrands = $derived(productBrandsQuery.productBrands.isDone);
 
 	let priceFilters = $state<PriceFilters>({});
 	let dimensionFilters = $state<DimensionFilters>({});
@@ -157,7 +150,7 @@
 		<TextInput
 			class="h-10 bg-color-background pl-8"
 			type="search"
-			placeholder={`Search for ${productToSwapCategory} by name`}
+			placeholder={`Search for ${productCategory}s by name`}
 			defaultValue={parsedProductFilters.name}
 			oninput={(e) => {
 				const searchValue = e.currentTarget.value;
@@ -205,7 +198,7 @@
 </div>
 
 {#snippet AvailabilityFilter()}
-	<DesignProductSwapFilterPopover
+	<ProductFilterPopover
 		triggerLabel="Availability"
 		hasFilter={!!parsedProductFilters.availability}
 		bind:open={openAvailabilityFilter}
@@ -266,11 +259,11 @@
 				}
 			})}
 		</div>
-	</DesignProductSwapFilterPopover>
+	</ProductFilterPopover>
 {/snippet}
 
 {#snippet PriceFilter()}
-	<DesignProductSwapFilterPopover
+	<ProductFilterPopover
 		triggerLabel="Price"
 		hasFilter={hasPriceFilter}
 		bind:open={openPriceFilter}
@@ -316,11 +309,11 @@
 				});
 			}
 		})}
-	</DesignProductSwapFilterPopover>
+	</ProductFilterPopover>
 {/snippet}
 
 {#snippet DimensionFilter()}
-	<DesignProductSwapFilterPopover
+	<ProductFilterPopover
 		triggerLabel="Dimension"
 		hasFilter={hasDimensionsFilter}
 		bind:open={openDimensionsFilter}
@@ -386,11 +379,11 @@
 				});
 			}
 		})}
-	</DesignProductSwapFilterPopover>
+	</ProductFilterPopover>
 {/snippet}
 
 {#snippet WeightFilter()}
-	<DesignProductSwapFilterPopover
+	<ProductFilterPopover
 		triggerLabel="Weight"
 		hasFilter={hasWeightFilter}
 		bind:open={openWeightFilter}
@@ -436,11 +429,11 @@
 				});
 			}
 		})}
-	</DesignProductSwapFilterPopover>
+	</ProductFilterPopover>
 {/snippet}
 
 {#snippet BrandFilter()}
-	<DesignProductSwapFilterPopover
+	<ProductFilterPopover
 		triggerLabel="Brand"
 		hasFilter={hasBrandFilter}
 		bind:open={openBrandFilter}
@@ -469,7 +462,7 @@
 				{/each}
 			</div>
 		</div>
-	</DesignProductSwapFilterPopover>
+	</ProductFilterPopover>
 {/snippet}
 
 {#snippet CheckBoxFilter({

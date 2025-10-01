@@ -52,6 +52,62 @@ async function getProductsForClientByIds(ctx: QueryCtx, productIds: Id<'products
 	return clientProducts;
 }
 
+async function getClientProducts(ctx: QueryCtx, cursor?: string, numItems: number = 25) {
+	const page = await paginator(ctx.db, schema)
+		.query('products')
+		.paginate({
+			cursor: cursor ?? null,
+			numItems
+		});
+
+	const { page: products, isDone, continueCursor } = page;
+
+	const clientProducts = productsToClientProducts(products);
+
+	return {
+		clientProducts,
+		isDone,
+		continueCursor
+	};
+}
+
+async function getClientProductsWithFilters(
+	ctx: QueryCtx,
+	args: {
+		cursor?: string;
+		numItems?: number;
+		productFilter?: ProductFilter;
+	}
+) {
+	const { cursor, numItems = 25, productFilter } = args;
+
+	const clientProducts: ClientProduct[] = [];
+	let isDone = false;
+	let continueCursor = cursor;
+	let newNumItems = numItems;
+
+	while (clientProducts.length < numItems && !isDone) {
+		const clientProductPaginationResult = await getClientProducts(ctx, continueCursor, newNumItems);
+
+		const filteredClientProducts = filterClientProducts(
+			clientProductPaginationResult.clientProducts,
+			productFilter
+		);
+
+		clientProducts.push(...filteredClientProducts);
+
+		newNumItems = numItems - clientProducts.length;
+		isDone = clientProductPaginationResult.isDone;
+		continueCursor = clientProductPaginationResult.continueCursor;
+	}
+
+	return {
+		clientProducts,
+		isDone,
+		continueCursor
+	};
+}
+
 async function getClientProductsByCategory(
 	ctx: QueryCtx,
 	category: ProductCategory,
@@ -120,9 +176,9 @@ async function getClientProductsByCategoryWithFilters(
 	};
 }
 
-async function getProductBrandsByCategory(
+async function getProductBrands(
 	ctx: QueryCtx,
-	category: ProductCategory,
+	category?: ProductCategory,
 	paginationOptions?: { cursor?: string; numItems?: number }
 ) {
 	const { cursor, numItems = 25 } = paginationOptions ?? {};
@@ -132,12 +188,15 @@ async function getProductBrandsByCategory(
 	let doc: Doc<'products'> | null = null;
 	let lastUniqueBrand = cursor;
 
-	if (!lastUniqueBrand)
-		doc = await ctx.db
-			.query('products')
-			.withIndex('by_category_brand', (q) => q.eq('category', category))
-			.order('desc')
-			.first();
+	if (!lastUniqueBrand) {
+		if (category)
+			doc = await ctx.db
+				.query('products')
+				.withIndex('by_category_brand', (q) => q.eq('category', category))
+				.order('desc')
+				.first();
+		else doc = await ctx.db.query('products').withIndex('by_brand').order('desc').first();
+	}
 
 	if (lastUniqueBrand) await getUniqueBrand();
 
@@ -149,13 +208,20 @@ async function getProductBrandsByCategory(
 	}
 
 	async function getUniqueBrand() {
-		doc = await ctx.db
-			.query('products')
-			.withIndex('by_category_brand', (q) =>
-				q.eq('category', category).lt('brand', lastUniqueBrand)
-			)
-			.order('desc')
-			.first();
+		if (category)
+			doc = await ctx.db
+				.query('products')
+				.withIndex('by_category_brand', (q) =>
+					q.eq('category', category).lt('brand', lastUniqueBrand)
+				)
+				.order('desc')
+				.first();
+		else
+			doc = await ctx.db
+				.query('products')
+				.withIndex('by_brand', (q) => q.lt('brand', lastUniqueBrand))
+				.order('desc')
+				.first();
 	}
 
 	const uniqueBrands = brands.filter((brand) => brand !== undefined);
@@ -174,9 +240,11 @@ const productModel = {
 	getProductCategoriesForSpace,
 	getProductsForClientByIds,
 	getProductByLudwigImageUrl,
+	getClientProducts,
+	getClientProductsWithFilters,
 	getClientProductsByCategory,
 	getClientProductsByCategoryWithFilters,
-	getProductBrandsByCategory
+	getProductBrands
 };
 
 export default productModel;

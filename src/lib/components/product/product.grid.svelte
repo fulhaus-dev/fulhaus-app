@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte';
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
-	import type { DesignProduct, ProductCategory, ProductFilterQueryString } from '$lib/types';
+	import type { DesignProduct, ProductFilterQueryString } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
-	import { api } from '../../../../convex/_generated/api';
 	import ProductFilters from '$lib/components/product/product.filters.svelte';
 	import { QueryParams } from '$lib/enums';
 	import { parseProductFilters } from '$lib/components/product/product.utils';
@@ -12,15 +11,15 @@
 	import { SofaIcon } from '@lucide/svelte';
 	import ProductDetailDialog from '$lib/components/product/product.detail-dialog.svelte';
 	import ProductAvailabilityInfo from '$lib/components/product/product.availability-info.svelte';
+	import { api } from '../../../convex/_generated/api';
 
-	let getProductsByCategoryPaginationCursor = $state<string>();
+	let getProductsPaginationCursor = $state<string>();
 
 	type DesignProductsProps = {
-		productToSwapCategory: ProductCategory;
 		onSelectProduct: (product: DesignProduct) => void;
 	};
 
-	const { productToSwapCategory, onSelectProduct }: DesignProductsProps = $props();
+	const { onSelectProduct }: DesignProductsProps = $props();
 
 	const productFilters = $derived(
 		page.url.searchParams.get(QueryParams.PRODUCT_FILTERS) ?? ''
@@ -29,43 +28,39 @@
 	const parsedProductFilters = $derived.by(() => parseProductFilters(productFilters));
 
 	const { query } = useConvexQuerySubscription(
-		api.v1.product.query.getClientProductsByCategoryWithFilters,
+		api.v1.product.query.getClientProductsWithFilters,
 		() => ({
-			cursor: getProductsByCategoryPaginationCursor,
-			category: productToSwapCategory,
+			cursor: getProductsPaginationCursor,
 			productFilter: parsedProductFilters
 		}),
 		{
-			requiredArgsKeys: ['category'],
 			debounceDelay: 300
 		}
 	);
 
-	const productsByCategory = $derived(query.response?.data.clientProducts ?? []);
-	const getClientProductsByCategoryPaginationContinueCursor = $derived(
-		query.response?.data.continueCursor
-	);
+	const products = $derived(query.response?.data.clientProducts ?? []);
+	const getClientProductsPaginationContinueCursor = $derived(query.response?.data.continueCursor);
 	const hasCursor = $derived(
-		getClientProductsByCategoryPaginationContinueCursor !== undefined ||
-			getProductsByCategoryPaginationCursor !== undefined
+		getClientProductsPaginationContinueCursor !== undefined ||
+			getProductsPaginationCursor !== undefined
 	);
 	const isSameCursor = $derived(
-		getClientProductsByCategoryPaginationContinueCursor === getProductsByCategoryPaginationCursor
+		getClientProductsPaginationContinueCursor === getProductsPaginationCursor
 	);
-	const loadingProductsByCategory = $derived(query.loading && (!hasCursor || !isSameCursor));
-	const loadingPaginatedProductsByCategory = $derived(query.loading && hasCursor && isSameCursor);
+	const loadingProducts = $derived(query.loading && (!hasCursor || !isSameCursor));
+	const loadingPaginatedProducts = $derived(query.loading && hasCursor && isSameCursor);
 </script>
 
 <div class="relative flex-1 overflow-y-auto pb-64">
 	<div class="sticky top-0 z-4 bg-color-background-surface p-2 shadow shadow-color-shadow">
-		<ProductFilters productCategory={productToSwapCategory} />
+		<ProductFilters />
 	</div>
 
-	{#if loadingProductsByCategory}
+	{#if loadingProducts}
 		<RingLoader class="mx-auto mt-8" />
 	{/if}
 
-	{#if !loadingProductsByCategory && !loadingPaginatedProductsByCategory && productsByCategory.length < 1}
+	{#if !loadingProducts && !loadingPaginatedProducts && products.length < 1}
 		<div class="flex w-full flex-col items-center justify-center gap-y-4 px-2 pt-8 text-sm">
 			<SofaIcon class="size-8 text-color-text-muted" />
 			<p>No products matching your search/filter criteria</p>
@@ -74,11 +69,11 @@
 
 	<div
 		class={cn(
-			'hidden w-full grid-cols-3 gap-x-2 gap-y-12 px-2 pt-2',
-			!loadingProductsByCategory && productsByCategory.length > 0 && 'grid'
+			'hidden w-full grid-cols-4 gap-x-2 gap-y-12 px-2 pt-2',
+			!loadingProducts && products.length > 0 && 'grid'
 		)}
 	>
-		{#each productsByCategory as product (product._id)}
+		{#each products as product (product._id)}
 			<div class="w-full space-y-2">
 				<button
 					class="group relative h-40 w-full cursor-pointer"
@@ -134,7 +129,7 @@
 		{/each}
 	</div>
 
-	{#if loadingPaginatedProductsByCategory}
+	{#if loadingPaginatedProducts}
 		<RingLoader class="mx-auto mt-4" />
 	{/if}
 </div>

@@ -1,5 +1,4 @@
-import type { ProductFilterQueryString } from '$lib/components/design/design-product-swap/design-product-swap.types';
-import type { ProductFilter } from '$lib/types';
+import type { ProductFilter, ProductFilterQueryString } from '$lib/types';
 import { zProductFilter } from '$lib/zod-schemas';
 
 export function parseProductFilters(productFilterQueryString: ProductFilterQueryString) {

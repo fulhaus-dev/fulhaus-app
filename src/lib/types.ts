@@ -81,6 +81,11 @@ export type UpdateDesign = {
 	productIds?: Id<'products'>[];
 };
 
+export type UpdateDesignProduct = {
+	productId: Id<'products'>;
+	productCategory: ProductCategory;
+};
+
 export type ProductStyle = Doc<'products'>['styles'][0];
 
 export type Design = Doc<'designs'>;
@@ -138,3 +143,8 @@ export type Workspace = {
 export type UserWorkspace = Omit<Workspace, 'members'>;
 
 export type ProductFilter = z.infer<typeof zProductFilter>;
+
+export type ProductFilterKey = keyof ProductFilter;
+export type ProductFilterQueryString =
+	| `${ProductFilterKey}-${string}`
+	| `${ProductFilterKey}-${string},${ProductFilterKey}-${string}`;

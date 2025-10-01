@@ -5,6 +5,7 @@ import { vUpdateDesign } from './validator';
 import designModel from './model';
 import { internal } from '../../_generated/api';
 import object from '../../util/object';
+import { vProductCategory } from '../product/validator';
 
 export const updateDesignById = mutation({
 	args: {
@@ -45,5 +46,69 @@ export const updateDesignById = mutation({
 				designId: args.designId,
 				userId
 			});
+	}
+});
+
+export const addNewProductToDesignById = mutation({
+	args: {
+		workspaceId: v.id('workspaces'),
+		designId: v.id('designs'),
+		update: v.object({
+			productId: v.id('products'),
+			productCategory: vProductCategory
+		})
+	},
+	handler: async (ctx, args) => {
+		const userId = await authorization.workspaceMemberIsAuthorizedToPerformFunction(
+			ctx,
+			args.workspaceId,
+			'createDesign'
+		);
+
+		const currentDesign = await designModel.getDesignById(ctx, args.designId);
+		if (!currentDesign) return;
+
+		await designModel.updateDesignById(ctx, args.designId, userId, {
+			productIds: [...(currentDesign.productIds ?? []), args.update.productId],
+			productCategories: [...(currentDesign.productCategories ?? []), args.update.productCategory]
+		});
+
+		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
+			designId: args.designId,
+			userId
+		});
+	}
+});
+
+export const removeProductFromDesignById = mutation({
+	args: {
+		workspaceId: v.id('workspaces'),
+		designId: v.id('designs'),
+		remove: v.object({
+			productId: v.id('products'),
+			productCategory: vProductCategory
+		})
+	},
+	handler: async (ctx, args) => {
+		const userId = await authorization.workspaceMemberIsAuthorizedToPerformFunction(
+			ctx,
+			args.workspaceId,
+			'createDesign'
+		);
+
+		const currentDesign = await designModel.getDesignById(ctx, args.designId);
+		if (!currentDesign) return;
+
+		await designModel.updateDesignById(ctx, args.designId, userId, {
+			productIds: (currentDesign.productIds ?? []).filter((id) => id !== args.remove.productId),
+			productCategories: (currentDesign.productCategories ?? []).filter(
+				(category) => category !== args.remove.productCategory
+			)
+		});
+
+		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
+			designId: args.designId,
+			userId
+		});
 	}
 });

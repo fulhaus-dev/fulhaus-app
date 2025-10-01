@@ -5,19 +5,15 @@
 	import { XIcon } from '@lucide/svelte';
 	import { Dialog } from 'bits-ui';
 	import type { Snippet } from 'svelte';
-	import DesignProductSwapAvailabilityInfo from '$lib/components/design/design-product-swap/design-product-swap.availability-info.svelte';
+	import ProductAvailabilityInfo from '$lib/components/product/product.availability-info.svelte';
 
-	type DesignProductSwapProductDetailDialogProps = {
+	type ProductDetailDialogProps = {
 		children: Snippet;
 		class?: string;
 		product: DesignProduct;
 	};
 
-	const {
-		children,
-		class: className = '',
-		product
-	}: DesignProductSwapProductDetailDialogProps = $props();
+	const { children, class: className = '', product }: ProductDetailDialogProps = $props();
 </script>
 
 <Dialog.Root>
@@ -46,7 +42,7 @@
 						<h4 class="text-4xl font-medium">
 							{number.toMoney(product.retailPrice, product.currencyCode)}
 						</h4>
-						<DesignProductSwapAvailabilityInfo
+						<ProductAvailabilityInfo
 							stockQty={product.stockQty}
 							restockDate={product.restockDate}
 						/>

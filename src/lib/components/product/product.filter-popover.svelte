@@ -4,7 +4,7 @@
 	import { Popover } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 
-	type DesignProductSwapFilterPopoverProps = {
+	type ProductFilterPopoverProps = {
 		open?: boolean;
 		triggerLabel: string;
 		children: Snippet;
@@ -18,7 +18,7 @@
 		hasFilter,
 		open = $bindable(false),
 		aFilterIsOpen = false
-	}: DesignProductSwapFilterPopoverProps = $props();
+	}: ProductFilterPopoverProps = $props();
 
 	let isOpen = $state(false);
 </script>

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { cn } from '$lib/utils/cn';
 
-	type DesignProductSwapAvailabilityInfoProps = {
+	type ProductAvailabilityInfoProps = {
 		stockQty: number;
 		restockDate?: number;
 	};
 
-	const { stockQty, restockDate }: DesignProductSwapAvailabilityInfoProps = $props();
+	const { stockQty, restockDate }: ProductAvailabilityInfoProps = $props();
 </script>
 
 <div>

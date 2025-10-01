@@ -1,6 +1,6 @@
 import { page } from '$app/state';
 import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte';
-import type { UpdateDesign } from '$lib/types';
+import type { UpdateDesignProduct, UpdateDesign } from '$lib/types';
 import asyncFetch from '$lib/utils/async-fetch';
 import { asyncTryCatch } from '$lib/utils/try-catch';
 import { api } from '../../../convex/_generated/api';
@@ -45,8 +45,38 @@ export function useDesignMutation() {
 		if (error) state.error = error.message;
 	}
 
+	async function addNewProductToDesign(designId: Id<'designs'>, update: UpdateDesignProduct) {
+		if (!activeWorkspaceId) return;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.design.mutation.addNewProductToDesignById, {
+				workspaceId: activeWorkspaceId as Id<'workspaces'>,
+				designId,
+				update
+			})
+		);
+
+		if (error) state.error = error.message;
+	}
+
+	async function removeProductFromDesign(designId: Id<'designs'>, remove: UpdateDesignProduct) {
+		if (!activeWorkspaceId) return;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.design.mutation.removeProductFromDesignById, {
+				workspaceId: activeWorkspaceId as Id<'workspaces'>,
+				designId,
+				remove
+			})
+		);
+
+		if (error) state.error = error.message;
+	}
+
 	return {
 		designState: state,
-		updateDesign
+		updateDesign,
+		addNewProductToDesign,
+		removeProductFromDesign
 	};
 }
