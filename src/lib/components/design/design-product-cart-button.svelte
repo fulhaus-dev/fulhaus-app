@@ -4,15 +4,15 @@
 	import type { Id } from '../../../convex/_generated/dataModel';
 	import type { CartItemQuantityChangeType } from '$lib/types';
 	import { useCartMutation } from '$lib/client/mutations/use-cart.mutation.svelte';
-	import { useCartQuery } from '$lib/client/queries/use-cart.query.svelte';
+	import { useDesignCartQuery } from '$lib/client/queries/use-cart.query.svelte';
 
-	const { productId }: { productId: Id<'products'> } = $props();
+	const { designId, productId }: { designId: Id<'designs'>; productId: Id<'products'> } = $props();
 
-	const cartQuery = useCartQuery();
+	const designCartQuery = useDesignCartQuery(() => designId);
 	const { saveCartItems, updateCartItem, deleteCartItem } = useCartMutation();
 
 	const currentProductCartItem = $derived.by(() =>
-		cartQuery.cartItems.find((cartItem) => cartItem.productId === productId)
+		designCartQuery.cartItems.find((cartItem) => cartItem.productId === productId)
 	);
 
 	const cartProductQty = $derived(currentProductCartItem?.quantity ?? 0);
@@ -36,7 +36,7 @@
 </script>
 
 {#if cartProductQty < 1}
-	<Button class="h-10" onclick={() => saveCartItems([{ productId, quantity: 1 }])}
+	<Button class="h-10" onclick={() => saveCartItems([{ designId, productId, quantity: 1 }])}
 		>Add to Cart</Button
 	>
 {/if}

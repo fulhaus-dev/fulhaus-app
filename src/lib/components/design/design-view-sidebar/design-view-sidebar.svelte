@@ -7,7 +7,7 @@
 	import { cn } from '$lib/utils/cn';
 	import { SparklesIcon } from '@lucide/svelte';
 
-	const { design }: { design: Design } = $props();
+	const { design, totalDesignPrice }: { design: Design; totalDesignPrice: number } = $props();
 </script>
 
 <div class="space-y-4">
@@ -51,7 +51,11 @@
 				<span>Regenerate</span>
 			</Button>
 
-			<DesignViewSidebarCartButton productIds={design?.productIds ?? []} />
+			<DesignViewSidebarCartButton
+				designId={design._id}
+				productIds={design?.productIds ?? []}
+				{totalDesignPrice}
+			/>
 		</div>
 	</div>
 </div>

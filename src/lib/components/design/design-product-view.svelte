@@ -121,7 +121,7 @@
 							</Button>
 						</DesignProductSwapDialog>
 
-						<DesignProductCartButton productId={designProduct._id} />
+						<DesignProductCartButton {designId} productId={designProduct._id} />
 					</div>
 				</div>
 

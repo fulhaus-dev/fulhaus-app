@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { useCartMutation } from '$lib/client/mutations/use-cart.mutation.svelte';
-	import { useCartQuery } from '$lib/client/queries/use-cart.query.svelte';
+	import { useWorkspaceCartQuery } from '$lib/client/queries/use-cart.query.svelte';
 	import Button from '$lib/components/button.svelte';
 	import type { CartItem, CartItemQuantityChangeType } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
 	import { Icon, MinusIcon, MoveLeftIcon, PlusIcon, Trash2Icon } from '@lucide/svelte';
 
-	const cartQuery = useCartQuery();
+	const workspaceCartQuery = useWorkspaceCartQuery();
 	const { updateCartItem, deleteCartItem } = useCartMutation();
 
-	const hasCartItems = $derived(cartQuery.cartItems.length > 0);
+	const hasCartItems = $derived(workspaceCartQuery.cartItems.length > 0);
 
 	const subTotal = $derived.by(() =>
-		cartQuery.cartItems
+		workspaceCartQuery.cartItems
 			.map((cartItem) => cartItem.product.retailPrice * (cartItem.quantity ?? 0))
 			.reduce((a, b) => a + b, 0)
 	);
@@ -56,7 +56,7 @@
 				<div
 					class="h-fit flex-1 divide-y divide-color-border rounded-md border border-color-border"
 				>
-					{#each cartQuery.cartItems as cartItem (cartItem._id)}
+					{#each workspaceCartQuery.cartItems as cartItem (cartItem._id)}
 						<div class="flex justify-between p-4">
 							<div class="flex gap-x-4">
 								<div class="h-36 w-36 rounded-md bg-color-background-surface p-2">
@@ -89,7 +89,10 @@
 
 							<div class="flex flex-col justify-between py-2">
 								<h4 class="text-lg font-medium">
-									{number.toMoney(cartItem.product.retailPrice, cartQuery.cartCurrencyCode)}
+									{number.toMoney(
+										cartItem.product.retailPrice,
+										workspaceCartQuery.cartCurrencyCode
+									)}
 								</h4>
 
 								<Button
@@ -114,7 +117,7 @@
 						<div class="space-y-2">
 							{@render OrderSummaryAmount(
 								'Subtotal',
-								`${number.toMoney(subTotal, cartQuery.cartCurrencyCode)}`
+								`${number.toMoney(subTotal, workspaceCartQuery.cartCurrencyCode)}`
 							)}
 							{@render OrderSummaryAmount('Shipping', 'Calculated at checkout', 'info')}
 							{@render OrderSummaryAmount('Tax', 'Calculated at checkout', 'info')}
@@ -123,7 +126,7 @@
 
 							{@render OrderSummaryAmount(
 								'Total',
-								`${number.toMoney(total, cartQuery.cartCurrencyCode)}`
+								`${number.toMoney(total, workspaceCartQuery.cartCurrencyCode)}`
 							)}
 						</div>
 

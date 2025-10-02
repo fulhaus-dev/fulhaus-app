@@ -1,30 +1,36 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
 	import type { Id } from '../../../../convex/_generated/dataModel';
-	import CartPreviewIcon from '$lib/components/cart-preview-icon.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import number from '$lib/utils/number';
-	import { useCartQuery } from '$lib/client/queries/use-cart.query.svelte';
+	import { useDesignCartQuery } from '$lib/client/queries/use-cart.query.svelte';
 	import { useCartMutation } from '$lib/client/mutations/use-cart.mutation.svelte';
+
+	type DesignViewSidebarCartButtonProps = {
+		designId: Id<'designs'>;
+		productIds: Id<'products'>[];
+		totalDesignPrice: number;
+	};
 
 	const workspaceId = page.data.activeWorkspaceId;
 
-	const { productIds }: { productIds: Id<'products'>[] } = $props();
+	const { designId, productIds, totalDesignPrice }: DesignViewSidebarCartButtonProps = $props();
 
-	const cartQuery = useCartQuery();
+	const designCartQuery = useDesignCartQuery(() => designId);
 	const { saveCartItems } = useCartMutation();
 
-	const hasCartItems = $derived(cartQuery.cartItems.length > 0);
+	const hasCartItems = $derived(designCartQuery.cartItems.length > 0);
 
 	const totalCart = $derived.by(() =>
-		cartQuery.cartItems
+		designCartQuery.cartItems
 			.map((cartItem) => cartItem.product.retailPrice * (cartItem.quantity ?? 0))
 			.reduce((a, b) => a + b, 0)
 	);
 
 	function onclick() {
-		if (!hasCartItems) saveCartItems(productIds.map((productId) => ({ productId, quantity: 1 })));
+		if (!hasCartItems)
+			saveCartItems(productIds.map((productId) => ({ designId, productId, quantity: 1 })));
 
 		if (hasCartItems) goto(`/${workspaceId}/cart`);
 	}
@@ -32,10 +38,12 @@
 
 <div class="w-full">
 	<Button class="gap-x-4" {onclick}>
-		<CartPreviewIcon />
-
 		{#if !hasCartItems}
-			<span>Add all to Cart</span>
+			<span
+				>Add all to Cart: <span>
+					{number.toMoney(totalDesignPrice, designCartQuery.cartCurrencyCode)}
+				</span>
+			</span>
 		{/if}
 
 		{#if hasCartItems}
@@ -47,7 +55,7 @@
 		<div
 			class="scrollbar-thin h-[50vh] w-full overflow-y-auto rounded-md bg-color-background-surface p-8 pb-96"
 		>
-			{#each cartQuery.cartItems as cartItem (cartItem._id)}
+			{#each designCartQuery.cartItems as cartItem (cartItem._id)}
 				<div
 					class="flex h-10 w-full items-center gap-x-2 border-t border-color-border text-sm text-color-text-muted"
 				>
@@ -57,7 +65,7 @@
 					</div>
 
 					<h4 class="w-20 text-end font-medium">
-						{number.toMoney(cartItem.product.retailPrice, cartQuery.cartCurrencyCode)}
+						{number.toMoney(cartItem.product.retailPrice, designCartQuery.cartCurrencyCode)}
 					</h4>
 				</div>
 			{/each}
@@ -68,7 +76,7 @@
 				<p>Total</p>
 
 				<h4 class="text-end">
-					{number.toMoney(totalCart, cartQuery.cartCurrencyCode)}
+					{number.toMoney(totalCart, designCartQuery.cartCurrencyCode)}
 				</h4>
 			</div>
 		</div>

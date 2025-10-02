@@ -16,3 +16,17 @@ export const getCartByWorkspaceId = query({
 		return SuccessData(cart);
 	}
 });
+
+export const getCartByDesignId = query({
+	args: {
+		workspaceId: v.id('workspaces'),
+		designId: v.id('designs')
+	},
+	handler: async (ctx, args) => {
+		await authorization.userIsWorkspaceMember(ctx, args.workspaceId);
+
+		const cart = await cartModel.getCartByDesignId(ctx, args.workspaceId, args.designId);
+
+		return SuccessData(cart);
+	}
+});

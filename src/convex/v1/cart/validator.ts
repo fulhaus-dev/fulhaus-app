@@ -1,6 +1,7 @@
 import { v } from 'convex/values';
 
 export const vSaveCartItem = v.object({
+	designId: v.id('designs'),
 	productId: v.id('products'),
 	quantity: v.number()
 });

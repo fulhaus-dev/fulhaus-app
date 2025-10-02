@@ -12,7 +12,9 @@ export function useCartMutation() {
 		error: undefined as string | undefined
 	});
 
-	async function saveCartItems(data: { productId: Id<'products'>; quantity: number }[]) {
+	async function saveCartItems(
+		data: { designId: Id<'designs'>; productId: Id<'products'>; quantity: number }[]
+	) {
 		if (!currentWorkspaceId) return;
 
 		const { error } = await asyncTryCatch(() =>

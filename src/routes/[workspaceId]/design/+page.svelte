@@ -20,6 +20,7 @@
 	const designProducts = $derived(designQuery.designProducts);
 
 	const hasDesignProducts = $derived(designProducts.length > 0);
+	const totalDesignPrice = $derived(designProducts.reduce((a, b) => a + b.retailPrice, 0));
 </script>
 
 {#if designQuery.loading}
@@ -91,7 +92,7 @@
 		{/if}
 
 		<div class="sticky top-[2.8rem] z-1 h-[calc(100%-2.8rem)] w-[24rem] pt-2">
-			<DesignViewSidebar {design} />
+			<DesignViewSidebar {design} {totalDesignPrice} />
 		</div>
 	</div>
 </section>

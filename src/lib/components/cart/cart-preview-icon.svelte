@@ -1,14 +1,16 @@
 <script lang="ts">
-	import { useCartQuery } from '$lib/client/queries/use-cart.query.svelte';
+	import { useWorkspaceCartQuery } from '$lib/client/queries/use-cart.query.svelte';
 	import { cn } from '$lib/utils/cn';
 	import { ShoppingCartIcon } from '@lucide/svelte';
 
 	const { class: className = '' }: { class?: string } = $props();
 
-	const cartQuery = useCartQuery();
+	const workspaceCartQuery = useWorkspaceCartQuery();
 
 	const totalCartItems = $derived.by(() =>
-		cartQuery.cartItems.map((cartItem) => cartItem.quantity ?? 0).reduce((a, b) => a + b, 0)
+		workspaceCartQuery.cartItems
+			.map((cartItem) => cartItem.quantity ?? 0)
+			.reduce((a, b) => a + b, 0)
 	);
 </script>
 
