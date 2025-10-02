@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ImageSlider from '$lib/components/image-slider.svelte';
-	import type { DesignProduct } from '$lib/types';
+	import type { Product } from '$lib/types';
 	import number from '$lib/utils/number';
 	import { XIcon } from '@lucide/svelte';
 	import { Dialog } from 'bits-ui';
@@ -10,7 +10,7 @@
 	type ProductDetailDialogProps = {
 		children: Snippet;
 		class?: string;
-		product: DesignProduct;
+		product: Product;
 	};
 
 	const { children, class: className = '', product }: ProductDetailDialogProps = $props();

@@ -9,9 +9,11 @@ export const productTable = defineTable({
 	createdAt: v.number(),
 	updatedAt: v.number()
 })
-	.index('by_product_id', ['pId', 'status'])
-	.index('by_fh_sku', ['fhSku', 'status'])
-	.index('by_category', ['category', 'status'])
-	.index('by_brand', ['brand', 'status'])
-	.index('by_category_brand', ['category', 'brand', 'status'])
+	.index('by_product_id', ['pId'])
+	.index('by_fh_sku', ['fhSku'])
+	.index('by_category', ['category'])
+	.index('by_brand', ['brand'])
+	.index('by_category_brand', ['category', 'brand'])
+	.index('by_price', ['msrp'])
+	.index('by_category_price', ['category', 'msrp'])
 	.index('by_ludwig_image_url', ['ludwigImageUrl']);

@@ -11,7 +11,7 @@ export function productsToClientProducts(products: (Product | null)[]) {
 		name: product.name,
 		description: product.description,
 		pdpLink: product.pdpLink,
-		retailPrice: product.msrp ?? product.tradePrice * 2,
+		retailPrice: product.msrp ?? 0,
 		unitPerBox: product.unitPerBox,
 		stockQty: product.stockQty,
 		restockDate: product.restockDate,
@@ -43,7 +43,7 @@ export function filterClientProducts(
 ) {
 	if (!productFilter) return clientProducts;
 
-	let filteredClientProducts = clientProducts;
+	let filteredClientProducts = clientProducts.filter((product) => (product.retailPrice ?? 0) > 0);
 
 	if (productFilter.category)
 		filteredClientProducts = filteredClientProducts.filter(

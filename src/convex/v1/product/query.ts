@@ -37,8 +37,16 @@ export const getProductCategoriesForSpace = query({
 
 export const getClientProductsWithFilters = query({
 	args: {
-		cursor: v.optional(v.string()),
-		productFilter: v.optional(vProductFilter)
+		productFilter: v.optional(vProductFilter),
+		paginationOptions: v.optional(
+			v.object({ cursor: v.optional(v.string()), numItems: v.optional(v.number()) })
+		),
+		sortOptions: v.optional(
+			v.object({
+				index: v.literal('by_price'),
+				order: v.union(v.literal('asc'), v.literal('desc'))
+			})
+		)
 	},
 	handler: async (ctx, args) => {
 		await authorization.userIsAuthenticated(ctx);
@@ -55,15 +63,24 @@ export const getClientProductsWithFilters = query({
 export const getClientProductsByCategoryWithFilters = query({
 	args: {
 		category: vProductCategory,
-		cursor: v.optional(v.string()),
-		productFilter: v.optional(vProductFilter)
+		productFilter: v.optional(vProductFilter),
+		paginationOptions: v.optional(
+			v.object({ cursor: v.optional(v.string()), numItems: v.optional(v.number()) })
+		),
+		sortOptions: v.optional(
+			v.object({
+				index: v.literal('by_category_price'),
+				order: v.union(v.literal('asc'), v.literal('desc'))
+			})
+		)
 	},
-	handler: async (ctx, args) => {
+	handler: async (ctx, { category, ...otherArgs }) => {
 		await authorization.userIsAuthenticated(ctx);
 
 		const clientProductPaginationResult = await productModel.getClientProductsByCategoryWithFilters(
 			ctx,
-			args
+			category,
+			otherArgs
 		);
 
 		return SuccessData(clientProductPaginationResult);

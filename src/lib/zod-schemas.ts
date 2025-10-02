@@ -22,3 +22,13 @@ export const zProductFilter = z
 		brand: z.optional(z.string())
 	})
 	.strip();
+
+export const zProductSortIndex = z.enum(['by_category_price', 'by_price']);
+export const zProductSortOrder = z.enum(['asc', 'desc']);
+
+export const zProductSortOptions = z
+	.object({
+		index: zProductSortIndex,
+		order: zProductSortOrder
+	})
+	.strip();

@@ -1,23 +1,29 @@
 <script lang="ts">
-	import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte';
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
-	import type { DesignProduct, ProductCategory, ProductFilterQueryString } from '$lib/types';
+	import type {
+		Product,
+		ProductCategory,
+		ProductFilterQueryString,
+		ProductSortOptionsQueryString
+	} from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
-	import { api } from '../../../../convex/_generated/api';
 	import ProductFilters from '$lib/components/product/product.filters.svelte';
 	import { QueryParams } from '$lib/enums';
-	import { parseProductFilters } from '$lib/components/product/product.utils';
+	import {
+		parseProductFilters,
+		parseProductSortOptions
+	} from '$lib/components/product/product.utils';
 	import { page } from '$app/state';
 	import { SofaIcon } from '@lucide/svelte';
 	import ProductDetailDialog from '$lib/components/product/product.detail-dialog.svelte';
 	import ProductAvailabilityInfo from '$lib/components/product/product.availability-info.svelte';
-
-	let getProductsByCategoryPaginationCursor = $state<string>();
+	import infiniteScroll from '$lib/dom-actions/infinite-scroll';
+	import { usePaginatedProductsByCategoryQuery } from '$lib/client/queries/use-product.query.svelte';
 
 	type DesignProductsProps = {
 		productToSwapCategory: ProductCategory;
-		onSelectProduct: (product: DesignProduct) => void;
+		onSelectProduct: (product: Product) => void;
 	};
 
 	const { productToSwapCategory, onSelectProduct }: DesignProductsProps = $props();
@@ -25,47 +31,58 @@
 	const productFilters = $derived(
 		page.url.searchParams.get(QueryParams.PRODUCT_FILTERS) ?? ''
 	) as ProductFilterQueryString;
-
 	const parsedProductFilters = $derived.by(() => parseProductFilters(productFilters));
 
-	const { query } = useConvexQuerySubscription(
-		api.v1.product.query.getClientProductsByCategoryWithFilters,
-		() => ({
-			cursor: getProductsByCategoryPaginationCursor,
-			category: productToSwapCategory,
-			productFilter: parsedProductFilters
-		}),
+	const productSortOptions = $derived(
+		page.url.searchParams.get(QueryParams.PRODUCT_SORT_OPTIONS) ?? ''
+	) as ProductSortOptionsQueryString;
+	const parsedProductSortOptions = $derived.by(() => parseProductSortOptions(productSortOptions));
+
+	let getProductsByCategoryPaginationCursor = $state<string>();
+
+	const paginatedProductsByCategoryQuery = usePaginatedProductsByCategoryQuery(
+		productToSwapCategory,
 		{
-			requiredArgsKeys: ['category'],
-			debounceDelay: 300
+			cursor: () => getProductsByCategoryPaginationCursor,
+			productFilter: () => parsedProductFilters,
+			sortOptions: () => parsedProductSortOptions
 		}
 	);
 
-	const productsByCategory = $derived(query.response?.data.clientProducts ?? []);
-	const getClientProductsByCategoryPaginationContinueCursor = $derived(
-		query.response?.data.continueCursor
+	const productsByCategory = $derived(paginatedProductsByCategoryQuery.clientProducts);
+	const hasMoreProductsByCategory = $derived(!paginatedProductsByCategoryQuery.isDone);
+	const getClientProductsByCategoryContinueCursor = $derived(
+		paginatedProductsByCategoryQuery.continueCursor
 	);
-	const hasCursor = $derived(
-		getClientProductsByCategoryPaginationContinueCursor !== undefined ||
-			getProductsByCategoryPaginationCursor !== undefined
+	const loadingPaginatedProductsByCategory = $derived(
+		getProductsByCategoryPaginationCursor === getClientProductsByCategoryContinueCursor
 	);
-	const isSameCursor = $derived(
-		getClientProductsByCategoryPaginationContinueCursor === getProductsByCategoryPaginationCursor
+	const loadingFreshProductsByCategory = $derived(
+		paginatedProductsByCategoryQuery.loading && !loadingPaginatedProductsByCategory
 	);
-	const loadingProductsByCategory = $derived(query.loading && (!hasCursor || !isSameCursor));
-	const loadingPaginatedProductsByCategory = $derived(query.loading && hasCursor && isSameCursor);
+
+	function loadMoreProductsByCategory() {
+		if (
+			!hasMoreProductsByCategory ||
+			loadingFreshProductsByCategory ||
+			loadingPaginatedProductsByCategory
+		)
+			return;
+
+		getProductsByCategoryPaginationCursor = getClientProductsByCategoryContinueCursor;
+	}
 </script>
 
-<div class="relative flex-1 overflow-y-auto pb-64">
+<div class="relative flex-1 overflow-y-auto pb-96">
 	<div class="sticky top-0 z-4 bg-color-background-surface p-2 shadow shadow-color-shadow">
 		<ProductFilters productCategory={productToSwapCategory} />
 	</div>
 
-	{#if loadingProductsByCategory}
+	{#if loadingFreshProductsByCategory}
 		<RingLoader class="mx-auto mt-8" />
 	{/if}
 
-	{#if !loadingProductsByCategory && !loadingPaginatedProductsByCategory && productsByCategory.length < 1}
+	{#if !loadingFreshProductsByCategory && !loadingPaginatedProductsByCategory && productsByCategory.length < 1}
 		<div class="flex w-full flex-col items-center justify-center gap-y-4 px-2 pt-8 text-sm">
 			<SofaIcon class="size-8 text-color-text-muted" />
 			<p>No products matching your search/filter criteria</p>
@@ -74,8 +91,8 @@
 
 	<div
 		class={cn(
-			'hidden w-full grid-cols-3 gap-x-2 gap-y-12 px-2 pt-2',
-			!loadingProductsByCategory && productsByCategory.length > 0 && 'grid'
+			'grid w-full grid-cols-3 gap-x-2 gap-y-12 px-2 pt-2',
+			loadingFreshProductsByCategory && 'hidden'
 		)}
 	>
 		{#each productsByCategory as product (product._id)}
@@ -136,5 +153,17 @@
 
 	{#if loadingPaginatedProductsByCategory}
 		<RingLoader class="mx-auto mt-4" />
+	{/if}
+
+	{#if hasMoreProductsByCategory && !loadingPaginatedProductsByCategory}
+		<div
+			use:infiniteScroll={{
+				callback: loadMoreProductsByCategory,
+				enabled: hasMoreProductsByCategory && !loadingPaginatedProductsByCategory,
+				threshold: 0.1,
+				rootMargin: '200px'
+			}}
+			class="h-px"
+		></div>
 	{/if}
 </div>

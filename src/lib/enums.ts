@@ -5,5 +5,6 @@ export const enum QueryParams {
 	LUDWIG_CHAT_ID = 'lcid',
 	ACTIVE_DESIGN_ASSET_TAB = 'dat',
 	FILE_UPLOAD_TYPE = 'fut',
-	PRODUCT_FILTERS = 'pf'
+	PRODUCT_FILTERS = 'pf',
+	PRODUCT_SORT_OPTIONS = 'pso'
 }

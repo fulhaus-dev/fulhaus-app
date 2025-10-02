@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DesignProduct } from '$lib/types';
+	import type { Product } from '$lib/types';
 	import { MoveRightIcon, XIcon } from '@lucide/svelte';
 	import { Dialog } from 'bits-ui';
 	import type { Snippet } from 'svelte';
@@ -9,8 +9,8 @@
 	type DesignProductSwapDialogProps = {
 		children: Snippet;
 		class?: string;
-		productToSwap: DesignProduct;
-		onSwap: (product: DesignProduct) => void;
+		productToSwap: Product;
+		onSwap: (product: Product) => void;
 	};
 
 	const {
@@ -21,7 +21,7 @@
 	}: DesignProductSwapDialogProps = $props();
 
 	let isOpen = $state(false);
-	let replacementProduct = $state<DesignProduct | null>(null);
+	let replacementProduct = $state<Product | null>(null);
 
 	function onOpenChange(open: boolean) {
 		if (open) return;

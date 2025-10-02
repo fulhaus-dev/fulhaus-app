@@ -1,22 +1,27 @@
 <script lang="ts">
-	import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte';
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
-	import type { DesignProduct, ProductFilterQueryString } from '$lib/types';
+	import type {
+		Product,
+		ProductFilterQueryString,
+		ProductSortOptionsQueryString
+	} from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
 	import ProductFilters from '$lib/components/product/product.filters.svelte';
 	import { QueryParams } from '$lib/enums';
-	import { parseProductFilters } from '$lib/components/product/product.utils';
+	import {
+		parseProductFilters,
+		parseProductSortOptions
+	} from '$lib/components/product/product.utils';
 	import { page } from '$app/state';
 	import { SofaIcon } from '@lucide/svelte';
 	import ProductDetailDialog from '$lib/components/product/product.detail-dialog.svelte';
 	import ProductAvailabilityInfo from '$lib/components/product/product.availability-info.svelte';
-	import { api } from '../../../convex/_generated/api';
-
-	let getProductsPaginationCursor = $state<string>();
+	import { useProductsQuery } from '$lib/client/queries/use-product.query.svelte';
+	import infiniteScroll from '$lib/dom-actions/infinite-scroll';
 
 	type DesignProductsProps = {
-		onSelectProduct: (product: DesignProduct) => void;
+		onSelectProduct: (product: Product) => void;
 	};
 
 	const { onSelectProduct }: DesignProductsProps = $props();
@@ -24,43 +29,46 @@
 	const productFilters = $derived(
 		page.url.searchParams.get(QueryParams.PRODUCT_FILTERS) ?? ''
 	) as ProductFilterQueryString;
-
 	const parsedProductFilters = $derived.by(() => parseProductFilters(productFilters));
 
-	const { query } = useConvexQuerySubscription(
-		api.v1.product.query.getClientProductsWithFilters,
-		() => ({
-			cursor: getProductsPaginationCursor,
-			productFilter: parsedProductFilters
-		}),
-		{
-			debounceDelay: 300
-		}
-	);
+	const productSortOptions = $derived(
+		page.url.searchParams.get(QueryParams.PRODUCT_SORT_OPTIONS) ?? ''
+	) as ProductSortOptionsQueryString;
+	const parsedProductSortOptions = $derived.by(() => parseProductSortOptions(productSortOptions));
 
-	const products = $derived(query.response?.data.clientProducts ?? []);
-	const getClientProductsPaginationContinueCursor = $derived(query.response?.data.continueCursor);
-	const hasCursor = $derived(
-		getClientProductsPaginationContinueCursor !== undefined ||
-			getProductsPaginationCursor !== undefined
+	let getProductsPaginationCursor = $state<string>();
+
+	const productsQuery = useProductsQuery({
+		cursor: () => getProductsPaginationCursor,
+		productFilter: () => parsedProductFilters,
+		sortOptions: () => parsedProductSortOptions
+	});
+
+	const products = $derived(productsQuery.clientProducts);
+	const hasMoreProducts = $derived(!productsQuery.isDone);
+	const getProductsContinueCursor = $derived(productsQuery.continueCursor);
+	const loadingPaginatedProducts = $derived(
+		getProductsPaginationCursor === getProductsContinueCursor
 	);
-	const isSameCursor = $derived(
-		getClientProductsPaginationContinueCursor === getProductsPaginationCursor
-	);
-	const loadingProducts = $derived(query.loading && (!hasCursor || !isSameCursor));
-	const loadingPaginatedProducts = $derived(query.loading && hasCursor && isSameCursor);
+	const loadingFreshProducts = $derived(productsQuery.loading && !loadingPaginatedProducts);
+
+	function loadMoreProducts() {
+		if (!hasMoreProducts || loadingFreshProducts || loadingPaginatedProducts) return;
+
+		getProductsPaginationCursor = getProductsContinueCursor;
+	}
 </script>
 
-<div class="relative flex-1 overflow-y-auto pb-64">
+<div class="relative flex-1 overflow-y-auto pb-96">
 	<div class="sticky top-0 z-4 bg-color-background-surface p-2 shadow shadow-color-shadow">
 		<ProductFilters />
 	</div>
 
-	{#if loadingProducts}
+	{#if loadingFreshProducts}
 		<RingLoader class="mx-auto mt-8" />
 	{/if}
 
-	{#if !loadingProducts && !loadingPaginatedProducts && products.length < 1}
+	{#if !loadingFreshProducts && !loadingPaginatedProducts && products.length < 1}
 		<div class="flex w-full flex-col items-center justify-center gap-y-4 px-2 pt-8 text-sm">
 			<SofaIcon class="size-8 text-color-text-muted" />
 			<p>No products matching your search/filter criteria</p>
@@ -69,8 +77,8 @@
 
 	<div
 		class={cn(
-			'hidden w-full grid-cols-4 gap-x-2 gap-y-12 px-2 pt-2',
-			!loadingProducts && products.length > 0 && 'grid'
+			'grid w-full grid-cols-4 gap-x-2 gap-y-12 px-2 pt-2',
+			loadingFreshProducts && 'hidden'
 		)}
 	>
 		{#each products as product (product._id)}
@@ -131,5 +139,17 @@
 
 	{#if loadingPaginatedProducts}
 		<RingLoader class="mx-auto mt-4" />
+	{/if}
+
+	{#if hasMoreProducts && !loadingPaginatedProducts}
+		<div
+			use:infiniteScroll={{
+				callback: loadMoreProducts,
+				enabled: hasMoreProducts && !loadingPaginatedProducts,
+				threshold: 0.1,
+				rootMargin: '200px'
+			}}
+			class="h-px"
+		></div>
 	{/if}
 </div>

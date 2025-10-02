@@ -3,21 +3,34 @@
 	import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte';
 	import {
 		parseProductFilters,
-		stringifyProductFilters
+		parseProductSortOptions,
+		stringifyProductFilters,
+		stringifyProductSortOptions
 	} from '$lib/components/product/product.utils';
 	import TextInput from '$lib/components/text-input.svelte';
 	import { QueryParams } from '$lib/enums';
-	import type { ProductCategory, ProductFilterKey, ProductFilterQueryString } from '$lib/types';
+	import type {
+		ProductCategory,
+		ProductFilterKey,
+		ProductFilterQueryString,
+		ProductSortOptionsQueryString
+	} from '$lib/types';
 	import { ArrowDownWideNarrowIcon, SearchIcon } from '@lucide/svelte';
 	import Checkbox from '$lib/components/checkbox.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { cn } from '$lib/utils/cn';
 	import { useProductBrandsQuery } from '$lib/client/queries/use-product.query.svelte';
 	import ProductFilterPopover from '$lib/components/product/product.filter-popover.svelte';
+	import ProductSortFilterPopover from '$lib/components/product/product.sort-filter-popover.svelte';
 
 	type UpdateRouteProductFilterQuery = {
 		productFilterQueryString?: ProductFilterQueryString;
 		productFilterKeysToRemove?: ProductFilterKey[];
+	};
+
+	type UpdateRouteProductSortOptionsQuery = {
+		productSortOptionsQueryString?: ProductSortOptionsQueryString;
+		removeSortOptions?: 'remove-sort-options';
 	};
 
 	type PriceFilters = {
@@ -59,19 +72,26 @@
 	let openDimensionsFilter = $state(false);
 	let openWeightFilter = $state(false);
 	let openBrandFilter = $state(false);
+	let openSortFilter = $state(false);
 
 	const aFilterIsOpen = $derived(
 		openAvailabilityFilter ||
 			openPriceFilter ||
 			openDimensionsFilter ||
 			openWeightFilter ||
-			openBrandFilter
+			openBrandFilter ||
+			openSortFilter
 	);
 
 	const productFilters = $derived.by(
 		() => page.url.searchParams.get(QueryParams.PRODUCT_FILTERS) ?? ''
 	) as ProductFilterQueryString;
 	const parsedProductFilters = $derived.by(() => parseProductFilters(productFilters));
+
+	const productSortOptions = $derived.by(
+		() => page.url.searchParams.get(QueryParams.PRODUCT_SORT_OPTIONS) ?? ''
+	) as ProductSortOptionsQueryString;
+	const parsedProductSortOptions = $derived.by(() => parseProductSortOptions(productSortOptions));
 
 	const hasPriceFilter = $derived(
 		parsedProductFilters.minPrice !== undefined || parsedProductFilters.maxPrice !== undefined
@@ -88,6 +108,8 @@
 		weightFilters.minWeight !== undefined || weightFilters.maxWeight !== undefined
 	);
 	const hasBrandFilter = $derived(parsedProductFilters.brand !== undefined);
+
+	const hasSortFilter = $derived(parsedProductSortOptions !== undefined);
 
 	function updateRouteProductFilterQuery({
 		productFilterQueryString,
@@ -132,13 +154,38 @@
 		});
 	}
 
+	function updateRouteProductSortFilterQuery({
+		productSortOptionsQueryString,
+		removeSortOptions
+	}: UpdateRouteProductSortOptionsQuery) {
+		if (!productSortOptionsQueryString && !removeSortOptions) return;
+
+		if (removeSortOptions) {
+			updateRouteQuery({
+				queryKeysToRemove: [QueryParams.PRODUCT_SORT_OPTIONS],
+				options: { keepFocus: true }
+			});
+			return;
+		}
+
+		if (productSortOptionsQueryString) {
+			const newProductSortOptions = parseProductSortOptions(productSortOptionsQueryString);
+
+			if (newProductSortOptions)
+				updateRouteQuery({
+					queryString: `${QueryParams.PRODUCT_SORT_OPTIONS}=${stringifyProductSortOptions(newProductSortOptions)}`,
+					options: { keepFocus: true }
+				});
+		}
+	}
+
 	function clearFilters() {
 		priceFilters = {};
 		dimensionFilters = {};
 		weightFilters = {};
 
 		updateRouteQuery({
-			queryKeysToRemove: [QueryParams.PRODUCT_FILTERS],
+			queryKeysToRemove: [QueryParams.PRODUCT_FILTERS, QueryParams.PRODUCT_SORT_OPTIONS],
 			options: { keepFocus: true }
 		});
 	}
@@ -185,15 +232,7 @@
 			>
 		</div>
 
-		<Button
-			class={cn(
-				'size-6 rounded-sm border-color-border bg-color-background p-px text-color-text-muted ring-0',
-				aFilterIsOpen && 'opacity-20'
-			)}
-			variant="outlined"
-		>
-			<ArrowDownWideNarrowIcon class="size-full" />
-		</Button>
+		{@render SortFilter()}
 	</div>
 </div>
 
@@ -578,4 +617,56 @@
 			})}
 		</form>
 	</div>
+{/snippet}
+
+{#snippet SortFilter()}
+	<ProductSortFilterPopover hasSort={!!hasSortFilter} bind:open={openSortFilter} {aFilterIsOpen}>
+		<div class="space-y-4 p-4">
+			{@render CheckBoxFilter({
+				id: 'price-low-to-high',
+				label: 'Price - low to high',
+				checked:
+					(parsedProductSortOptions?.index.includes('_price') &&
+						parsedProductSortOptions?.order === 'asc') ??
+					false,
+				onchange: (checked) => {
+					openSortFilter = false;
+
+					if (checked)
+						updateRouteProductSortFilterQuery({
+							productSortOptionsQueryString: productCategory
+								? `index-by_category_price,order-asc`
+								: `index-by_price,order-asc`
+						});
+					else
+						updateRouteProductSortFilterQuery({
+							removeSortOptions: 'remove-sort-options'
+						});
+				}
+			})}
+
+			{@render CheckBoxFilter({
+				id: 'price-high-to-low',
+				label: 'Price - high to low',
+				checked:
+					(parsedProductSortOptions?.index.includes('_price') &&
+						parsedProductSortOptions?.order === 'desc') ??
+					false,
+				onchange: (checked) => {
+					openSortFilter = false;
+
+					if (checked)
+						updateRouteProductSortFilterQuery({
+							productSortOptionsQueryString: productCategory
+								? `index-by_category_price,order-desc`
+								: `index-by_price,order-desc`
+						});
+					else
+						updateRouteProductSortFilterQuery({
+							removeSortOptions: 'remove-sort-options'
+						});
+				}
+			})}
+		</div>
+	</ProductSortFilterPopover>
 {/snippet}

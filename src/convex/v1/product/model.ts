@@ -6,9 +6,10 @@ import date from '../../util/date';
 import { SpaceType } from '../design/type';
 import { spaceTypeProductCategories } from '../design/constant';
 import { filterClientProducts, productsToClientProducts } from './util';
-import { ClientProduct, ProductCategory, ProductFilter } from './type';
+import { ClientProduct, Product, ProductCategory, ProductFilter } from './type';
 import { paginator } from 'convex-helpers/server/pagination';
 import schema from '../../schema';
+import type { PaginationResult } from 'convex/server';
 
 async function createProduct(ctx: MutationCtx, args: Infer<typeof vCreateProduct>) {
 	return await ctx.db.insert('products', {
@@ -52,15 +53,36 @@ async function getProductsForClientByIds(ctx: QueryCtx, productIds: Id<'products
 	return clientProducts;
 }
 
-async function getClientProducts(ctx: QueryCtx, cursor?: string, numItems: number = 25) {
-	const page = await paginator(ctx.db, schema)
-		.query('products')
-		.paginate({
-			cursor: cursor ?? null,
-			numItems
-		});
+async function getClientProducts(
+	ctx: QueryCtx,
+	paginationOptions?: { cursor?: string; numItems?: number },
+	sortOptions?: { index: 'by_price'; order: 'asc' | 'desc' }
+) {
+	const { cursor, numItems = 25 } = paginationOptions ?? {};
 
-	const { page: products, isDone, continueCursor } = page;
+	let page: PaginationResult<Product> | null = null;
+
+	if (!sortOptions)
+		page = await paginator(ctx.db, schema)
+			.query('products')
+			.filterWith(async (doc) => doc.status === 'Active')
+			.paginate({
+				cursor: cursor ?? null,
+				numItems
+			});
+
+	if (sortOptions)
+		page = await paginator(ctx.db, schema)
+			.query('products')
+			.withIndex(sortOptions.index)
+			.order(sortOptions.order)
+			.filterWith(async (doc) => doc.status === 'Active')
+			.paginate({
+				cursor: cursor ?? null,
+				numItems
+			});
+
+	const { page: products, isDone, continueCursor } = page ?? ({} as PaginationResult<Product>);
 
 	const clientProducts = productsToClientProducts(products);
 
@@ -73,13 +95,15 @@ async function getClientProducts(ctx: QueryCtx, cursor?: string, numItems: numbe
 
 async function getClientProductsWithFilters(
 	ctx: QueryCtx,
+
 	args: {
-		cursor?: string;
-		numItems?: number;
 		productFilter?: ProductFilter;
+		paginationOptions?: { cursor?: string; numItems?: number };
+		sortOptions?: { index: 'by_price'; order: 'asc' | 'desc' };
 	}
 ) {
-	const { cursor, numItems = 25, productFilter } = args;
+	const { productFilter } = args;
+	const { cursor, numItems = 25 } = args.paginationOptions ?? {};
 
 	const clientProducts: ClientProduct[] = [];
 	let isDone = false;
@@ -87,7 +111,14 @@ async function getClientProductsWithFilters(
 	let newNumItems = numItems;
 
 	while (clientProducts.length < numItems && !isDone) {
-		const clientProductPaginationResult = await getClientProducts(ctx, continueCursor, newNumItems);
+		const clientProductPaginationResult = await getClientProducts(
+			ctx,
+			{
+				cursor: continueCursor,
+				numItems: newNumItems
+			},
+			args.sortOptions
+		);
 
 		const filteredClientProducts = filterClientProducts(
 			clientProductPaginationResult.clientProducts,
@@ -111,18 +142,34 @@ async function getClientProductsWithFilters(
 async function getClientProductsByCategory(
 	ctx: QueryCtx,
 	category: ProductCategory,
-	cursor?: string,
-	numItems: number = 25
+	paginationOptions?: { cursor?: string; numItems?: number },
+	sortOptions?: { index: 'by_category_price'; order: 'asc' | 'desc' }
 ) {
-	const page = await paginator(ctx.db, schema)
-		.query('products')
-		.withIndex('by_category', (q) => q.eq('category', category).eq('status', 'Active'))
-		.paginate({
-			cursor: cursor ?? null,
-			numItems
-		});
+	const { cursor, numItems = 25 } = paginationOptions ?? {};
+	let page: PaginationResult<Product> | null = null;
 
-	const { page: products, isDone, continueCursor } = page;
+	if (!sortOptions)
+		page = await paginator(ctx.db, schema)
+			.query('products')
+			.withIndex('by_category', (q) => q.eq('category', category))
+			.filterWith(async (doc) => doc.status === 'Active')
+			.paginate({
+				cursor: cursor ?? null,
+				numItems
+			});
+
+	if (sortOptions)
+		page = await paginator(ctx.db, schema)
+			.query('products')
+			.withIndex(sortOptions.index, (q) => q.eq('category', category))
+			.order(sortOptions.order)
+			.filterWith(async (doc) => doc.status === 'Active')
+			.paginate({
+				cursor: cursor ?? null,
+				numItems
+			});
+
+	const { page: products, isDone, continueCursor } = page ?? ({} as PaginationResult<Product>);
 
 	const clientProducts = productsToClientProducts(products);
 
@@ -135,14 +182,15 @@ async function getClientProductsByCategory(
 
 async function getClientProductsByCategoryWithFilters(
 	ctx: QueryCtx,
+	category: ProductCategory,
 	args: {
-		category: ProductCategory;
-		cursor?: string;
-		numItems?: number;
 		productFilter?: ProductFilter;
+		paginationOptions?: { cursor?: string; numItems?: number };
+		sortOptions?: { index: 'by_category_price'; order: 'asc' | 'desc' };
 	}
 ) {
-	const { category, cursor, numItems = 25, productFilter } = args;
+	const { productFilter } = args;
+	const { cursor, numItems = 25 } = args.paginationOptions ?? {};
 
 	const clientProducts: ClientProduct[] = [];
 	let isDone = false;
@@ -153,8 +201,11 @@ async function getClientProductsByCategoryWithFilters(
 		const clientProductPaginationResult = await getClientProductsByCategory(
 			ctx,
 			category,
-			continueCursor,
-			newNumItems
+			{
+				cursor: continueCursor,
+				numItems: newNumItems
+			},
+			args.sortOptions
 		);
 
 		const filteredClientProducts = filterClientProducts(

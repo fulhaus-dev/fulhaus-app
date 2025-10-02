@@ -1,7 +1,12 @@
 import type { Value } from 'convex/values';
 import type { Doc, Id } from '../convex/_generated/dataModel';
 import type z from 'zod';
-import type { zProductFilter } from '$lib/zod-schemas';
+import type {
+	zProductFilter,
+	zProductSortIndex,
+	zProductSortOptions,
+	zProductSortOrder
+} from '$lib/zod-schemas';
 
 type ErrorDetails = Record<string, Value>;
 
@@ -90,7 +95,7 @@ export type ProductStyle = Doc<'products'>['styles'][0];
 
 export type Design = Doc<'designs'>;
 
-export type DesignProduct = {
+export type Product = {
 	_id: Id<'products'>;
 	fhSku: string;
 	brand?: string;
@@ -123,7 +128,7 @@ export type DesignProduct = {
 export type CurrencyCode = Doc<'products'>['currencyCode'];
 
 export type CartItem = Doc<'cartItems'> & {
-	product: DesignProduct;
+	product: Product;
 };
 
 export type Cart = {
@@ -148,3 +153,9 @@ export type ProductFilterKey = keyof ProductFilter;
 export type ProductFilterQueryString =
 	| `${ProductFilterKey}-${string}`
 	| `${ProductFilterKey}-${string},${ProductFilterKey}-${string}`;
+
+export type ProductSortOptions = z.infer<typeof zProductSortOptions>;
+
+export type ProductSortIndex = z.infer<typeof zProductSortIndex>;
+export type ProductSortOrder = z.infer<typeof zProductSortOrder>;
+export type ProductSortOptionsQueryString = `index-${ProductSortIndex},order-${ProductSortOrder}`;

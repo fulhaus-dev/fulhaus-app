@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DesignProduct } from '$lib/types';
+	import type { Product } from '$lib/types';
 	import { XIcon } from '@lucide/svelte';
 	import { Dialog } from 'bits-ui';
 	import type { Snippet } from 'svelte';
@@ -8,13 +8,13 @@
 	type ProductGridDialogProps = {
 		children: Snippet;
 		class?: string;
-		onSelectProduct: (product: DesignProduct) => void;
+		onSelectProduct: (product: Product) => void;
 	};
 
 	const { children, class: className = '', onSelectProduct }: ProductGridDialogProps = $props();
 
 	let isOpen = $state(false);
-	let replacementProduct = $state<DesignProduct | null>(null);
+	let replacementProduct = $state<Product | null>(null);
 
 	function onOpenChange(open: boolean) {
 		if (open) return;

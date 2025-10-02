@@ -2,7 +2,7 @@
 	import Button from '$lib/components/button.svelte';
 	import DesignProductSwapDialog from '$lib/components/design/design-product-swap/design-product-swap.dialog.svelte';
 	import LudwigLoader from '$lib/components/loaders/ludwig-loader.svelte';
-	import type { DesignProduct } from '$lib/types';
+	import type { Product } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
 	import { PlusIcon, RefreshCwIcon, TrashIcon } from '@lucide/svelte';
@@ -14,7 +14,7 @@
 
 	type DesignProductViewProps = {
 		designId: Id<'designs'>;
-		designProducts: DesignProduct[];
+		designProducts: Product[];
 		generatingDesignFurnitureRecommendation: boolean;
 	};
 
@@ -30,8 +30,8 @@
 		productToSwap,
 		replacementProduct
 	}: {
-		productToSwap: DesignProduct;
-		replacementProduct: DesignProduct;
+		productToSwap: Product;
+		replacementProduct: Product;
 	}) {
 		const replacementProductId = replacementProduct._id;
 		const currentDesignProductIds = designProducts.map((p) => p._id);
