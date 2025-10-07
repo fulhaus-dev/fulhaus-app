@@ -21,7 +21,10 @@
 	<LudwigStartChatBackground />
 {/if}
 
-<section use:chatAutoScroll class="relative h-full w-full space-y-12 overflow-y-scroll">
+<section
+	use:chatAutoScroll
+	class="relative scrollbar-thin h-full w-full space-y-12 overflow-y-scroll"
+>
 	{#if ludwigChat.loading}
 		<FulhausLoader class="mx-auto mt-40 size-10" />
 	{/if}

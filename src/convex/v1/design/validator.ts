@@ -29,6 +29,7 @@ export const vUpdateDesign = v.object({
 	productIds: v.optional(v.array(v.id('products'))),
 	renderedImageUrl: v.optional(v.string()),
 	styles: v.optional(v.array(vProductStyle)),
+	tags: v.optional(v.array(v.string())),
 	renderingImage: v.optional(v.boolean()),
 	generatingFurnitureRecommendation: v.optional(v.boolean())
 });

@@ -28,7 +28,7 @@ importers:
         version: 3.888.0
       '@convex-dev/rate-limiter':
         specifier: ^0.2.12
-        version: 0.2.12(convex@1.27.3(react@19.1.1))(react@19.1.1)
+        version: 0.2.12(convex@1.27.4(react@19.1.1))(react@19.1.1)
       '@react-email/render':
         specifier: ^1.2.3
         version: 1.2.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -42,11 +42,11 @@ importers:
         specifier: ^2.9.6
         version: 2.9.6(@internationalized/date@3.9.0)(svelte@5.38.8)
       convex:
-        specifier: ^1.27.3
-        version: 1.27.3(react@19.1.1)
+        specifier: ^1.27.4
+        version: 1.27.4(react@19.1.1)
       convex-helpers:
         specifier: ^0.1.104
-        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.3(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11)
+        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.4(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11)
       dompurify:
         specifier: ^3.2.6
         version: 3.2.6
@@ -1547,8 +1547,8 @@ packages:
       zod:
         optional: true
 
-  convex@1.27.3:
-    resolution: {integrity: sha512-Ebr9lPgXkL7JO5IFr3bG+gYvHskyJjc96Fx0BBNkJUDXrR/bd9/uI4q8QszbglK75XfDu068vR0d/HK2T7tB9Q==}
+  convex@1.27.4:
+    resolution: {integrity: sha512-aPP3uxOF5v+K4uftXxRh8GAYepsjsFgU+S9IpAyLVNaFU3Z72WB1rIhaSzPAo4Q0TJWsOKANFGU903IU92QDTA==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -1889,10 +1889,6 @@ packages:
 
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
-
-  jwt-decode@4.0.0:
-    resolution: {integrity: sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==}
-    engines: {node: '>=18'}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -3169,9 +3165,9 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.0.1': {}
 
-  '@convex-dev/rate-limiter@0.2.12(convex@1.27.3(react@19.1.1))(react@19.1.1)':
+  '@convex-dev/rate-limiter@0.2.12(convex@1.27.4(react@19.1.1))(react@19.1.1)':
     dependencies:
-      convex: 1.27.3(react@19.1.1)
+      convex: 1.27.4(react@19.1.1)
     optionalDependencies:
       react: 19.1.1
 
@@ -4268,19 +4264,18 @@ snapshots:
 
   confbox@0.2.2: {}
 
-  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.3(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11):
+  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.4(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11):
     dependencies:
-      convex: 1.27.3(react@19.1.1)
+      convex: 1.27.4(react@19.1.1)
     optionalDependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.1.1
       typescript: 5.9.2
       zod: 4.1.11
 
-  convex@1.27.3(react@19.1.1):
+  convex@1.27.4(react@19.1.1):
     dependencies:
       esbuild: 0.25.4
-      jwt-decode: 4.0.0
       prettier: 3.6.2
     optionalDependencies:
       react: 19.1.1
@@ -4646,8 +4641,6 @@ snapshots:
   json-schema@0.4.0: {}
 
   json-stable-stringify-without-jsonify@1.0.1: {}
-
-  jwt-decode@4.0.0: {}
 
   keyv@4.5.4:
     dependencies:

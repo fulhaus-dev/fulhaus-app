@@ -66,3 +66,55 @@ export function useWorkspaceDesignsQuery() {
 
 	return workspaceDesignsQuery;
 }
+
+export function useUniqueDesignSpacesForWorkspaceQuery() {
+	const { query } = useConvexQuerySubscription(
+		api.v1.design.query.getUniqueDesignSpacesForWorkspace,
+		() => ({
+			workspaceId: page.params.workspaceId as Id<'workspaces'>
+		}),
+		{
+			requiredArgsKeys: ['workspaceId']
+		}
+	);
+
+	const uniqueDesignSpacesForWorkspaceQuery = $state({
+		get loading() {
+			return query.loading;
+		},
+		get error() {
+			return query.error;
+		},
+		get uniqueSpaces() {
+			return query.response?.data ?? [];
+		}
+	});
+
+	return uniqueDesignSpacesForWorkspaceQuery;
+}
+
+export function useDesignTagsForWorkspaceQuery() {
+	const { query } = useConvexQuerySubscription(
+		api.v1.design.query.getDesignTagsForWorkspace,
+		() => ({
+			workspaceId: page.params.workspaceId as Id<'workspaces'>
+		}),
+		{
+			requiredArgsKeys: ['workspaceId']
+		}
+	);
+
+	const designTagsForWorkspaceQuery = $state({
+		get loading() {
+			return query.loading;
+		},
+		get error() {
+			return query.error;
+		},
+		get designTags() {
+			return query.response?.data ?? [];
+		}
+	});
+
+	return designTagsForWorkspaceQuery;
+}

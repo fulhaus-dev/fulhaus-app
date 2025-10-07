@@ -19,6 +19,7 @@ export const designTable = defineTable({
 	generatingFurnitureRecommendation: v.optional(v.boolean()),
 	renderingImage: v.optional(v.boolean()),
 	styles: v.optional(v.array(vProductStyle)),
+	tags: v.optional(v.array(v.string())),
 	publishedAt: v.optional(v.number()),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),
@@ -27,5 +28,14 @@ export const designTable = defineTable({
 	deletedAt: v.optional(v.number())
 })
 	.index('by_workspace_id', ['workspaceId'])
+	.index('by_workspace_space', ['workspaceId', 'spaceType'])
 	.index('by_chat_id', ['chatId'])
 	.index('by_floor_plan_url', ['floorPlanUrl']);
+
+export const designTagTable = defineTable({
+	workspaceId: v.id('workspaces'),
+	designId: v.id('designs'),
+	tag: v.string()
+})
+	.index('by_workspace_tag', ['workspaceId', 'tag'])
+	.index('by_design_id', ['designId']);

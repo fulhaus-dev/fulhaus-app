@@ -26,6 +26,9 @@ export const updateDesignById = mutation({
 		const updates = args.updates;
 		const dataToUpdate = object.getDifference(currentDesign, updates);
 
+		if (dataToUpdate.tags)
+			dataToUpdate.tags = [...new Set([...dataToUpdate.tags, ...(currentDesign.tags ?? [])])];
+
 		await designModel.updateDesignById(ctx, args.designId, userId, dataToUpdate);
 
 		if (dataToUpdate.productCategories || dataToUpdate.inspirationImageUrl) {
@@ -110,5 +113,38 @@ export const removeProductFromDesignById = mutation({
 			designId: args.designId,
 			userId
 		});
+	}
+});
+
+export const addTagsToDesign = mutation({
+	args: {
+		workspaceId: v.id('workspaces'),
+		designId: v.id('designs'),
+		tagNames: v.array(v.string())
+	},
+	handler: async (ctx, args) => {
+		await authorization.workspaceMemberIsAuthorizedToPerformFunction(
+			ctx,
+			args.workspaceId,
+			'createDesign'
+		);
+
+		await designModel.addTagsToDesign(ctx, args.workspaceId, args.designId, args.tagNames);
+	}
+});
+
+export const deleteDesignTag = mutation({
+	args: {
+		workspaceId: v.id('workspaces'),
+		designTagId: v.id('designTags')
+	},
+	handler: async (ctx, args) => {
+		await authorization.workspaceMemberIsAuthorizedToPerformFunction(
+			ctx,
+			args.workspaceId,
+			'createDesign'
+		);
+
+		await designModel.deleteDesignTag(ctx, args.designTagId);
 	}
 });

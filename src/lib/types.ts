@@ -84,6 +84,7 @@ export type UpdateDesign = {
 	floorPlanFile?: FloorPlanFile;
 	productCategories?: ProductCategory[];
 	productIds?: Id<'products'>[];
+	tags?: string[];
 };
 
 export type UpdateDesignProduct = {
@@ -159,3 +160,10 @@ export type ProductSortOptions = z.infer<typeof zProductSortOptions>;
 export type ProductSortIndex = z.infer<typeof zProductSortIndex>;
 export type ProductSortOrder = z.infer<typeof zProductSortOrder>;
 export type ProductSortOptionsQueryString = `index-${ProductSortIndex},order-${ProductSortOrder}`;
+
+export type DesignTag = {
+	_id: Id<'designTags'>;
+	workspaceId: Id<'workspaces'>;
+	designId: Id<'designs'>;
+	tag: string;
+};

@@ -73,10 +73,39 @@ export function useDesignMutation() {
 		if (error) state.error = error.message;
 	}
 
+	async function addTagsToDesign(designId: Id<'designs'>, tagNames: string[]) {
+		if (!activeWorkspaceId) return;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.design.mutation.addTagsToDesign, {
+				workspaceId: activeWorkspaceId as Id<'workspaces'>,
+				designId,
+				tagNames
+			})
+		);
+
+		if (error) state.error = error.message;
+	}
+
+	async function deleteDesignTag(designTagId: Id<'designTags'>) {
+		if (!activeWorkspaceId) return;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.design.mutation.deleteDesignTag, {
+				workspaceId: activeWorkspaceId as Id<'workspaces'>,
+				designTagId
+			})
+		);
+
+		if (error) state.error = error.message;
+	}
+
 	return {
 		designState: state,
 		updateDesign,
 		addNewProductToDesign,
-		removeProductFromDesign
+		removeProductFromDesign,
+		addTagsToDesign,
+		deleteDesignTag
 	};
 }
