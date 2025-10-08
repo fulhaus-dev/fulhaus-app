@@ -90,7 +90,10 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 	});
 
 	const stream = result.toUIMessageStreamResponse();
-	stream.headers.set('Access-Control-Allow-Origin', process.env.APP_URL!);
+	stream.headers.set(
+		'Access-Control-Allow-Origin',
+		'https://fulhaus-app-production.up.railway.app'
+	);
 
 	return stream;
 });

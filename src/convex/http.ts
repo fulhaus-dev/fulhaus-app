@@ -30,11 +30,8 @@ http.route({
 	handler: httpAction(async (_, request) => {
 		const origin = request.headers.get('Origin');
 
-		// Log what the browser is sending vs what your env var is
-		console.log(`Received Origin: ${origin}`);
-		console.log(`Comparing against APP_URL: ${process.env.APP_URL}`);
-
-		if (origin !== process.env.APP_URL) return new Response(null, { status: 204 });
+		if (origin !== (process.env.APP_URL || 'https://fulhaus-app-production.up.railway.app'))
+			return new Response(null, { status: 204 });
 
 		return new Response(null, {
 			headers: new Headers({
