@@ -14,6 +14,7 @@ export const handle = async ({ event, resolve }) => {
 
 	event.locals.currentUserId = authenticated?.currentUserId;
 	event.locals.activeWorkspaceId = authenticated?.activeWorkspaceId;
+	event.locals.authToken = authenticated?.authToken;
 
 	return resolve(event);
 };

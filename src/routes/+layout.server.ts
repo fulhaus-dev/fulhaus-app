@@ -6,6 +6,7 @@ export async function load({ locals }) {
 	return {
 		activeWorkspaceId: locals.activeWorkspaceId,
 		currentUserId: locals.currentUserId,
+		authToken: locals.authToken,
 		sampleInspoImages
 	};
 }

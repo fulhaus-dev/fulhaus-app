@@ -21,6 +21,7 @@
 
 	<menu class="flex flex-1 items-center justify-center gap-x-8">
 		<Link href={`/${workspaceId}/ludwig`}>Ludwig</Link>
+		<Link href={`/${workspaceId}/ludwig-test`}>Ludwig Test</Link>
 		<Link href="/shop-designs">Shop Designs</Link>
 		<Link href="/inspiration">Inspiration</Link>
 	</menu>

@@ -49,6 +49,7 @@ import type * as v1_chat_internal_action from "../v1/chat/internal/action.js";
 import type * as v1_chat_internal_mutation from "../v1/chat/internal/mutation.js";
 import type * as v1_chat_internal_query from "../v1/chat/internal/query.js";
 import type * as v1_chat_model from "../v1/chat/model.js";
+import type * as v1_chat_mutation from "../v1/chat/mutation.js";
 import type * as v1_chat_table from "../v1/chat/table.js";
 import type * as v1_chat_util from "../v1/chat/util.js";
 import type * as v1_chat_validator from "../v1/chat/validator.js";
@@ -68,6 +69,7 @@ import type * as v1_ludwig_ai_tool_product from "../v1/ludwig/ai/tool/product.js
 import type * as v1_ludwig_ai_tool_recommendation from "../v1/ludwig/ai/tool/recommendation.js";
 import type * as v1_ludwig_ai_tool_ui from "../v1/ludwig/ai/tool/ui.js";
 import type * as v1_ludwig_ai_util from "../v1/ludwig/ai/util.js";
+import type * as v1_ludwig_http_action from "../v1/ludwig/http/action.js";
 import type * as v1_ludwig_internal_mutation from "../v1/ludwig/internal/mutation.js";
 import type * as v1_ludwig_internal_query from "../v1/ludwig/internal/query.js";
 import type * as v1_ludwig_model from "../v1/ludwig/model.js";
@@ -167,6 +169,7 @@ declare const fullApi: ApiFromModules<{
   "v1/chat/internal/mutation": typeof v1_chat_internal_mutation;
   "v1/chat/internal/query": typeof v1_chat_internal_query;
   "v1/chat/model": typeof v1_chat_model;
+  "v1/chat/mutation": typeof v1_chat_mutation;
   "v1/chat/table": typeof v1_chat_table;
   "v1/chat/util": typeof v1_chat_util;
   "v1/chat/validator": typeof v1_chat_validator;
@@ -186,6 +189,7 @@ declare const fullApi: ApiFromModules<{
   "v1/ludwig/ai/tool/recommendation": typeof v1_ludwig_ai_tool_recommendation;
   "v1/ludwig/ai/tool/ui": typeof v1_ludwig_ai_tool_ui;
   "v1/ludwig/ai/util": typeof v1_ludwig_ai_util;
+  "v1/ludwig/http/action": typeof v1_ludwig_http_action;
   "v1/ludwig/internal/mutation": typeof v1_ludwig_internal_mutation;
   "v1/ludwig/internal/query": typeof v1_ludwig_internal_query;
   "v1/ludwig/model": typeof v1_ludwig_model;

@@ -48,7 +48,7 @@
 		<h4 class="flex-1 text-sm font-medium">{design.name}</h4>
 
 		<div class="flex flex-1 items-center justify-center">
-			<Button
+			<!-- <Button
 				class="h-[1.6rem] w-40 rounded-sm text-xs transition-all duration-300"
 				onclick={() =>
 					activeDesignView === 'product'
@@ -62,7 +62,7 @@
 				{/if}
 
 				<span>{activeDesignView === 'product' ? 'Canvas View' : 'Product View'}</span>
-			</Button>
+			</Button> -->
 		</div>
 
 		<div class="flex-1"></div>

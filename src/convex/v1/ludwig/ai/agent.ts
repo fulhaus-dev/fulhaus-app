@@ -14,7 +14,7 @@ export const ludwigAgent: AgentConfig = {
 	options: {
 		model: googleGemini2_5FlashChat,
 		systemPromptFileId: process.env.LUDWIG_SYSTEM_PROMPT_FILE_ID! as Id<'_storage'>,
-		maxToolCallSteps: 20,
+		maxToolCallSteps: 200,
 		providerOptions: {
 			google: {
 				thinkingConfig: {

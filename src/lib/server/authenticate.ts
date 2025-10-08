@@ -86,7 +86,7 @@ export async function refreshAuthToken(cookies: Cookies, sessionId: Id<'sessions
 	const { data: response } = await asyncTryCatch(() =>
 		convexHttpClient.mutation(api.v1.auth.mutation.refreshAuthSession, { sessionId })
 	);
-	if (!response) return null;
+	if (!response) return;
 
 	setAuthTokenCookie(cookies, response.token, response.tokenExpInMinutes * 60);
 
@@ -94,14 +94,22 @@ export async function refreshAuthToken(cookies: Cookies, sessionId: Id<'sessions
 }
 
 export default async function authenticate(cookies: Cookies) {
-	const { authToken, activeWorkspaceId, currentUserId, authSessionId } = getAuthParams(cookies);
+	const {
+		authToken: currentAuthToken,
+		activeWorkspaceId,
+		currentUserId,
+		authSessionId
+	} = getAuthParams(cookies);
+	let authToken = currentAuthToken;
 
 	if (!activeWorkspaceId || !currentUserId || !authSessionId) return;
 
-	if (!authToken && authSessionId) {
+	if (!currentAuthToken && authSessionId) {
 		const newAuthToken = await refreshAuthToken(cookies, authSessionId);
 		if (!newAuthToken) return;
+
+		authToken = newAuthToken;
 	}
 
-	return { activeWorkspaceId, currentUserId };
+	return { activeWorkspaceId, currentUserId, authToken: authToken };
 }

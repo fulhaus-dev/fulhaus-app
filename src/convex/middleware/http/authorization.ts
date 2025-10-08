@@ -32,8 +32,17 @@ async function workspaceMemberIsAuthorizedToPerformFunction(
 	return userId;
 }
 
+async function isWorkspaceChat(ctx: ActionCtx, workspaceId: Id<'workspaces'>, chatId: Id<'chats'>) {
+	const chat = await ctx.runQuery(internal.v1.chat.internal.query.getChatById, { chatId });
+	if (!chat) throw ServerError.NotFound('Chat not found.');
+	if (chat.workspaceId !== workspaceId) throw ServerError.Forbidden('Access denied.');
+
+	return chat;
+}
+
 const httpAuthorization = {
 	apiKey,
-	workspaceMemberIsAuthorizedToPerformFunction
+	workspaceMemberIsAuthorizedToPerformFunction,
+	isWorkspaceChat
 };
 export default httpAuthorization;

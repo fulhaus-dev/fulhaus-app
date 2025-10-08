@@ -108,7 +108,7 @@ export function usePaginatedProductsByCategoryQuery(
 				productFilter: args.productFilter?.(),
 				paginationOptions: {
 					cursor: effectiveCursor,
-					numItems: 100
+					numItems: 25
 				},
 				sortOptions: effectiveSortOptions
 			};
@@ -181,7 +181,7 @@ export function useProductsQuery(args: {
 				productFilter: args.productFilter(),
 				paginationOptions: {
 					cursor: effectiveCursor,
-					numItems: 100
+					numItems: 25
 				},
 				sortOptions: effectiveSortOptions
 			};

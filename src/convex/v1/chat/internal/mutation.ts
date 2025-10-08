@@ -4,6 +4,16 @@ import chatModel from '../model';
 
 import { vChatAssistantMessage, vChatToolMessage, vLlmUsage } from '../validator';
 
+export const createChat = internalMutation({
+	args: {
+		workspaceId: v.id('workspaces'),
+		userId: v.id('users')
+	},
+	handler: async (ctx, args) => {
+		return await chatModel.createChat(ctx, args);
+	}
+});
+
 export const saveChatAssistantResponse = internalMutation({
 	args: {
 		workspaceId: v.id('workspaces'),

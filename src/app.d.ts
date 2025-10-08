@@ -9,11 +9,13 @@ declare global {
 		interface Locals {
 			currentUserId?: Id<'users'>;
 			activeWorkspaceId?: Id<'workspaces'>;
+			authToken?: string;
 		}
 
 		interface PageData {
 			currentUserId?: Id<'users'>;
 			activeWorkspaceId?: Id<'workspaces'>;
+			authToken?: string;
 			sampleInspoImages: ImageData[];
 		}
 	}

@@ -5,3 +5,5 @@ const xai = createXai({
 });
 
 export const xaiGrok4FastReasoningChat = xai.chat('grok-4-fast-reasoning');
+
+export const xaiGrok4Fast = xai('grok-4-fast-non-reasoning');
