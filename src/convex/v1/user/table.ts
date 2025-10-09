@@ -12,7 +12,6 @@ export const userTable = defineTable({
 	phoneVerifiedAt: v.optional(v.number()),
 	currentWorkspaceId: v.optional(v.id('workspaces')),
 	lastLoginAt: v.number(),
-	createdAt: v.number(),
 	updatedAt: v.number(),
 	deletedAt: v.optional(v.number())
 })

@@ -182,16 +182,16 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 	});
 }
 
-export function redirectToStartNewDesignInSameProjectTool(toolCtxParams: AiToolCtxParams) {
+export function redirectToStartNewDesignChatTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
-		description: 'Redirects the user to start a new design within the same project.',
+		description: 'Redirects the user to start a new design chat.',
 		inputSchema: z.object({
-			spaceToDesign: z.enum(spaceTypes).describe('The space to design.')
+			spaceToDesign: z.enum(spaceTypes).describe('The new space to design.')
 		}),
 		execute: async ({ spaceToDesign }) => {
 			const { ctx, workspaceId, userId } = toolCtxParams;
 
-			const chatId = await ctx.runMutation(internal.v1.ludwig.internal.mutation.createChat, {
+			const chatId = await ctx.runMutation(internal.v1.chat.internal.mutation.createChat, {
 				userId,
 				workspaceId
 			});
@@ -201,7 +201,7 @@ export function redirectToStartNewDesignInSameProjectTool(toolCtxParams: AiToolC
 				message: 'User redirected to start a new design successfully',
 				chatId,
 				spaceToDesign,
-				toolName: 'redirectToStartNewDesignInSameProject'
+				toolName: 'redirectToStartNewDesignChat'
 			};
 		}
 	});

@@ -1,28 +1,23 @@
 <script lang="ts">
-	import type { ChatMessage } from '$lib/types';
-	import chat from '$lib/utils/chat';
 	import stringUtil from '$lib/utils/string';
+	import type { UIMessage } from 'ai';
 
-	const { message }: { message: ChatMessage } = $props();
+	const { uiMessage }: { uiMessage: UIMessage } = $props();
 
-	const aiMessageContent = $derived.by(() => {
-		if (message.role !== 'assistant') return;
+	const aiUiMessage = $derived.by(() => {
+		if (uiMessage.role !== 'assistant') return;
 
-		return chat.getChatMessageContent(message.content);
+		return uiMessage;
 	});
 </script>
 
-{#if aiMessageContent}
+{#if aiUiMessage}
 	<div class="p-4">
-		{#each aiMessageContent as content, i (`${content.type}-${i}`)}
-			{#if content.type === 'text'}
+		{#each aiUiMessage.parts as part, partIndex (`${partIndex}-${aiUiMessage.role}-${aiUiMessage.id}`)}
+			{#if part.type === 'text'}
 				<p class="prose leading-tight prose-neutral dark:prose-invert">
-					{@html stringUtil.parseMarkdown(content.text)}
+					{@html stringUtil.parseMarkdown(part.text)}
 				</p>
-			{/if}
-
-			{#if content.type === 'image' && typeof (content as any).image === 'string'}
-				<img src={(content as any).image} alt="AI chat content" />
 			{/if}
 		{/each}
 	</div>

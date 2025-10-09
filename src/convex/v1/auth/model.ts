@@ -1,6 +1,5 @@
 import { MutationCtx, QueryCtx } from '../../_generated/server';
 import { Id } from '../../_generated/dataModel';
-import date from '../../util/date';
 import ServerError from '../../response/error';
 import { authJwtManager } from '../../auth.config';
 import generator from '../../util/generator';
@@ -37,7 +36,6 @@ async function createSession(ctx: MutationCtx, userId: Id<'users'>) {
 	if (!sessionId) {
 		sessionId = await ctx.db.insert('sessions', {
 			userId,
-			createdAt: date.now(),
 			expInDays: sessionExpInDays
 		});
 	}
@@ -51,7 +49,7 @@ async function getSessionById(ctx: QueryCtx, sessionId: Id<'sessions'>) {
 	const session = await ctx.db.get(sessionId);
 	if (!session) return null;
 
-	const createdDate = new Date(session.createdAt);
+	const createdDate = new Date(session._creationTime);
 
 	const expirationDate = new Date(createdDate);
 	expirationDate.setDate(createdDate.getDate() + session.expInDays);

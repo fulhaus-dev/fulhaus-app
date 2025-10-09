@@ -9,6 +9,7 @@ import type { Id } from '../../../convex/_generated/dataModel.js';
 import { page } from '$app/state';
 import { QueryParams } from '$lib/enums.js';
 import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js';
+import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte.js';
 
 type AuthStep = 'email' | 'otp' | 'name';
 
@@ -16,12 +17,14 @@ const OTP_LENGTH = 6;
 
 export function useAuthMutation() {
 	const convexClient = useConvexClient();
+	const { updateRouteQuery } = useRouteMutation();
 
 	const redirectUrl = page.url.searchParams.get(QueryParams.AUTH_REDIRECT_URL) ?? '/';
+	const authStep = (page.url.searchParams.get(QueryParams.AUTH_STEP) ?? 'email') as AuthStep;
 
 	const state = $state({
 		isSignUp: false,
-		step: 'email' as AuthStep,
+		step: authStep,
 		email: undefined as string | undefined,
 		otp: undefined as string | undefined,
 		firstName: undefined as string | undefined,
@@ -84,6 +87,7 @@ export function useAuthMutation() {
 
 		state.isSignUp = response.data.isSignUp;
 		state.step = 'otp';
+		updateRouteQuery({ queryString: `${QueryParams.AUTH_STEP}=otp` });
 	}
 
 	async function onSubmitSignInWithOtp(
@@ -136,6 +140,11 @@ export function useAuthMutation() {
 			state.userId = response.data.userId;
 			state.step = 'name';
 			state.loading = false;
+			updateRouteQuery({ queryString: `${QueryParams.AUTH_STEP}=name` });
+
+			setTimeout(() => {
+				window.location.reload();
+			}, 100);
 			return;
 		}
 
@@ -152,11 +161,6 @@ export function useAuthMutation() {
 
 		if (!state.firstName || !state.lastName) {
 			state.serverError = 'Your fullname is required';
-			return;
-		}
-
-		if (!state.userId) {
-			state.serverError = 'An unknown error occurred, try again.';
 			return;
 		}
 

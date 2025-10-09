@@ -5,8 +5,8 @@ import { ProductCategory } from '../../product/type';
 import { asyncTryCatch } from '../../../util/async';
 import { generateObject, generateText, ImagePart } from 'ai';
 import {
-	googleGemini2_5FlashImagePreviewImm,
-	googleGemini2_5FlashLlm
+	googleGenerativeAIGemini2_5FlashImagePreview,
+	googleGenerativeAIGemini2_5Flash
 } from '../../../config/google';
 import { productStyles } from '../../product/constant';
 
@@ -33,7 +33,7 @@ ${args.spaceProductCategories.join('\n')}
 
 	const { data, error } = await asyncTryCatch(() =>
 		generateObject({
-			model: googleGemini2_5FlashLlm,
+			model: googleGenerativeAIGemini2_5Flash,
 			system: systemPrompt,
 			schema: outputSchema,
 			messages: [
@@ -83,7 +83,7 @@ ${productStyles.join('\n')}
 
 	const { data, error } = await asyncTryCatch(() =>
 		generateObject({
-			model: googleGemini2_5FlashLlm,
+			model: googleGenerativeAIGemini2_5Flash,
 			system: systemPrompt,
 			schema: outputSchema,
 			messages: [
@@ -144,7 +144,7 @@ The orientation of the generated design image MUST be LANDSCAPE.
 
 	const { data: result, error } = await asyncTryCatch(() =>
 		generateText({
-			model: googleGemini2_5FlashImagePreviewImm,
+			model: googleGenerativeAIGemini2_5FlashImagePreview,
 			system: systemPrompt,
 			messages: [
 				{

@@ -1,4 +1,5 @@
 export const enum QueryParams {
+	AUTH_STEP = 'aus',
 	AUTH_REDIRECT_URL = 'aru',
 	FORCE_REFRESH_TOKEN = 'frt',
 	LUDWIG_PAGE_DESIGN_VIEW = 'lpdv',

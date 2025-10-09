@@ -12,7 +12,6 @@ async function createUser(ctx: MutationCtx, email: string) {
 		email: email.toLowerCase(),
 		emailVerifiedAt: date.now(),
 		lastLoginAt: date.now(),
-		createdAt: date.now(),
 		updatedAt: date.now()
 	});
 

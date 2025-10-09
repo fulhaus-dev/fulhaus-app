@@ -30,12 +30,11 @@ http.route({
 	handler: httpAction(async (_, request) => {
 		const origin = request.headers.get('Origin');
 
-		if (origin !== (process.env.APP_URL || 'https://fulhaus-app-production.up.railway.app'))
-			return new Response(null, { status: 204 });
+		if (origin !== 'http://localhost:5173') return new Response(null, { status: 204 });
 
 		return new Response(null, {
 			headers: new Headers({
-				'Access-Control-Allow-Origin': process.env.APP_URL!,
+				'Access-Control-Allow-Origin': 'http://localhost:5173',
 				'Access-Control-Allow-Methods': 'POST',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Workspace-Id',
 				'Access-Control-Max-Age': '86400'

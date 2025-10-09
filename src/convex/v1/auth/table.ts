@@ -9,6 +9,5 @@ export const otpTable = defineTable({
 
 export const sessionTable = defineTable({
 	userId: v.id('users'),
-	createdAt: v.number(),
 	expInDays: v.number()
 }).index('user_id', ['userId']);

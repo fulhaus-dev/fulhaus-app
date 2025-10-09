@@ -33,20 +33,9 @@ export type ImageData = {
 	url: string;
 };
 
-export type ChatMessage = Doc<'chatMessages'>['message'];
-
-export type ChatMessageContent = Doc<'chatMessages'>['message']['content'];
-
-export type ChatMessageDoc = {
-	id: Id<'chatMessages'>;
-	message: ChatMessage;
-	userId: Id<'users'>;
-	createdAt: number;
-};
-
 export type ChatUser = {
 	userId: string;
-	fullName: string;
+	fullName?: string;
 	imageUrl?: string;
 };
 

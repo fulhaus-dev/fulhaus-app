@@ -7,7 +7,6 @@ export const workspaceTable = defineTable({
 	members: v.array(v.id('users')),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),
-	createdAt: v.number(),
 	updatedAt: v.number(),
 	deletedAt: v.optional(v.number())
 }).index('deleted_at', ['deletedAt']);

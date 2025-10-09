@@ -1,25 +1,22 @@
 import { defineTable } from 'convex/server';
 import { v } from 'convex/values';
-import { vChatMessage, vLlmUsage } from './validator';
+import { vChatUiMessage, vChatUsage } from './validator';
 
 export const chatTable = defineTable({
 	workspaceId: v.id('workspaces'),
 	designId: v.optional(v.id('designs')),
-	createdById: v.id('users'),
-	createdAt: v.number()
+	createdById: v.id('users')
 }).index('workspace_chat', ['workspaceId']);
 
-export const chatMessageTable = defineTable({
+export const chatUiMessageTable = defineTable({
 	workspaceId: v.id('workspaces'),
 	chatId: v.id('chats'),
-	message: vChatMessage,
-	usage: v.optional(vLlmUsage),
-	createdById: v.id('users'),
-	createdAt: v.number()
+	message: vChatUiMessage,
+	createdById: v.id('users')
 }).index('workspace_chat_message', ['workspaceId', 'chatId']);
 
-export const chatResponseStreamTable = defineTable({
+export const chatUsageTokenTable = defineTable({
 	workspaceId: v.id('workspaces'),
 	chatId: v.id('chats'),
-	stream: v.any()
-}).index('workspace_chat_response_stream', ['workspaceId', 'chatId']);
+	usage: vChatUsage
+}).index('workspace_chat_usage', ['workspaceId', 'chatId']);

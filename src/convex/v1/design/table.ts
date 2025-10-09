@@ -23,7 +23,6 @@ export const designTable = defineTable({
 	publishedAt: v.optional(v.number()),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),
-	createdAt: v.number(),
 	updatedAt: v.number(),
 	deletedAt: v.optional(v.number())
 })

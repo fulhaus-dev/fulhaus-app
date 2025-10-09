@@ -12,7 +12,6 @@ async function createWorkspace(
 		members: [],
 		createdById: userId,
 		updatedById: userId,
-		createdAt: date.now(),
 		updatedAt: date.now()
 	});
 

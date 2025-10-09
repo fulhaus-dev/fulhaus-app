@@ -3,7 +3,7 @@ import { otpTable, sessionTable } from './v1/auth/table';
 import { userTable } from './v1/user/table';
 import { workspaceTable } from './v1/workspace/table';
 import { userPermissionTable } from './v1/user/permission/table';
-import { chatMessageTable, chatResponseStreamTable, chatTable } from './v1/chat/table';
+import { chatUiMessageTable, chatTable, chatUsageTokenTable } from './v1/chat/table';
 import { workspaceAssetTable } from './v1/workspace/asset/table';
 import { designTable, designTagTable } from './v1/design/table';
 import { ludwigChatTempAssetTable } from './v1/ludwig/table';
@@ -18,8 +18,8 @@ export default defineSchema({
 	users: userTable,
 	userPermissions: userPermissionTable,
 	chats: chatTable,
-	chatMessages: chatMessageTable,
-	chatResponseStreams: chatResponseStreamTable,
+	chatUiMessages: chatUiMessageTable,
+	chatUsageTokens: chatUsageTokenTable,
 	workspaceAssets: workspaceAssetTable,
 	designs: designTable,
 	designTags: designTagTable,

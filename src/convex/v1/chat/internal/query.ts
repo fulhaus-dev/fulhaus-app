@@ -11,13 +11,13 @@ export const getChatById = internalQuery({
 	}
 });
 
-export const getChatMessages = internalQuery({
+export const getChatUiMessages = internalQuery({
 	args: {
 		workspaceId: v.id('workspaces'),
 		chatId: v.id('chats')
 	},
 	handler: async (ctx, args) => {
-		return await chatModel.getChatMessageHistory(ctx, {
+		return await chatModel.getChatUiMessages(ctx, {
 			workspaceId: args.workspaceId,
 			chatId: args.chatId
 		});

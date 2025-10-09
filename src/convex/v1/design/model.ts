@@ -16,7 +16,6 @@ async function createDesign(
 		floorPlanUrl: args.floorPlanFile?.url,
 		createdById: userId,
 		updatedById: userId,
-		createdAt: date.now(),
 		updatedAt: date.now()
 	});
 }

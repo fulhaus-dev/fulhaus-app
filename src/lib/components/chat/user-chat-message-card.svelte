@@ -4,20 +4,19 @@
 	import type { ChatUser } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import { ChevronDownIcon } from '@lucide/svelte';
-	import type { Doc } from '../../../convex/_generated/dataModel';
-	import chat from '$lib/utils/chat';
+	import type { UIMessage } from 'ai';
 
 	type UserChatMessageCardProps = {
-		message: Doc<'chatMessages'>['message'];
+		uiMessage: UIMessage;
 		user: ChatUser;
 	};
 
-	const { message, user }: UserChatMessageCardProps = $props();
+	const { uiMessage, user }: UserChatMessageCardProps = $props();
 
-	const userMessageContent = $derived.by(() => {
-		if (message.role !== 'user') return;
+	const userUiMessage = $derived.by(() => {
+		if (uiMessage.role !== 'user') return;
 
-		return chat.getChatMessageContent(message.content);
+		return uiMessage;
 	});
 
 	let messageParagraphRef = $state<HTMLParagraphElement | null>(null);
@@ -30,36 +29,30 @@
 	let isExpandCard = $state(false);
 </script>
 
-{#if userMessageContent}
+{#if userUiMessage}
 	<div
 		class={cn(
 			'relative mt-12 flex w-fit items-center gap-x-2 rounded-2xl rounded-tr-none bg-color-background-surface p-4',
 			messageIsOverflowing ||
-				(userMessageContent.some((content) => content.type === 'image') && 'items-start')
+				(userUiMessage.parts.some((part) => part.type === 'file') && 'items-start')
 		)}
 	>
 		<Avatar class="size-8" src={user.imageUrl} fullName={user.fullName} />
 
 		<div>
-			{#each userMessageContent as content, i (`${content.type}-${i}`)}
-				{#if content.type === 'text'}
-					<p
-						bind:this={messageParagraphRef}
-						class={cn(
-							'max-h-20 max-w-fit flex-1 overflow-hidden text-ellipsis transition-all',
-							isExpandCard && 'max-h-auto'
-						)}
-					>
-						{content.text}
-					</p>
+			{#each userUiMessage.parts as part, partIndex (`${partIndex}-${userUiMessage.role}-${userUiMessage.id}`)}
+				{#if part.type === 'text'}
+					<p>{part.text}</p>
 				{/if}
 
-				{#if (content.type === 'image' && typeof (content as any).image === 'string') || (content.type === 'file' && typeof (content as any).data === 'string' && (content as any).mediaType.startsWith('image/'))}
-					<img
-						class="mt-2 h-auto w-48 rounded-md object-cover"
-						src={(content as any).image ?? (content as any).data}
-						alt="user chat file"
-					/>
+				{#if part.type === 'file'}
+					{#if part.mediaType.startsWith('image/')}
+						<img
+							class="mt-2 h-auto w-48 rounded-md object-cover"
+							src={part.url}
+							alt={`User chat file`}
+						/>
+					{/if}
 				{/if}
 			{/each}
 		</div>

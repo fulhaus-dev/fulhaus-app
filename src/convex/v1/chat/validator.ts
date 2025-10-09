@@ -1,123 +1,82 @@
 import { v } from 'convex/values';
 
-export const vProviderOptions = v.record(v.string(), v.record(v.string(), v.any()));
-
-export const vTextPart = v.object({
+const vTextUiPart = v.object({
 	type: v.literal('text'),
 	text: v.string(),
-	providerOptions: v.optional(vProviderOptions)
+	state: v.optional(v.union(v.literal('streaming'), v.literal('done')))
 });
 
-export const vImagePart = v.object({
-	type: v.literal('image'),
-	image: v.union(v.string(), v.bytes()),
-	mediaType: v.optional(v.string()),
-	providerOptions: v.optional(vProviderOptions)
-});
-
-export const vFilePart = v.object({
+const vFileUiPart = v.object({
 	type: v.literal('file'),
-	data: v.union(v.string(), v.bytes(), v.any()),
-	filename: v.optional(v.string()),
 	mediaType: v.string(),
-	providerOptions: v.optional(vProviderOptions)
+	filename: v.optional(v.string()),
+	url: v.string()
 });
 
-export const vReasoningPart = v.object({
+const vToolUiPart = v.object({
+	type: v.string(),
+	toolCallId: v.string(),
+	state: v.union(
+		v.literal('input-streaming'),
+		v.literal('input-available'),
+		v.literal('output-available'),
+		v.literal('output-error')
+	),
+	input: v.optional(v.any()),
+	output: v.optional(v.any()),
+	errorText: v.optional(v.string()),
+	providerExecuted: v.optional(v.boolean())
+});
+
+const vReasoningUiPart = v.object({
 	type: v.literal('reasoning'),
 	text: v.string(),
-	providerOptions: v.optional(vProviderOptions)
+	state: v.optional(v.union(v.literal('streaming'), v.literal('done'))),
+	providerMetadata: v.optional(v.any())
 });
 
-export const vToolCallPart = v.object({
-	type: v.literal('tool-call'),
-	toolCallId: v.string(),
-	toolName: v.string(),
-	input: v.any(),
-	providerExecuted: v.optional(v.boolean()),
-	providerOptions: v.optional(vProviderOptions)
+const vSourceUrlUiPart = v.object({
+	type: v.literal('source-url'),
+	sourceId: v.string(),
+	url: v.string(),
+	title: v.optional(v.string()),
+	providerMetadata: v.optional(v.any())
 });
 
-export const vToolResultOutput = v.union(
-	v.object({ type: v.literal('text'), value: v.string() }),
-	v.object({ type: v.literal('json'), value: v.any() }),
-	v.object({ type: v.literal('error-text'), value: v.string() }),
-	v.object({ type: v.literal('error-json'), value: v.any() }),
-	v.object({
-		type: v.literal('content'),
-		value: v.array(
-			v.union(
-				v.object({ type: v.literal('text'), text: v.string() }),
-				v.object({
-					type: v.literal('media'),
-					data: v.string(),
-					mediaType: v.string()
-				})
-			)
-		)
-	})
+const vDataUiPart = v.object({
+	type: v.string(),
+	id: v.optional(v.string()),
+	data: v.any()
+});
+
+const vStepStartUiPart = v.object({
+	type: v.literal('step-start')
+});
+
+const vUiMessagePart = v.union(
+	vTextUiPart,
+	vFileUiPart,
+	vToolUiPart,
+	vReasoningUiPart,
+	vSourceUrlUiPart,
+	vDataUiPart,
+	vStepStartUiPart
 );
 
-export const vToolResultPart = v.object({
-	type: v.literal('tool-result'),
-	toolCallId: v.string(),
-	toolName: v.string(),
-	output: vToolResultOutput,
-	providerOptions: v.optional(vProviderOptions)
+const vChatMetadata = v.record(v.string(), v.any());
+
+export const vChatUiMessage = v.object({
+	id: v.string(),
+	role: v.union(v.literal('system'), v.literal('user'), v.literal('assistant')),
+	parts: v.array(vUiMessagePart),
+	metadata: v.optional(vChatMetadata)
 });
 
-export const vChatUserContent = v.union(
-	v.string(),
-	v.array(v.union(vTextPart, vImagePart, vFilePart))
-);
-
-export const vChatAssistantContent = v.union(
-	v.string(),
-	v.array(v.union(vTextPart, vFilePart, vReasoningPart, vToolCallPart, vToolResultPart))
-);
-
-export const vChatSystemMessage = v.object({
-	role: v.literal('system'),
-	content: v.string(),
-	providerOptions: v.optional(vProviderOptions)
-});
-
-export const vChatUserMessage = v.object({
-	role: v.literal('user'),
-	content: vChatUserContent,
-	providerOptions: v.optional(vProviderOptions)
-});
-
-export const vChatAssistantMessage = v.object({
-	role: v.literal('assistant'),
-	content: vChatAssistantContent,
-	providerOptions: v.optional(vProviderOptions)
-});
-
-export const vChatToolMessage = v.object({
-	role: v.literal('tool'),
-	content: v.array(vToolResultPart),
-	providerOptions: v.optional(vProviderOptions)
-});
-
-export const vChatMessage = v.union(
-	vChatSystemMessage,
-	vChatUserMessage,
-	vChatAssistantMessage,
-	vChatToolMessage
-);
-
-export const vLlmUsage = v.object({
+export const vChatUsage = v.object({
 	inputTokens: v.optional(v.number()),
 	outputTokens: v.optional(v.number()),
 	toolTokens: v.optional(v.number()),
 	reasoningTokens: v.optional(v.number()),
 	cachedInputTokens: v.optional(v.number()),
 	totalTokens: v.optional(v.number())
-});
-
-export const vChatResponseStream = v.object({
-	type: v.string(),
-	id: v.optional(v.string()),
-	delta: v.optional(v.string())
 });
