@@ -101,11 +101,11 @@
 									<span
 										class={cn(
 											'text-lg text-color-text-placeholder',
-											productCategoryIcons[productCategory]
+											productCategoryIcons[productCategory.category]
 										)}
 									></span>
 									<p>
-										{productCategory}
+										{productCategory.category}
 									</p>
 								</div>
 							{/each}

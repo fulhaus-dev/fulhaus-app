@@ -1,11 +1,10 @@
 import { mutation } from '../../_generated/server';
 import authorization from '../../middleware/authorization';
 import { v } from 'convex/values';
-import { vUpdateDesign } from './validator';
+import { vDesignProductCategory, vUpdateDesign } from './validator';
 import designModel from './model';
 import { internal } from '../../_generated/api';
 import object from '../../util/object';
-import { vProductCategory } from '../product/validator';
 
 export const updateDesignById = mutation({
 	args: {
@@ -55,7 +54,7 @@ export const addNewProductToDesignById = mutation({
 		designId: v.id('designs'),
 		update: v.object({
 			productId: v.id('products'),
-			productCategory: vProductCategory
+			productCategory: vDesignProductCategory
 		})
 	},
 	handler: async (ctx, args) => {
@@ -70,10 +69,7 @@ export const addNewProductToDesignById = mutation({
 
 		await designModel.updateDesignById(ctx, args.designId, userId, {
 			productIds: [...(currentDesign.productIds ?? []), args.update.productId],
-			productCategories: [
-				...(currentDesign.productCategories ?? []),
-				{ category: args.update.productCategory }
-			]
+			productCategories: [...(currentDesign.productCategories ?? []), args.update.productCategory]
 		});
 
 		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
@@ -89,7 +85,7 @@ export const removeProductFromDesignById = mutation({
 		designId: v.id('designs'),
 		remove: v.object({
 			productId: v.id('products'),
-			productCategory: vProductCategory
+			productCategory: vDesignProductCategory
 		})
 	},
 	handler: async (ctx, args) => {
@@ -105,7 +101,7 @@ export const removeProductFromDesignById = mutation({
 		await designModel.updateDesignById(ctx, args.designId, userId, {
 			productIds: (currentDesign.productIds ?? []).filter((id) => id !== args.remove.productId),
 			productCategories: (currentDesign.productCategories ?? []).filter(
-				(productCategory) => productCategory.category !== args.remove.productCategory
+				(productCategory) => productCategory.category !== args.remove.productCategory.category
 			)
 		});
 

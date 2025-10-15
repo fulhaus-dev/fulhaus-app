@@ -23,7 +23,12 @@ export const zProductFilter = z
 	})
 	.strip();
 
-export const zProductSortIndex = z.enum(['by_category_price', 'by_price']);
+export const zProductSortIndex = z.enum([
+	'by_category_price_usd',
+	'by_category_price_cad',
+	'by_price_usd',
+	'by_price_cad'
+]);
 export const zProductSortOrder = z.enum(['asc', 'desc']);
 
 export const zProductSortOptions = z

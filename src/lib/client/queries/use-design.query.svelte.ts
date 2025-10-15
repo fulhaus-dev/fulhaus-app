@@ -2,7 +2,7 @@ import { api } from '../../../convex/_generated/api.js';
 import { page } from '$app/state';
 import { QueryParams } from '$lib/enums.js';
 import type { Id } from '../../../convex/_generated/dataModel.js';
-import type { Design } from '$lib/types.js';
+import type { CurrencyCode, Design } from '$lib/types.js';
 import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte.js';
 
 export function useDesignQuery() {
@@ -16,10 +16,11 @@ export function useDesignQuery() {
 	const { query } = useConvexQuerySubscription(
 		api.v1.design.query.getDesignDataByChatId,
 		() => ({
-			chatId: ludwigChatId!
+			chatId: ludwigChatId!,
+			currencyCode: 'CAD' as CurrencyCode
 		}),
 		{
-			requiredArgsKeys: ['chatId']
+			requiredArgsKeys: ['chatId', 'currencyCode']
 		}
 	);
 
@@ -95,7 +96,7 @@ export function useUniqueDesignSpacesForWorkspaceQuery() {
 
 export function useDesignTagsForWorkspaceQuery() {
 	const { query } = useConvexQuerySubscription(
-		api.v1.design.query.getDesignTagsForWorkspace,
+		api.v1.design.tag.query.getDesignTagsForWorkspace,
 		() => ({
 			workspaceId: page.params.workspaceId as Id<'workspaces'>
 		}),

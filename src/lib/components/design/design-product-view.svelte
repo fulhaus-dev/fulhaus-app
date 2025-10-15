@@ -62,7 +62,7 @@
 								'h-64 w-full object-contain group-hover:opacity-50',
 								generatingDesignFurnitureRecommendation && 'animate-pulse'
 							)}
-							src={designProduct.ludwigImageUrl}
+							src={designProduct.mainImageUrl}
 							alt={designProduct.name}
 						/>
 
@@ -83,7 +83,7 @@
 								onclick={() =>
 									removeProductFromDesign(designId, {
 										productId: designProduct._id,
-										productCategory: designProduct.category
+										productCategory: { category: designProduct.category }
 									})}
 							>
 								<TrashIcon class="size-3" />
@@ -141,7 +141,7 @@
 			onSelectProduct={(product) =>
 				addNewProductToDesign(designId, {
 					productId: product._id,
-					productCategory: product.category
+					productCategory: { category: product.category }
 				})}
 		>
 			<PlusIcon class="size-12 " />

@@ -1,5 +1,6 @@
 import { api } from '../../../convex/_generated/api.js';
 import type {
+	CurrencyCode,
 	Product,
 	ProductCategory,
 	ProductFilter,
@@ -98,12 +99,12 @@ export function usePaginatedProductsByCategoryQuery(
 			lastCursor = effectiveCursor;
 
 			const currentSortOptions = args.sortOptions?.();
-			const effectiveSortOptions =
-				currentSortOptions?.index === 'by_category_price'
-					? { index: 'by_category_price' as const, order: currentSortOptions.order }
-					: undefined;
+			const effectiveSortOptions = currentSortOptions?.index?.includes('by_category')
+				? { index: currentSortOptions.index, order: currentSortOptions.order }
+				: undefined;
 
 			return {
+				currencyCode: 'CAD' as CurrencyCode,
 				category,
 				productFilter: args.productFilter?.(),
 				paginationOptions: {
@@ -114,7 +115,7 @@ export function usePaginatedProductsByCategoryQuery(
 			};
 		},
 		{
-			requiredArgsKeys: ['category'],
+			requiredArgsKeys: ['category', 'currencyCode'],
 			debounceDelay: 300,
 			onLoading: (loading) => {
 				paginatedProductsByCategoryQuery.loading = loading;
@@ -172,12 +173,12 @@ export function useProductsQuery(args: {
 
 			const currentSortOptions = args.sortOptions?.();
 
-			const effectiveSortOptions =
-				currentSortOptions?.index === 'by_price'
-					? { index: 'by_price' as const, order: currentSortOptions.order }
-					: undefined;
+			const effectiveSortOptions = currentSortOptions?.index?.includes('by_price')
+				? { index: currentSortOptions.index, order: currentSortOptions.order }
+				: undefined;
 
 			return {
+				currencyCode: 'CAD' as CurrencyCode,
 				productFilter: args.productFilter(),
 				paginationOptions: {
 					cursor: effectiveCursor,

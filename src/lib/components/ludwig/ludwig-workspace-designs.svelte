@@ -191,11 +191,11 @@
 						alt={workspaceDesign.design.name}
 					/>
 
-					<div class="absolute right-0 bottom-0 left-0 z-1 flex flex-wrap gap-1 p-2">
+					<!-- <div class="absolute right-0 bottom-0 left-0 z-1 flex flex-wrap gap-1 p-2">
 						{#each workspaceDesign.design.styles ?? [] as style, index (`${index}-${style}`)}
 							{@render WorkspaceDesignStyle(style)}
 						{/each}
-					</div>
+					</div> -->
 				</button>
 
 				<div class="space-y-2 px-2">
@@ -284,11 +284,11 @@
 							</div>
 						</td>
 						<td class="max-w-[24%] px-4 py-1">
-							<div class="flex flex-wrap gap-1">
+							<!-- <div class="flex flex-wrap gap-1">
 								{#each workspaceDesign.design.styles ?? [] as style, index (`${index}-${style}`)}
 									{@render WorkspaceDesignStyle(style)}
 								{/each}
-							</div>
+							</div> -->
 						</td>
 
 						<td class="justify-items-end px-4 py-1 opacity-0 group-hover:opacity-100">

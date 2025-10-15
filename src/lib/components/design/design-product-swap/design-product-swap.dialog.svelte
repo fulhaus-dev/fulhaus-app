@@ -54,10 +54,10 @@
 				</div>
 
 				<div class="mx-auto flex w-fit items-center gap-x-8">
-					{@render ProductPreview({ src: productToSwap.ludwigImageUrl, alt: productToSwap.name })}
+					{@render ProductPreview({ src: productToSwap.mainImageUrl, alt: productToSwap.name })}
 					<MoveRightIcon />
 					{@render ProductPreview({
-						src: replacementProduct?.ludwigImageUrl,
+						src: replacementProduct?.mainImageUrl,
 						alt: replacementProduct?.name
 					})}
 				</div>

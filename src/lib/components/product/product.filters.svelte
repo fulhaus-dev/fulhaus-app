@@ -635,8 +635,8 @@
 					if (checked)
 						updateRouteProductSortFilterQuery({
 							productSortOptionsQueryString: productCategory
-								? `index-by_category_price,order-asc`
-								: `index-by_price,order-asc`
+								? `index-by_category_price_cad,order-asc`
+								: `index-by_price_cad,order-asc`
 						});
 					else
 						updateRouteProductSortFilterQuery({
@@ -658,8 +658,8 @@
 					if (checked)
 						updateRouteProductSortFilterQuery({
 							productSortOptionsQueryString: productCategory
-								? `index-by_category_price,order-desc`
-								: `index-by_price,order-desc`
+								? `index-by_category_price_cad,order-desc`
+								: `index-by_price_cad,order-desc`
 						});
 					else
 						updateRouteProductSortFilterQuery({

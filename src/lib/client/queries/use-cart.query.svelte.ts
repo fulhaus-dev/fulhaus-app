@@ -2,6 +2,7 @@ import { api } from '../../../convex/_generated/api.js';
 import type { Id } from '../../../convex/_generated/dataModel.js';
 import { page } from '$app/state';
 import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte.js';
+import type { CurrencyCode } from '$lib/types.js';
 
 export function useWorkspaceCartQuery() {
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'> | undefined;
@@ -9,10 +10,11 @@ export function useWorkspaceCartQuery() {
 	const { query } = useConvexQuerySubscription(
 		api.v1.cart.query.getCartByWorkspaceId,
 		() => ({
-			workspaceId: currentWorkspaceId!
+			workspaceId: currentWorkspaceId!,
+			currencyCode: 'CAD' as CurrencyCode
 		}),
 		{
-			requiredArgsKeys: ['workspaceId']
+			requiredArgsKeys: ['workspaceId', 'currencyCode']
 		}
 	);
 
@@ -41,10 +43,11 @@ export function useDesignCartQuery(designId: () => Id<'designs'>) {
 		api.v1.cart.query.getCartByDesignId,
 		() => ({
 			workspaceId: currentWorkspaceId!,
-			designId: designId()
+			designId: designId(),
+			currencyCode: 'CAD' as CurrencyCode
 		}),
 		{
-			requiredArgsKeys: ['workspaceId', 'designId']
+			requiredArgsKeys: ['workspaceId', 'designId', 'currencyCode']
 		}
 	);
 

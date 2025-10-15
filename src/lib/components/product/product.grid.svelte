@@ -90,7 +90,7 @@
 				>
 					<img
 						class="h-full w-full rounded-md border border-color-border object-contain p-1 group-hover:border-color-action-border"
-						src={product.ludwigImageUrl}
+						src={product.mainImageUrl}
 						alt={product.name}
 					/>
 

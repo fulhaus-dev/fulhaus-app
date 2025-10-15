@@ -8,7 +8,6 @@
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { ArmchairIcon, PaletteIcon } from '@lucide/svelte';
 
 	type DesignView = 'product' | 'canvas';
 

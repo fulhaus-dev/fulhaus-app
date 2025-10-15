@@ -5,7 +5,7 @@ import { r2 } from '../../../util/r2';
 import file from '../../../util/file';
 import { Id } from '../../../_generated/dataModel';
 import asyncFetch from '../../../util/fetch';
-import { LudwigRecommendationResponse } from '../../ludwig/type';
+// import { LudwigRecommendationResponse } from '../../ludwig/type';
 import date from '../../../util/date';
 import { getDesignRenderedImage, getDesignStylesFromRenderedImage } from '../../ludwig/ai/util';
 import { ProductStyle } from '../../product/type';
@@ -67,13 +67,46 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			};
 		}
 
-		const { response, error } = await asyncFetch.post(process.env.LUDWIG_RECOMMENDATION_ENDPOINT!, {
-			body: JSON.stringify({
-				image_url: design.inspirationImageUrl,
-				room_name: design.spaceType,
-				categories: design.productCategories
-			})
-		});
+		// const { response, error } = await asyncFetch.post(process.env.LUDWIG_RECOMMENDATION_ENDPOINT!, {
+		// 	body: JSON.stringify({
+		// 		image_url: design.inspirationImageUrl,
+		// 		room_name: design.spaceType,
+		// 		categories: design.productCategories
+		// 	})
+		// });
+		// if (error) {
+		// 	await updateDesignStatus({
+		// 		ctx,
+		// 		designId,
+		// 		userId,
+		// 		update: {
+		// 			generatingFurnitureRecommendation: false
+		// 		}
+		// 	});
+
+		// 	return { error };
+		// }
+
+		// const responseJson = (await response.json()) as LudwigRecommendationResponse;
+
+		// const recommendations = responseJson.recommendations.data;
+
+		// const products = await Promise.all(
+		// 	recommendations.map((recommendation) =>
+		// 		ctx.runQuery(internal.v1.product.internal.query.getProductById, {
+		// 			productId: recommendation.id as Id<'products'>
+		// 		})
+		// 	)
+		// );
+
+		const { response, error } = await asyncFetch.post(
+			'https://7xprymjerm.us-east-2.awsapprunner.com/vector-generation',
+			{
+				body: JSON.stringify({
+					image_url: design.inspirationImageUrl
+				})
+			}
+		);
 		if (error) {
 			await updateDesignStatus({
 				ctx,
@@ -87,14 +120,25 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			return { error };
 		}
 
-		const responseJson = (await response.json()) as LudwigRecommendationResponse;
+		const responseJson = await response.json();
+		const inspoVector = responseJson.vector as number[];
 
-		const recommendations = responseJson.recommendations.data;
+		const recommendations = await ctx.runAction(
+			internal.v1.product.internal.action.getLudwigProductRecommendationsByCategory,
+			{
+				currencyCode: 'CAD',
+				limit: 1,
+				categoryList: design.productCategories.map((productCategory) => ({
+					imageEmbedding: inspoVector,
+					category: productCategory.category
+				}))
+			}
+		);
 
 		const products = await Promise.all(
-			recommendations.map((recommendation) =>
+			recommendations.data.map(({ result }) =>
 				ctx.runQuery(internal.v1.product.internal.query.getProductById, {
-					productId: recommendation.id as Id<'products'>
+					productId: result[0]._id
 				})
 			)
 		);

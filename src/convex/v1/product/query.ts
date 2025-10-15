@@ -85,9 +85,7 @@ export const getClientProductsByCategoryWithFilters = query({
 export const getProductBrands = query({
 	args: {
 		category: v.optional(vProductCategory),
-		paginationOptions: v.optional(
-			v.object({ cursor: v.optional(v.string()), numItems: v.optional(v.number()) })
-		)
+		paginationOptions: v.optional(vProductPaginationOptions)
 	},
 	handler: async (ctx, args) => {
 		await authorization.userIsAuthenticated(ctx);

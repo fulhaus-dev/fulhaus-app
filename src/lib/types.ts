@@ -61,7 +61,8 @@ export type UpdateProject = {
 };
 
 export type SpaceType = Doc<'designs'>['spaceType'];
-export type ProductCategory = Doc<'designs'>['productCategories'][0];
+export type DesignProductCategory = Doc<'designs'>['productCategories'][0];
+export type ProductCategory = Doc<'designs'>['productCategories'][0]['category'];
 
 export type FloorPlanFile = Doc<'designs'>['floorPlanFile'];
 
@@ -71,14 +72,14 @@ export type UpdateDesign = {
 	inspirationImageUrl?: string;
 	floorPlanFileUrl?: string;
 	floorPlanFile?: FloorPlanFile;
-	productCategories?: ProductCategory[];
+	productCategories?: DesignProductCategory[];
 	productIds?: Id<'products'>[];
 	tags?: string[];
 };
 
 export type UpdateDesignProduct = {
 	productId: Id<'products'>;
-	productCategory: ProductCategory;
+	productCategory: DesignProductCategory;
 };
 
 export type ProductStyle = Doc<'products'>['styles'][0];
@@ -98,7 +99,6 @@ export type Product = {
 	restockDate?: number;
 	imageUrls: string[];
 	mainImageUrl?: string;
-	ludwigImageUrl: string;
 	currencyCode: CurrencyCode;
 	dimension?: string;
 	width: number;
@@ -115,7 +115,7 @@ export type Product = {
 	stockDate: number;
 };
 
-export type CurrencyCode = Doc<'products'>['currencyCode'];
+export type CurrencyCode = Doc<'products'>['prices'][0]['currencyCode'];
 
 export type CartItem = Doc<'cartItems'> & {
 	product: Product;

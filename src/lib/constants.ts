@@ -307,5 +307,17 @@ export const productCategoryIcons: Record<ProductCategory, string> = {
 	Wardrobe: 'icon-[mdi--wardrobe-outline]',
 	'Waste basket': 'icon-[mdi--delete-outline]',
 	Whisk: 'icon-[mdi--pot-mix-outline]',
-	'Wine Glass': 'icon-[mdi--glass-wine]'
+	'Wine Glass': 'icon-[mdi--glass-wine]',
+	'Outdoor Arm Chair': 'icon-[mdi--sofa-single-outline]',
+	'Outdoor Rug': 'icon-[mdi--rug]',
+	'Outdoor Dining Chair': 'icon-[mdi--table-chair]',
+	'Outdoor Chair': 'icon-[mdi--chair-accent-outline]',
+	'Outdoor Coffee Table': 'icon-[mdi--table-furniture]',
+	'Outdoor Dining Table': 'icon-[mdi--table-picnic]',
+	'Outdoor Fire Pit': 'icon-[mdi--fireplace]',
+	'Outdoor Lounger': 'icon-[mdi--car-child-seat]',
+	'Outdoor Side Table': 'icon-[mdi--table-furniture]',
+	'Outdoor Sofa': 'icon-[mdi--sofa-single-outline]',
+	'Outdoor Throw Pillow': 'icon-[mdi--decagram-outline]',
+	'Outdoor Umbrella': 'icon-[mdi--umbrella-outline]'
 };

@@ -4,6 +4,7 @@ import { uploadWorkspaceAsset } from './v1/workspace/asset/http/action';
 import { streamLudwigChatResponse } from './v1/ludwig/http/action';
 import { httpAction } from './_generated/server';
 import { getLudwigProductRecommendationsByCategory } from './v1/product/http/action';
+import { checkCors } from './middleware/cors';
 
 const http = httpRouter();
 
@@ -29,14 +30,11 @@ http.route({
 	path: '/ludwig/stream-chat',
 	method: 'OPTIONS',
 	handler: httpAction(async (_, request) => {
-		const origin = request.headers.get('Origin');
-
-		if (origin !== 'https://fulhaus-app-production.up.railway.app')
-			return new Response(null, { status: 204 });
+		const origin = checkCors(request);
 
 		return new Response(null, {
 			headers: new Headers({
-				'Access-Control-Allow-Origin': 'https://fulhaus-app-production.up.railway.app',
+				'Access-Control-Allow-Origin': origin,
 				'Access-Control-Allow-Methods': 'POST',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Workspace-Id',
 				'Access-Control-Max-Age': '86400'

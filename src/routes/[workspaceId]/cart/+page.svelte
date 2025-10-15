@@ -62,7 +62,7 @@
 								<div class="h-36 w-36 rounded-md bg-color-background-surface p-2">
 									<img
 										class="h-full w-full rounded-md object-contain"
-										src={cartItem.product.ludwigImageUrl}
+										src={cartItem.product.mainImageUrl}
 										alt={cartItem.product.name}
 									/>
 								</div>

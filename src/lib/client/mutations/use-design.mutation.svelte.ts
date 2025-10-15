@@ -77,7 +77,7 @@ export function useDesignMutation() {
 		if (!activeWorkspaceId) return;
 
 		const { error } = await asyncTryCatch(() =>
-			convexClient.mutation(api.v1.design.mutation.addTagsToDesign, {
+			convexClient.mutation(api.v1.design.tag.mutation.saveDesignTags, {
 				workspaceId: activeWorkspaceId as Id<'workspaces'>,
 				designId,
 				tagNames
@@ -91,7 +91,7 @@ export function useDesignMutation() {
 		if (!activeWorkspaceId) return;
 
 		const { error } = await asyncTryCatch(() =>
-			convexClient.mutation(api.v1.design.mutation.deleteDesignTag, {
+			convexClient.mutation(api.v1.design.tag.mutation.deleteDesignTag, {
 				workspaceId: activeWorkspaceId as Id<'workspaces'>,
 				designTagId
 			})

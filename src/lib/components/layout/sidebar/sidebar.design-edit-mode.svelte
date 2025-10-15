@@ -22,7 +22,10 @@
 
 	const filteredProductCategories = $derived.by(() => {
 		const availableProductCategories = productCategoriesBySpaceQuery.categories.filter(
-			(productCategory) => !updates.productCategories?.includes(productCategory)
+			(productCategory) =>
+				!updates.productCategories
+					?.map((productCategory) => productCategory.category)
+					?.includes(productCategory)
 		);
 
 		if (productCategorySearchValue === '') return availableProductCategories;
@@ -59,11 +62,11 @@
 							<span
 								class={cn(
 									'text-lg text-color-text-placeholder group-hover:text-color-error-text',
-									productCategoryIcons[productCategory]
+									productCategoryIcons[productCategory.category]
 								)}
 							></span>
 							<p>
-								{productCategory}
+								{productCategory.category}
 							</p>
 						</div>
 
@@ -180,7 +183,12 @@
 						class="flex h-10 w-full cursor-pointer items-center gap-x-4 px-4 hover:bg-color-background-surface"
 						type="button"
 						onclick={() => {
-							updates.productCategories = [...(updates.productCategories ?? []), productCategory];
+							updates.productCategories = [
+								...(updates.productCategories ?? []).map((productCategory) => ({
+									category: productCategory.category
+								})),
+								{ category: productCategory }
+							];
 						}}
 					>
 						<span
