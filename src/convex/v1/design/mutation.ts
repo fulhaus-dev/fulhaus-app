@@ -26,9 +26,6 @@ export const updateDesignById = mutation({
 		const updates = args.updates;
 		const dataToUpdate = object.getDifference(currentDesign, updates);
 
-		if (dataToUpdate.tags)
-			dataToUpdate.tags = [...new Set([...dataToUpdate.tags, ...(currentDesign.tags ?? [])])];
-
 		await designModel.updateDesignById(ctx, args.designId, userId, dataToUpdate);
 
 		if (dataToUpdate.productCategories || dataToUpdate.inspirationImageUrl) {
@@ -73,7 +70,10 @@ export const addNewProductToDesignById = mutation({
 
 		await designModel.updateDesignById(ctx, args.designId, userId, {
 			productIds: [...(currentDesign.productIds ?? []), args.update.productId],
-			productCategories: [...(currentDesign.productCategories ?? []), args.update.productCategory]
+			productCategories: [
+				...(currentDesign.productCategories ?? []),
+				{ category: args.update.productCategory }
+			]
 		});
 
 		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
@@ -105,7 +105,7 @@ export const removeProductFromDesignById = mutation({
 		await designModel.updateDesignById(ctx, args.designId, userId, {
 			productIds: (currentDesign.productIds ?? []).filter((id) => id !== args.remove.productId),
 			productCategories: (currentDesign.productCategories ?? []).filter(
-				(category) => category !== args.remove.productCategory
+				(productCategory) => productCategory.category !== args.remove.productCategory
 			)
 		});
 
@@ -113,38 +113,5 @@ export const removeProductFromDesignById = mutation({
 			designId: args.designId,
 			userId
 		});
-	}
-});
-
-export const addTagsToDesign = mutation({
-	args: {
-		workspaceId: v.id('workspaces'),
-		designId: v.id('designs'),
-		tagNames: v.array(v.string())
-	},
-	handler: async (ctx, args) => {
-		await authorization.workspaceMemberIsAuthorizedToPerformFunction(
-			ctx,
-			args.workspaceId,
-			'createDesign'
-		);
-
-		await designModel.addTagsToDesign(ctx, args.workspaceId, args.designId, args.tagNames);
-	}
-});
-
-export const deleteDesignTag = mutation({
-	args: {
-		workspaceId: v.id('workspaces'),
-		designTagId: v.id('designTags')
-	},
-	handler: async (ctx, args) => {
-		await authorization.workspaceMemberIsAuthorizedToPerformFunction(
-			ctx,
-			args.workspaceId,
-			'createDesign'
-		);
-
-		await designModel.deleteDesignTag(ctx, args.designTagId);
 	}
 });

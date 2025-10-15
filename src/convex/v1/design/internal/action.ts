@@ -9,25 +9,25 @@ import { LudwigRecommendationResponse } from '../../ludwig/type';
 import date from '../../../util/date';
 import { getDesignRenderedImage, getDesignStylesFromRenderedImage } from '../../ludwig/ai/util';
 import { ProductStyle } from '../../product/type';
+import { UpdateDesign } from '../type';
 
 export const generateDesignStyles = internalAction({
 	args: {
+		workspaceId: v.id('workspaces'),
 		designId: v.id('designs'),
-		userId: v.id('users'),
 		renderedImageUrl: v.string()
 	},
-	handler: async (ctx, { designId, userId, renderedImageUrl }) => {
+	handler: async (ctx, { workspaceId, designId, renderedImageUrl }) => {
 		const { data: designStyles } = await getDesignStylesFromRenderedImage(renderedImageUrl);
 		if (!designStyles) return;
 
-		return await updateDesignStatus({
-			ctx,
+		await ctx.runMutation(internal.v1.design.tag.internal.mutation.saveDesignTags, {
+			workspaceId,
 			designId,
-			userId,
-			update: {
-				styles: designStyles
-			}
+			tags: designStyles
 		});
+
+		return;
 	}
 });
 
@@ -226,8 +226,8 @@ export const generateDesignRender = internalAction({
 
 		if (renderedImageUrl)
 			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignStyles, {
+				workspaceId: design.workspaceId,
 				designId,
-				userId,
 				renderedImageUrl
 			});
 
@@ -259,9 +259,12 @@ async function updateDesignStatus({
 		styles?: ProductStyle[];
 	};
 }) {
+	const currentUpdate: UpdateDesign = update;
+	if (update.renderedImageUrl) currentUpdate.generateRender = false;
+
 	await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
 		designId: designId,
 		userId: userId,
-		update
+		update: currentUpdate
 	});
 }

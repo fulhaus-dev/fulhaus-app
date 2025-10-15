@@ -4,6 +4,7 @@ import authorization from '../../middleware/authorization';
 import designModel from './model';
 import { SuccessData } from '../../response/success';
 import { vCurrencyCode } from '../../validator';
+import designTagModel from './tag/model';
 
 export const getDesignDataByChatId = query({
 	args: {
@@ -34,7 +35,7 @@ export const getDesignsByWorkspaceId = query({
 		const designsWithTags = await Promise.all(
 			designs.map(async (design) => ({
 				design,
-				designTags: await designModel.getDesignTagsByDesignId(ctx, design._id)
+				designTags: await designTagModel.getDesignTagsByDesignId(ctx, design._id)
 			}))
 		);
 
@@ -52,18 +53,5 @@ export const getUniqueDesignSpacesForWorkspace = query({
 		const spaces = await designModel.getUniqueDesignSpacesForWorkspace(ctx, args.workspaceId);
 
 		return SuccessData(spaces);
-	}
-});
-
-export const getDesignTagsForWorkspace = query({
-	args: {
-		workspaceId: v.id('workspaces')
-	},
-	handler: async (ctx, args) => {
-		await authorization.userIsAuthenticated(ctx);
-
-		const designTags = await designModel.getDesignTagsForWorkspace(ctx, args.workspaceId);
-
-		return SuccessData(designTags);
 	}
 });

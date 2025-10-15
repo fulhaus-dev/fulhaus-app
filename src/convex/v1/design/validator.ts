@@ -1,9 +1,14 @@
 import { v } from 'convex/values';
 import { spaceTypes } from './constant';
 import { vFloorPlanFile } from '../../validator';
-import { vProductCategory, vProductStyle } from '../product/validator';
+import { vProductCategory, vProductRecommendationFilter } from '../product/validator';
 
 export const vSpaceType = v.union(...spaceTypes.map((tag) => v.literal(tag)));
+
+export const vDesignProductCategory = v.object({
+	category: vProductCategory,
+	filter: v.optional(vProductRecommendationFilter)
+});
 
 export const vCreateDesign = v.object({
 	workspaceId: v.id('workspaces'),
@@ -14,8 +19,7 @@ export const vCreateDesign = v.object({
 	inspirationImageUrl: v.string(),
 	floorPlanUrl: v.optional(v.string()),
 	floorPlanFile: v.optional(vFloorPlanFile),
-	productCategories: v.array(vProductCategory),
-	styles: v.array(vProductStyle)
+	productCategories: v.array(vDesignProductCategory)
 });
 
 export const vUpdateDesign = v.object({
@@ -25,11 +29,10 @@ export const vUpdateDesign = v.object({
 	inspirationImageUrl: v.optional(v.string()),
 	floorPlanUrl: v.optional(v.string()),
 	floorPlanFile: v.optional(vFloorPlanFile),
-	productCategories: v.optional(v.array(vProductCategory)),
+	productCategories: v.optional(v.array(vDesignProductCategory)),
 	productIds: v.optional(v.array(v.id('products'))),
 	renderedImageUrl: v.optional(v.string()),
-	styles: v.optional(v.array(vProductStyle)),
-	tags: v.optional(v.array(v.string())),
 	renderingImage: v.optional(v.boolean()),
+	generateRender: v.optional(v.boolean()),
 	generatingFurnitureRecommendation: v.optional(v.boolean())
 });

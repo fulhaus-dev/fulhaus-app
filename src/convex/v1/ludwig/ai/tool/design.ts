@@ -23,7 +23,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 					.optional(z.url())
 					.describe('The floor plan url provided by the user. If any'),
 				productCategories: z
-					.array(z.enum(productCategories))
+					.array(z.object({ category: z.enum(productCategories) }))
 					.describe('The array of furniture product categories for the space to be designed.'),
 				styles: z
 					.array(z.enum(productStyles))
@@ -33,7 +33,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 		execute: async (input) => {
 			const { ctx, userId, workspaceId, chatId } = toolCtxParams;
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { floorPlanUrl, inspirationImageUrl: _, ...otherInput } = input;
+			const { floorPlanUrl, inspirationImageUrl: _, styles, ...otherInput } = input;
 
 			const ludwigChatTempAsset = await ctx.runQuery(
 				internal.v1.ludwig.internal.query.getLudwigChatTempAssetsByChatId,
@@ -57,16 +57,21 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
 				};
 
-			const newDesignId = await ctx.runMutation(internal.v1.design.internal.mutation.createDesign, {
-				userId,
-				create: {
-					...otherInput,
+			const newDesignId = await ctx.runMutation(
+				internal.v1.ludwig.ai.tool.internal.mutation.aiCreateDesign,
+				{
 					workspaceId,
-					chatId,
-					inspirationImageUrl,
-					floorPlanFile
+					userId,
+					create: {
+						...otherInput,
+						workspaceId,
+						chatId,
+						inspirationImageUrl,
+						floorPlanFile
+					},
+					styles
 				}
-			});
+			);
 
 			await ctx.runMutation(internal.v1.chat.internal.mutation.updateChatById, {
 				chatId,
@@ -115,7 +120,7 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 							.optional(z.url())
 							.describe('The new floor plan url provided by the user.'),
 						productCategories: z
-							.optional(z.array(z.enum(productCategories)))
+							.optional(z.array(z.object({ category: z.enum(productCategories) })))
 							.describe('New array of furniture product categories for the space to be designed.'),
 						styles: z
 							.array(z.enum(productStyles))
@@ -125,11 +130,12 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 			})
 			.strip(),
 		execute: async (input) => {
-			const { ctx, userId, chatId } = toolCtxParams;
+			const { ctx, userId, chatId, workspaceId } = toolCtxParams;
 			const { designId, update } = input;
 			const {
 				floorPlanUrl,
 				inspirationImageUrl: providedInspirationImageUrl,
+				styles,
 				...otherDesignDataToUpdate
 			} = update;
 
@@ -155,14 +161,16 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
 				};
 
-			await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
+			await ctx.runMutation(internal.v1.ludwig.ai.tool.internal.mutation.aiUpdateDesignById, {
+				workspaceId,
 				userId,
 				designId: designId as Id<'designs'>,
 				update: {
 					...otherDesignDataToUpdate,
 					inspirationImageUrl,
 					floorPlanFile
-				}
+				},
+				styles
 			});
 
 			await ctx.runMutation(
