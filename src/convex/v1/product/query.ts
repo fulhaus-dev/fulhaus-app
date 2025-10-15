@@ -4,21 +4,27 @@ import { SuccessData } from '../../response/success';
 import { vSpaceType } from '../design/validator';
 import productModel from './model';
 import { v } from 'convex/values';
-import { vProductCategory, vProductFilter } from './validator';
-import ServerError from '../../response/error';
+import {
+	vProductCategory,
+	vProductFilter,
+	vProductPaginationOptions,
+	vProductSortOptions
+} from './validator';
+import { vCurrencyCode } from '../../validator';
 
-export const getPoProductByPId = query({
+export const getPoProductsBySkus = query({
 	args: {
 		poApiKey: v.string(),
-		pId: v.string()
+		skus: v.array(v.string())
 	},
 	handler: async (ctx, args) => {
 		authorization.authorizeProductOnboarding(args.poApiKey);
 
-		const product = await productModel.getProductByPId(ctx, args.pId);
-		if (!product) throw ServerError.NotFound('Product not found.');
+		const products = await Promise.all(
+			args.skus.map((sku) => productModel.getProductBySku(ctx, sku))
+		);
 
-		return SuccessData(product);
+		return SuccessData(products);
 	}
 });
 
@@ -37,23 +43,18 @@ export const getProductCategoriesForSpace = query({
 
 export const getClientProductsWithFilters = query({
 	args: {
+		currencyCode: vCurrencyCode,
 		productFilter: v.optional(vProductFilter),
-		paginationOptions: v.optional(
-			v.object({ cursor: v.optional(v.string()), numItems: v.optional(v.number()) })
-		),
-		sortOptions: v.optional(
-			v.object({
-				index: v.literal('by_price'),
-				order: v.union(v.literal('asc'), v.literal('desc'))
-			})
-		)
+		paginationOptions: v.optional(vProductPaginationOptions),
+		sortOptions: v.optional(vProductSortOptions)
 	},
-	handler: async (ctx, args) => {
+	handler: async (ctx, { currencyCode, ...otherArgs }) => {
 		await authorization.userIsAuthenticated(ctx);
 
 		const clientProductPaginationResult = await productModel.getClientProductsWithFilters(
 			ctx,
-			args
+			currencyCode,
+			otherArgs
 		);
 
 		return SuccessData(clientProductPaginationResult);
@@ -62,24 +63,18 @@ export const getClientProductsWithFilters = query({
 
 export const getClientProductsByCategoryWithFilters = query({
 	args: {
+		currencyCode: vCurrencyCode,
 		category: vProductCategory,
 		productFilter: v.optional(vProductFilter),
-		paginationOptions: v.optional(
-			v.object({ cursor: v.optional(v.string()), numItems: v.optional(v.number()) })
-		),
-		sortOptions: v.optional(
-			v.object({
-				index: v.literal('by_category_price'),
-				order: v.union(v.literal('asc'), v.literal('desc'))
-			})
-		)
+		paginationOptions: v.optional(vProductPaginationOptions),
+		sortOptions: v.optional(vProductSortOptions)
 	},
-	handler: async (ctx, { category, ...otherArgs }) => {
+	handler: async (ctx, { currencyCode, ...otherArgs }) => {
 		await authorization.userIsAuthenticated(ctx);
 
 		const clientProductPaginationResult = await productModel.getClientProductsByCategoryWithFilters(
 			ctx,
-			category,
+			currencyCode,
 			otherArgs
 		);
 

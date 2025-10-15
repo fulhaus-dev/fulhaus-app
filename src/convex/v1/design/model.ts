@@ -5,6 +5,7 @@ import date from '../../util/date';
 import { vCreateDesign, vUpdateDesign } from './validator';
 import productModel from '../product/model';
 import { UniqueSpace } from './type';
+import { CurrencyCode } from '../../type';
 
 async function createDesign(
 	ctx: MutationCtx,
@@ -53,11 +54,18 @@ async function updateDesignById(
 	});
 }
 
-async function getDesignProductsByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
+async function getDesignProductsByChatId(
+	ctx: QueryCtx,
+	chatId: Id<'chats'>,
+	currencyCode: CurrencyCode
+) {
 	const design = await getDesignByChatId(ctx, chatId);
 	if (!design || !design.productIds) return [];
 
-	return await productModel.getProductsForClientByIds(ctx, design.productIds);
+	return await productModel.getProductsForClientByIds(ctx, {
+		productIds: design.productIds,
+		currencyCode
+	});
 }
 
 async function getExistingDesignsWithFloorPlanUrl(ctx: QueryCtx, floorPlanUrl: string) {

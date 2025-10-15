@@ -1,23 +1,31 @@
-import { MutationCtx, QueryCtx } from '../../_generated/server';
+import { ActionCtx, MutationCtx, QueryCtx } from '../../_generated/server';
 import { Infer } from 'convex/values';
 import { Doc, Id } from '../../_generated/dataModel';
-import { vCreateProduct } from './validator';
+import { vCreateProduct, vUpdateProduct } from './validator';
 import date from '../../util/date';
 import { SpaceType } from '../design/type';
 import { spaceTypeProductCategories } from '../design/constant';
 import { filterClientProducts, productsToClientProducts } from './util';
-import { ClientProduct, Product, ProductCategory, ProductFilter } from './type';
+import {
+	ClientProduct,
+	Product,
+	ProductCategory,
+	ProductFilter,
+	ProductPaginationOptions,
+	ProductRecommendationFilter,
+	ProductSortOptions
+} from './type';
 import { paginator } from 'convex-helpers/server/pagination';
 import schema from '../../schema';
 import type { PaginationResult } from 'convex/server';
+import { CurrencyCode } from '../../type';
 
 async function createProduct(ctx: MutationCtx, args: Infer<typeof vCreateProduct>) {
 	return await ctx.db.insert('products', {
 		...args,
 		status: 'Active',
 		stockDate: date.now(),
-		updatedAt: date.now(),
-		createdAt: date.now()
+		updatedAt: date.now()
 	});
 }
 
@@ -25,17 +33,21 @@ async function getProductById(ctx: QueryCtx, productId: Id<'products'>) {
 	return await ctx.db.get(productId);
 }
 
-async function getProductByPId(ctx: QueryCtx, pId: string) {
-	return await ctx.db
-		.query('products')
-		.withIndex('by_product_id', (q) => q.eq('pId', pId))
-		.first();
+async function updateProductById(
+	ctx: MutationCtx,
+	productId: Id<'products'>,
+	args: Infer<typeof vUpdateProduct>
+) {
+	return await ctx.db.patch(productId, {
+		...args,
+		updatedAt: date.now()
+	});
 }
 
-async function getProductByLudwigImageUrl(ctx: QueryCtx, ludwigImageUrl: string) {
+async function getProductBySku(ctx: QueryCtx, sku: string) {
 	return await ctx.db
 		.query('products')
-		.withIndex('by_ludwig_image_url', (q) => q.eq('ludwigImageUrl', ludwigImageUrl))
+		.withIndex('by_sku', (q) => q.eq('sku', sku))
 		.first();
 }
 
@@ -43,20 +55,27 @@ function getProductCategoriesForSpace(spaceType: SpaceType) {
 	return spaceTypeProductCategories[spaceType];
 }
 
-async function getProductsForClientByIds(ctx: QueryCtx, productIds: Id<'products'>[]) {
+async function getProductsForClientByIds(
+	ctx: QueryCtx,
+	args: { productIds: Id<'products'>[]; currencyCode: CurrencyCode }
+) {
 	// TODO: Handle send products with active status
-	const products = await Promise.all(productIds.map((productId) => getProductById(ctx, productId)));
+	const products = await Promise.all(
+		args.productIds.map((productId) => getProductById(ctx, productId))
+	);
 
 	const clientProducts = productsToClientProducts(
-		products.filter((product) => product?.status === 'Active')
+		products.filter((product) => product?.status === 'Active'),
+		args.currencyCode
 	);
 	return clientProducts;
 }
 
 async function getClientProducts(
 	ctx: QueryCtx,
-	paginationOptions?: { cursor?: string; numItems?: number },
-	sortOptions?: { index: 'by_price'; order: 'asc' | 'desc' }
+	currencyCode: CurrencyCode,
+	paginationOptions?: ProductPaginationOptions,
+	sortOptions?: ProductSortOptions
 ) {
 	const { cursor, numItems = 25 } = paginationOptions ?? {};
 
@@ -84,7 +103,7 @@ async function getClientProducts(
 
 	const { page: products, isDone, continueCursor } = page ?? ({} as PaginationResult<Product>);
 
-	const clientProducts = productsToClientProducts(products);
+	const clientProducts = productsToClientProducts(products, currencyCode);
 
 	return {
 		clientProducts,
@@ -95,11 +114,11 @@ async function getClientProducts(
 
 async function getClientProductsWithFilters(
 	ctx: QueryCtx,
-
+	currencyCode: CurrencyCode,
 	args: {
 		productFilter?: ProductFilter;
-		paginationOptions?: { cursor?: string; numItems?: number };
-		sortOptions?: { index: 'by_price'; order: 'asc' | 'desc' };
+		paginationOptions?: ProductPaginationOptions;
+		sortOptions?: ProductSortOptions;
 	}
 ) {
 	const { productFilter } = args;
@@ -113,6 +132,7 @@ async function getClientProductsWithFilters(
 	while (clientProducts.length < numItems && !isDone) {
 		const clientProductPaginationResult = await getClientProducts(
 			ctx,
+			currencyCode,
 			{
 				cursor: continueCursor,
 				numItems: newNumItems
@@ -141,11 +161,16 @@ async function getClientProductsWithFilters(
 
 async function getClientProductsByCategory(
 	ctx: QueryCtx,
-	category: ProductCategory,
-	paginationOptions?: { cursor?: string; numItems?: number },
-	sortOptions?: { index: 'by_category_price'; order: 'asc' | 'desc' }
+	currencyCode: CurrencyCode,
+	args: {
+		category: ProductCategory;
+		paginationOptions?: ProductPaginationOptions;
+		sortOptions?: ProductSortOptions;
+	}
 ) {
-	const { cursor, numItems = 25 } = paginationOptions ?? {};
+	const { category, paginationOptions = {}, sortOptions } = args;
+
+	const { cursor, numItems = 25 } = paginationOptions;
 	let page: PaginationResult<Product> | null = null;
 
 	if (!sortOptions)
@@ -171,7 +196,7 @@ async function getClientProductsByCategory(
 
 	const { page: products, isDone, continueCursor } = page ?? ({} as PaginationResult<Product>);
 
-	const clientProducts = productsToClientProducts(products);
+	const clientProducts = productsToClientProducts(products, currencyCode);
 
 	return {
 		clientProducts,
@@ -182,11 +207,12 @@ async function getClientProductsByCategory(
 
 async function getClientProductsByCategoryWithFilters(
 	ctx: QueryCtx,
-	category: ProductCategory,
+	currencyCode: CurrencyCode,
 	args: {
+		category: ProductCategory;
 		productFilter?: ProductFilter;
-		paginationOptions?: { cursor?: string; numItems?: number };
-		sortOptions?: { index: 'by_category_price'; order: 'asc' | 'desc' };
+		paginationOptions?: ProductPaginationOptions;
+		sortOptions?: ProductSortOptions;
 	}
 ) {
 	const { productFilter } = args;
@@ -198,15 +224,14 @@ async function getClientProductsByCategoryWithFilters(
 	let newNumItems = numItems;
 
 	while (clientProducts.length < numItems && !isDone) {
-		const clientProductPaginationResult = await getClientProductsByCategory(
-			ctx,
-			category,
-			{
+		const clientProductPaginationResult = await getClientProductsByCategory(ctx, currencyCode, {
+			category: args.category,
+			paginationOptions: {
 				cursor: continueCursor,
 				numItems: newNumItems
 			},
-			args.sortOptions
-		);
+			sortOptions: args.sortOptions
+		});
 
 		const filteredClientProducts = filterClientProducts(
 			clientProductPaginationResult.clientProducts,
@@ -230,7 +255,7 @@ async function getClientProductsByCategoryWithFilters(
 async function getProductBrands(
 	ctx: QueryCtx,
 	category?: ProductCategory,
-	paginationOptions?: { cursor?: string; numItems?: number }
+	paginationOptions?: ProductPaginationOptions
 ) {
 	const { cursor, numItems = 25 } = paginationOptions ?? {};
 
@@ -284,18 +309,36 @@ async function getProductBrands(
 	};
 }
 
+async function getLudwigProductRecommendationByCategory(
+	ctx: ActionCtx,
+	args: {
+		imageEmbedding: number[];
+		category: ProductCategory;
+		currencyCode: CurrencyCode;
+		limit: number;
+		filter?: ProductRecommendationFilter;
+	}
+) {
+	return await ctx.vectorSearch('products', 'by_image_embedding', {
+		vector: args.imageEmbedding,
+		limit: args.limit,
+		filter: (q) => q.eq('category', args.category)
+	});
+}
+
 const productModel = {
 	createProduct,
 	getProductById,
-	getProductByPId,
+	updateProductById,
+	getProductBySku,
 	getProductCategoriesForSpace,
 	getProductsForClientByIds,
-	getProductByLudwigImageUrl,
 	getClientProducts,
 	getClientProductsWithFilters,
 	getClientProductsByCategory,
 	getClientProductsByCategoryWithFilters,
-	getProductBrands
+	getProductBrands,
+	getLudwigProductRecommendationByCategory
 };
 
 export default productModel;

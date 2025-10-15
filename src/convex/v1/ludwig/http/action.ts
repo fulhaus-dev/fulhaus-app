@@ -82,11 +82,6 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 			content: ludwigChatDesignContext
 		});
 
-	// modelMessages.unshift({
-	// 	role: 'system',
-	// 	content: `Your responses MUST be short and concise, no verbose responses or lengthy explanations. Go straight to the question or response, keep you answers short and to the point. Do not explain or list things. After recommendation do not list the recommended items or types, just inform the user with the appropriate response that their recommendation has been generated.\n\n`
-	// });
-
 	const result = streamText({
 		...otherAgentOptions,
 		temperature: 0.1,
@@ -128,7 +123,10 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 		}
 	});
 
-	stream.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173');
+	stream.headers.set(
+		'Access-Control-Allow-Origin',
+		'https://fulhaus-app-production.up.railway.app'
+	);
 
 	return stream;
 });

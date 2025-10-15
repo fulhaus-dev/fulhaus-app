@@ -40,9 +40,16 @@ async function isWorkspaceChat(ctx: ActionCtx, workspaceId: Id<'workspaces'>, ch
 	return chat;
 }
 
+function authorizeLudwig(ludwigApiKey: string) {
+	if (ludwigApiKey !== process.env.LUDWIG_API_KEY) throw ServerError.Unauthorized();
+
+	return ludwigApiKey;
+}
+
 const httpAuthorization = {
 	apiKey,
 	workspaceMemberIsAuthorizedToPerformFunction,
-	isWorkspaceChat
+	isWorkspaceChat,
+	authorizeLudwig
 };
 export default httpAuthorization;

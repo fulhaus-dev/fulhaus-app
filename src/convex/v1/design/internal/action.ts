@@ -93,8 +93,8 @@ export const generateDesignFurnitureRecommendation = internalAction({
 
 		const products = await Promise.all(
 			recommendations.map((recommendation) =>
-				ctx.runQuery(internal.v1.product.internal.query.getProductByLudwigImageUrl, {
-					ludwigImageUrl: recommendation.url
+				ctx.runQuery(internal.v1.product.internal.query.getProductById, {
+					productId: recommendation.id as Id<'products'>
 				})
 			)
 		);
@@ -195,7 +195,7 @@ export const generateDesignRender = internalAction({
 			designDescription: design.description,
 			productImages: availableDesignProducts.map((designProduct) => ({
 				category: designProduct.category,
-				url: designProduct.mainImageUrl ?? designProduct.ludwigImageUrl,
+				url: designProduct.mainImageUrl,
 				name: designProduct.name
 			})),
 			originalInspirationImageUrl: design.inspirationImageUrl

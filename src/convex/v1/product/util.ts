@@ -1,40 +1,47 @@
+import { CurrencyCode } from '../../type';
 import number from '../../util/number';
-import { ClientProduct, Product, ProductCategory, ProductFilter } from './type';
+import { ClientProduct, Product, ProductFilter } from './type';
 
-export function productsToClientProducts(products: (Product | null)[]) {
+export function productsToClientProducts(products: (Product | null)[], currencyCode: CurrencyCode) {
 	const availableProducts = products.filter((product) => !!product);
 
-	const designProducts: ClientProduct[] = availableProducts.map((product) => ({
-		_id: product._id,
-		fhSku: product.fhSku,
-		brand: product.brand,
-		name: product.name,
-		description: product.description,
-		pdpLink: product.pdpLink,
-		retailPrice: product.msrp ?? 0,
-		unitPerBox: product.unitPerBox,
-		stockQty: product.stockQty,
-		restockDate: product.restockDate,
-		imageUrls: product.imageUrls,
-		mainImageUrl: product.mainImageUrl,
-		ludwigImageUrl: product.ludwigImageUrl,
-		currencyCode: product.currencyCode,
-		dimension: product.dimension,
-		width: product.width,
-		height: product.height,
-		depth: product.depth,
-		dimensionUnit: product.dimensionUnit,
-		weight: product.weight,
-		weightUnit: product.weightUnit,
-		colorNames: product.colorNames,
-		hexColors: product.hexColors,
-		materials: product.materials,
-		styles: product.styles,
-		category: product.category as ProductCategory,
-		stockDate: product.stockDate
-	}));
+	const designProducts: (ClientProduct | null)[] = availableProducts.map((product) => {
+		const retailPrice = product.prices.find(
+			(price) => price.currencyCode === currencyCode
+		)?.retailPrice;
+		if (!retailPrice) return null;
 
-	return designProducts;
+		return {
+			_id: product._id,
+			fhSku: product.fhSku,
+			brand: product.brand,
+			name: product.name,
+			description: product.description,
+			pdpLink: product.pdpLink,
+			retailPrice,
+			unitPerBox: product.unitPerBox,
+			stockQty: currencyCode === 'USD' ? product.stockQtyUSD : product.stockQtyCAD,
+			restockDate: currencyCode === 'USD' ? product.restockDateUSD : product.restockDateCAD,
+			imageUrls: product.imageUrls,
+			mainImageUrl: product.mainImageUrl,
+			currencyCode,
+			dimension: product.dimension,
+			width: product.width,
+			height: product.height,
+			depth: product.depth,
+			dimensionUnit: product.dimensionUnit,
+			weight: product.weight,
+			weightUnit: product.weightUnit,
+			colorNames: product.colorNames,
+			hexColors: product.hexColors,
+			materials: product.materials,
+			styles: product.styles,
+			category: product.category,
+			stockDate: product.stockDate
+		};
+	});
+
+	return designProducts.filter((product) => product !== null);
 }
 
 export function filterClientProducts(

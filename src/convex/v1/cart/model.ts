@@ -3,6 +3,7 @@ import { Id } from '../../_generated/dataModel';
 import { MutationCtx, QueryCtx } from '../../_generated/server';
 import { vSaveCartItem, vUpdateCartItem } from './validator';
 import productModel from '../product/model';
+import { CurrencyCode } from '../../type';
 
 async function saveCartItems(
 	ctx: MutationCtx,
@@ -19,14 +20,21 @@ async function saveCartItems(
 	);
 }
 
-async function getCartByWorkspaceId(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
+async function getCartByWorkspaceId(
+	ctx: QueryCtx,
+	workspaceId: Id<'workspaces'>,
+	currencyCode: CurrencyCode
+) {
 	const cartItems = await ctx.db
 		.query('cartItems')
 		.withIndex('by_workspace_design', (q) => q.eq('workspaceId', workspaceId))
 		.collect();
 
 	const cartProductIds = cartItems.map((cartItem) => cartItem.productId);
-	const products = await productModel.getProductsForClientByIds(ctx, cartProductIds);
+	const products = await productModel.getProductsForClientByIds(ctx, {
+		productIds: cartProductIds,
+		currencyCode
+	});
 
 	const cartCurrencyCode = products[0]?.currencyCode ?? 'USD';
 
@@ -42,7 +50,8 @@ async function getCartByWorkspaceId(ctx: QueryCtx, workspaceId: Id<'workspaces'>
 async function getCartByDesignId(
 	ctx: QueryCtx,
 	workspaceId: Id<'workspaces'>,
-	designId: Id<'designs'>
+	designId: Id<'designs'>,
+	currencyCode: CurrencyCode
 ) {
 	const cartItems = await ctx.db
 		.query('cartItems')
@@ -52,7 +61,10 @@ async function getCartByDesignId(
 		.collect();
 
 	const cartProductIds = cartItems.map((cartItem) => cartItem.productId);
-	const products = await productModel.getProductsForClientByIds(ctx, cartProductIds);
+	const products = await productModel.getProductsForClientByIds(ctx, {
+		productIds: cartProductIds,
+		currencyCode
+	});
 
 	const cartCurrencyCode = products[0]?.currencyCode ?? 'USD';
 

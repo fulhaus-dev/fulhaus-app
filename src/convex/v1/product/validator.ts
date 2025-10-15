@@ -1,7 +1,6 @@
 import { v } from 'convex/values';
-import { ISO_3166 } from './iso/3166';
-import { ISO_4217 } from './iso/4217';
 import { productCategories, productStyles } from './constant';
+import { vCountryAlpha2Code, vCurrencyCode } from '../../validator';
 
 export const vProductStatus = v.union(
 	v.literal('Active'),
@@ -9,18 +8,23 @@ export const vProductStatus = v.union(
 	v.literal('Discontinued')
 );
 
-export const vCountryAlpha2Code = v.union(...ISO_3166.map((country) => v.literal(country.alpha2)));
-export const vCurrencyCode = v.union(...ISO_4217.map((iso) => v.literal(iso.code)));
-
 export const vProductStyle = v.union(...productStyles.map((style) => v.literal(style)));
 export const vProductCategory = v.union(
 	...productCategories.map((category) => v.literal(category))
 );
 
+export const vProductPrice = v.object({
+	currencyCode: vCurrencyCode,
+	tradePrice: v.float64(),
+	map: v.optional(v.float64()),
+	msrp: v.optional(v.float64()),
+	retailPrice: v.float64(),
+	shippingPrice: v.optional(v.float64())
+});
+
 export const vCreateProductFields = {
 	vendorId: v.id('productVendors'),
 	ownerId: v.optional(v.id('workspaces')),
-	pId: v.string(),
 	sku: v.string(),
 	fhSku: v.string(),
 	itemId: v.optional(v.string()),
@@ -30,24 +34,21 @@ export const vCreateProductFields = {
 	name: v.string(),
 	description: v.string(),
 	pdpLink: v.optional(v.string()),
-	tradePrice: v.number(),
-	map: v.optional(v.number()),
-	msrp: v.optional(v.number()),
-	shippingPrice: v.optional(v.number()),
+	prices: v.array(vProductPrice),
+	hasCAD: v.optional(v.boolean()),
+	hasUSD: v.optional(v.boolean()),
+	retailPriceCAD: v.optional(v.float64()),
+	retailPriceUSD: v.optional(v.float64()),
 	unitPerBox: v.number(),
-	stockQty: v.number(),
-	restockDate: v.optional(v.number()),
 	imageUrls: v.array(v.string()),
-	mainImageUrl: v.optional(v.string()),
-	ludwigImageUrl: v.string(),
+	mainImageUrl: v.string(),
 	warehouseCountryCodes: v.array(vCountryAlpha2Code),
 	shippingCountryCodes: v.array(vCountryAlpha2Code),
-	currencyCode: vCurrencyCode,
 	dimension: v.optional(v.string()),
 	width: v.number(),
 	height: v.number(),
 	depth: v.number(),
-	shippingDimension: v.optional(v.string()),
+	shippingDimension: v.string(),
 	shippingWidth: v.number(),
 	shippingHeight: v.number(),
 	shippingDepth: v.number(),
@@ -55,11 +56,17 @@ export const vCreateProductFields = {
 	weight: v.number(),
 	shippingWeight: v.number(),
 	weightUnit: v.literal('lb'),
-	colorNames: v.optional(v.array(v.string())),
-	hexColors: v.optional(v.array(v.string())),
+	colorNames: v.array(v.string()),
+	hexColors: v.array(v.string()),
 	materials: v.array(v.string()),
 	styles: v.array(vProductStyle),
-	category: v.string()
+	category: vProductCategory,
+	stockQtyUSD: v.number(),
+	stockQtyCAD: v.number(),
+	restockDateUSD: v.optional(v.number()),
+	restockDateCAD: v.optional(v.number()),
+	imageEmbedding: v.array(v.float64()),
+	textEmbedding: v.array(v.float64())
 };
 
 export const vCreateProduct = v.object(vCreateProductFields);
@@ -76,8 +83,7 @@ export const vClientProduct = v.object({
 	stockQty: v.number(),
 	restockDate: v.optional(v.number()),
 	imageUrls: v.array(v.string()),
-	mainImageUrl: v.optional(v.string()),
-	ludwigImageUrl: v.string(),
+	mainImageUrl: v.string(),
 	currencyCode: vCurrencyCode,
 	dimension: v.optional(v.string()),
 	width: v.number(),
@@ -86,15 +92,27 @@ export const vClientProduct = v.object({
 	dimensionUnit: v.literal('in'),
 	weight: v.number(),
 	weightUnit: v.literal('lb'),
-	colorNames: v.optional(v.array(v.string())),
-	hexColors: v.optional(v.array(v.string())),
+	colorNames: v.array(v.string()),
+	hexColors: v.array(v.string()),
 	materials: v.array(v.string()),
 	styles: v.array(vProductStyle),
 	category: vProductCategory,
 	stockDate: v.number()
 });
 
-const vProductAvailability = v.union(
+export const vUpdateProduct = v.object({
+	prices: v.optional(v.array(vProductPrice)),
+	hasCAD: v.optional(v.boolean()),
+	hasUSD: v.optional(v.boolean()),
+	retailPriceCAD: v.optional(v.float64()),
+	retailPriceUSD: v.optional(v.float64()),
+	stockQty: v.optional(v.number()),
+	stockDate: v.optional(v.number()),
+	restockDate: v.optional(v.number()),
+	status: v.optional(vProductStatus)
+});
+
+const vProductAvailabilityFilter = v.union(
 	v.literal('In Stock'),
 	v.literal('Low Stock'),
 	v.literal('Out of Stock')
@@ -103,7 +121,7 @@ const vProductAvailability = v.union(
 export const vProductFilter = v.object({
 	category: v.optional(vProductCategory),
 	name: v.optional(v.string()),
-	availability: v.optional(vProductAvailability),
+	availability: v.optional(vProductAvailabilityFilter),
 	minPrice: v.optional(v.number()),
 	maxPrice: v.optional(v.number()),
 	minWidth: v.optional(v.number()),
@@ -115,4 +133,30 @@ export const vProductFilter = v.object({
 	minWeight: v.optional(v.number()),
 	maxWeight: v.optional(v.number()),
 	brand: v.optional(v.string())
+});
+
+export const vProductSortOptions = v.object({
+	index: v.union(
+		v.literal('by_category_price_usd'),
+		v.literal('by_category_price_cad'),
+		v.literal('by_price_usd'),
+		v.literal('by_price_cad')
+	),
+	order: v.union(v.literal('asc'), v.literal('desc'))
+});
+
+export const vProductPaginationOptions = v.object({
+	cursor: v.optional(v.string()),
+	numItems: v.optional(v.number())
+});
+
+export const vProductRecommendationFilter = v.object({
+	minPrice: v.optional(v.float64()),
+	maxPrice: v.optional(v.float64()),
+	minWidth: v.optional(v.number()),
+	maxWidth: v.optional(v.number()),
+	minHeight: v.optional(v.number()),
+	maxHeight: v.optional(v.number()),
+	minDepth: v.optional(v.number()),
+	maxDepth: v.optional(v.number())
 });

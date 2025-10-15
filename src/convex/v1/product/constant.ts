@@ -132,7 +132,19 @@ export const productCategories = [
 	'Wardrobe',
 	'Waste basket',
 	'Whisk',
-	'Wine Glass'
+	'Wine Glass',
+	'Outdoor Arm Chair',
+	'Outdoor Rug',
+	'Outdoor Dining Chair',
+	'Outdoor Chair',
+	'Outdoor Coffee Table',
+	'Outdoor Dining Table',
+	'Outdoor Fire Pit',
+	'Outdoor Lounger',
+	'Outdoor Side Table',
+	'Outdoor Sofa',
+	'Outdoor Throw Pillow',
+	'Outdoor Umbrella'
 ] as const;
 
 export const productStyles = [

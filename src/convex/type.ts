@@ -3,7 +3,9 @@ import { functionNames, httpStatusCode } from './constant';
 import { ActionCtx } from './_generated/server';
 import { Id } from './_generated/dataModel';
 import { JSONValue, LanguageModel, ToolSet } from 'ai';
-import { vFloorPlanFile } from './validator';
+import { vCurrencyCode, vFloorPlanFile } from './validator';
+
+export type CurrencyCode = Infer<typeof vCurrencyCode>;
 
 export type HttpStatusCode = (typeof httpStatusCode)[keyof typeof httpStatusCode];
 

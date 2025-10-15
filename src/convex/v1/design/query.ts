@@ -3,17 +3,19 @@ import { query } from '../../_generated/server';
 import authorization from '../../middleware/authorization';
 import designModel from './model';
 import { SuccessData } from '../../response/success';
+import { vCurrencyCode } from '../../validator';
 
 export const getDesignDataByChatId = query({
 	args: {
-		chatId: v.id('chats')
+		chatId: v.id('chats'),
+		currencyCode: vCurrencyCode
 	},
 	handler: async (ctx, args) => {
 		await authorization.userIsAuthenticated(ctx);
 
 		const [design, designProducts] = await Promise.all([
 			designModel.getDesignByChatId(ctx, args.chatId),
-			designModel.getDesignProductsByChatId(ctx, args.chatId)
+			designModel.getDesignProductsByChatId(ctx, args.chatId, args.currencyCode)
 		]);
 
 		return SuccessData({ design, designProducts });
