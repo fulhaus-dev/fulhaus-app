@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { usePaymentAction } from '$lib/client/actions/use-payment.action.svelte';
 	import { useCartMutation } from '$lib/client/mutations/use-cart.mutation.svelte';
 	import { useWorkspaceCartQuery } from '$lib/client/queries/use-cart.query.svelte';
 	import Button from '$lib/components/button.svelte';
+	import ErrorText from '$lib/components/error-text.svelte';
+	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import type { CartItem, CartItemQuantityChangeType } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import number from '$lib/utils/number';
@@ -9,6 +12,7 @@
 
 	const workspaceCartQuery = useWorkspaceCartQuery();
 	const { updateCartItem, deleteCartItem } = useCartMutation();
+	const { paymentActionState, handleCartCheckout } = usePaymentAction();
 
 	const hasCartItems = $derived(workspaceCartQuery.cartItems.length > 0);
 
@@ -136,7 +140,18 @@
 								{@render OrderCheckoutInfo('Returns', '30-day return policy for most items')}
 							</div>
 
-							<Button>Checkout</Button>
+							<div class="space-y-1">
+								<Button disabled={paymentActionState.loading} onclick={handleCartCheckout}>
+									<span>Checkout</span>
+
+									{#if paymentActionState.loading}
+										<RingLoader class="fill-color-action-text" />
+									{/if}
+								</Button>
+								{#if paymentActionState.error}
+									<ErrorText error={paymentActionState.error} />
+								{/if}
+							</div>
 						</div>
 
 						<Button class="w-fit text-sm" variant="text" onclick={() => window.history.back()}>

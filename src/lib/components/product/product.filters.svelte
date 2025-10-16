@@ -19,7 +19,10 @@
 	import Checkbox from '$lib/components/checkbox.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { useProductBrandsQuery } from '$lib/client/queries/use-product.query.svelte';
+	import {
+		useProductBrandsQuery,
+		useProductCategoriesQuery
+	} from '$lib/client/queries/use-product.query.svelte';
 	import ProductFilterPopover from '$lib/components/product/product.filter-popover.svelte';
 	import ProductSortFilterPopover from '$lib/components/product/product.sort-filter-popover.svelte';
 
@@ -57,8 +60,12 @@
 	const { updateRouteQuery } = useRouteMutation();
 
 	let cursor = $state<string | undefined>(undefined);
+	const productCategoriesQuery = useProductCategoriesQuery();
 	const productBrandsQuery = useProductBrandsQuery(productCategory, () => cursor);
 
+	const productCategories = $derived(
+		productCategoriesQuery.categories.toSorted((a, b) => a.localeCompare(b))
+	);
 	const productBrands = $derived(productBrandsQuery.productBrands.brands ?? []);
 	const currentCursor = $derived(productBrandsQuery.productBrands.cursor);
 	const hasMoreBrands = $derived(productBrandsQuery.productBrands.isDone);
@@ -67,6 +74,7 @@
 	let dimensionFilters = $state<DimensionFilters>({});
 	let weightFilters = $state<WeightFilters>({});
 
+	let openCategoryFilter = $state(false);
 	let openAvailabilityFilter = $state(false);
 	let openPriceFilter = $state(false);
 	let openDimensionsFilter = $state(false);
@@ -216,6 +224,10 @@
 
 	<div class="flex w-full items-center justify-between">
 		<div class="flex w-full items-center gap-x-1">
+			{#if !productCategory}
+				{@render CategoryFilter()}
+			{/if}
+
 			{@render AvailabilityFilter()}
 			{@render PriceFilter()}
 			{@render DimensionFilter()}
@@ -235,6 +247,37 @@
 		{@render SortFilter()}
 	</div>
 </div>
+
+{#snippet CategoryFilter()}
+	<ProductFilterPopover
+		triggerLabel="Category"
+		hasFilter={!!parsedProductFilters.category}
+		bind:open={openCategoryFilter}
+		{aFilterIsOpen}
+	>
+		<div class="scrollbar-thin max-h-96 space-y-4 overflow-y-auto p-4">
+			{#each productCategories as productCategory, index (`${index}-${productCategory}`)}
+				{@render CheckBoxFilter({
+					id: `${index}-${productCategory}`,
+					label: productCategory,
+					checked: parsedProductFilters.category === productCategory,
+					onchange: (checked) => {
+						openCategoryFilter = false;
+
+						if (checked)
+							updateRouteProductFilterQuery({
+								productFilterQueryString: `category-${productCategory}`
+							});
+						else
+							updateRouteProductFilterQuery({
+								productFilterKeysToRemove: ['category']
+							});
+					}
+				})}
+			{/each}
+		</div>
+	</ProductFilterPopover>
+{/snippet}
 
 {#snippet AvailabilityFilter()}
 	<ProductFilterPopover

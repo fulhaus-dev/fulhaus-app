@@ -19,6 +19,7 @@ import { paginator } from 'convex-helpers/server/pagination';
 import schema from '../../schema';
 import type { PaginationResult } from 'convex/server';
 import { CurrencyCode } from '../../type';
+import { productCategories } from './constant';
 
 async function createProduct(ctx: MutationCtx, args: Infer<typeof vCreateProduct>) {
 	return await ctx.db.insert('products', {
@@ -49,6 +50,10 @@ async function getProductBySku(ctx: QueryCtx, sku: string) {
 		.query('products')
 		.withIndex('by_sku', (q) => q.eq('sku', sku))
 		.first();
+}
+
+function getProductCategories() {
+	return productCategories;
 }
 
 function getProductCategoriesForSpace(spaceType: SpaceType) {
@@ -331,6 +336,7 @@ const productModel = {
 	getProductById,
 	updateProductById,
 	getProductBySku,
+	getProductCategories,
 	getProductCategoriesForSpace,
 	getProductsForClientByIds,
 	getClientProducts,

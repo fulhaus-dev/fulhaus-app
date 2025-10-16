@@ -87,6 +87,8 @@
 							class="flex h-full cursor-pointer items-center justify-center active:opacity-50"
 							title="Upload inspiration image"
 							accept=".jpeg, .jpg, .png"
+							onUpload={onSelect}
+							onOpen={() => setTabValue('personal')}
 						>
 							<CloudUploadIcon />
 						</DesignAssetUploadDialog>

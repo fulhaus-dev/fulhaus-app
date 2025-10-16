@@ -6,19 +6,21 @@
 	type DesignAssetUploadDialogProps = {
 		class?: string;
 		children: Snippet;
+		onOpen?: (open: boolean) => void;
 	} & ComponentProps<typeof DesignAssetUpload>;
 
 	const {
 		class: className = '',
 		children,
 		onUpload,
+		onOpen = () => {},
 		...otherDesignAssetUploadDialogProps
 	}: DesignAssetUploadDialogProps = $props();
 
 	let open = $state(false);
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root bind:open onOpenChange={onOpen}>
 	<Dialog.Trigger class={className}>
 		{@render children()}
 	</Dialog.Trigger>

@@ -5,6 +5,7 @@ import { streamLudwigChatResponse } from './v1/ludwig/http/action';
 import { httpAction } from './_generated/server';
 import { getLudwigProductRecommendationsByCategory } from './v1/product/http/action';
 import { checkCors } from './middleware/cors';
+import { internal } from './_generated/api';
 
 const http = httpRouter();
 
@@ -47,6 +48,22 @@ http.route({
 	path: '/product/get-product-recommendations',
 	method: 'POST',
 	handler: getLudwigProductRecommendationsByCategory
+});
+
+http.route({
+	path: `/stripe-webhook/${process.env.STRIPE_WEBHOOK_KEY}/CAD/stripe/payment/successful`,
+	method: 'POST',
+	handler: httpAction(async (ctx, request) => {
+		const { data } = await request.json();
+		const paymentData = data?.object;
+
+		if (paymentData)
+			await ctx.scheduler.runAfter(0, internal.v1.order.internal.action.createOrder, {
+				paymentData
+			});
+
+		return new Response(JSON.stringify({ message: 'Success' }), { status: 200 });
+	})
 });
 
 export default http;

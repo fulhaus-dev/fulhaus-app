@@ -11,12 +11,14 @@ import { productTable } from './v1/product/table';
 import { productVendorTable } from './v1/product/vendor/table';
 import { cartItemTable } from './v1/cart/table';
 import { designTagTable } from './v1/design/tag/table';
+import { stripeUserTable } from './v1/user/stripe/table';
 
 export default defineSchema({
 	otps: otpTable,
 	sessions: sessionTable,
 	workspaces: workspaceTable,
 	users: userTable,
+	stripeUsers: stripeUserTable,
 	userPermissions: userPermissionTable,
 	chats: chatTable,
 	chatUiMessages: chatUiMessageTable,

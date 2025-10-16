@@ -89,11 +89,21 @@ async function deleteCartItem(ctx: MutationCtx, cartItemId: Id<'cartItems'>) {
 	return await ctx.db.delete(cartItemId);
 }
 
+async function deleteCart(ctx: MutationCtx, workspaceId: Id<'workspaces'>) {
+	const cartItems = await ctx.db
+		.query('cartItems')
+		.withIndex('by_workspace_design', (q) => q.eq('workspaceId', workspaceId))
+		.collect();
+
+	await Promise.all(cartItems.map((cartItem) => ctx.db.delete(cartItem._id)));
+}
+
 const cartModel = {
 	saveCartItems,
 	getCartByWorkspaceId,
 	getCartByDesignId,
 	updateCartItem,
-	deleteCartItem
+	deleteCartItem,
+	deleteCart
 };
 export default cartModel;

@@ -1,5 +1,7 @@
 import type { DesignAssetFileType } from '$lib/types';
 import asyncFetch from '$lib/utils/async-fetch';
+import compressor from '$lib/utils/compression';
+import { asyncTryCatch } from '$lib/utils/try-catch';
 
 export function useDesignAssetMutation(args?: { onUpload?: (url: string) => void }) {
 	const state = $state({
@@ -9,6 +11,16 @@ export function useDesignAssetMutation(args?: { onUpload?: (url: string) => void
 
 	async function uploadDesignAssetFile(file: File, type: DesignAssetFileType) {
 		state.uploading = true;
+
+		const { data: compressedFile } = await asyncTryCatch(() =>
+			compressor.compressImageFile({ imageFile: file })
+		);
+
+		if (!compressedFile) {
+			state.error = 'Could not compress image, try again.';
+			state.uploading = false;
+			return;
+		}
 
 		const formData = new FormData();
 		formData.append('file', file, file.name);

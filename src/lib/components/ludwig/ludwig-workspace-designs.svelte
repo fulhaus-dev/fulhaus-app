@@ -8,11 +8,12 @@
 	} from '$lib/client/queries/use-design.query.svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignAddTagPopover from '$lib/components/design/design-add-tag-popover.svelte';
+	import SearchInputPopover from '$lib/components/search-input-popover.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import { QueryParams } from '$lib/enums';
 	import type { DesignTag, SpaceType } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
-	import { ArrowRightIcon, LayoutGridIcon, ListIcon, TagsIcon } from '@lucide/svelte';
+	import { ArrowRightIcon, LayoutGridIcon, ListIcon, SearchIcon, TagsIcon } from '@lucide/svelte';
 
 	type WorkspaceDesignsView = 'grid' | 'list';
 
@@ -24,6 +25,8 @@
 	let activeSpaceType = $state<string>('All');
 	let activeSpaceTag = $state<string>('All');
 	let workspaceDesignsView = $state<WorkspaceDesignsView>('grid');
+	let searchValue = $state<string>();
+	let searchIsActive = $state(false);
 
 	const workspaceUniqueDesignSpaces = $derived.by(
 		() => uniqueDesignSpacesForWorkspaceQuery.uniqueSpaces
@@ -45,6 +48,11 @@
 				workspaceDesign.designTags.some((designTag) => designTag.tag === activeSpaceTag)
 			);
 
+		if (searchValue)
+			reversedWorkspaceDesigns = reversedWorkspaceDesigns.filter((workspaceDesign) =>
+				workspaceDesign.design.name.toLowerCase().includes(searchValue!.toLowerCase())
+			);
+
 		return reversedWorkspaceDesigns;
 	});
 </script>
@@ -54,7 +62,7 @@
 		<div class="flex items-start gap-x-12 px-12">
 			<h2 class="py-4 text-2xl leading-none">My Designs</h2>
 
-			<div class="flex-1">
+			<div class={cn('flex-1', searchIsActive && 'opacity-10')}>
 				<div class="flex w-full items-start justify-center gap-x-4 overflow-x-auto px-2 py-4">
 					{@render WorkspaceDesignSpaceFilterButton({
 						spaceType: 'All',
@@ -88,7 +96,19 @@
 				{/if}
 			</div>
 
-			<div class="py-4">
+			<div class="flex items-center gap-x-4 py-4">
+				<Tooltip content="Search designs">
+					<SearchInputPopover
+						inputClassName="w-[36rem]"
+						placeholder="Search designs by name"
+						align="end"
+						bind:value={searchValue}
+						onOpen={(open) => (searchIsActive = open)}
+					>
+						<SearchIcon />
+					</SearchInputPopover>
+				</Tooltip>
+
 				<Tooltip content={workspaceDesignsView === 'grid' ? 'List view' : 'Grid view'}>
 					<Button
 						variant="text"
@@ -190,53 +210,26 @@
 							workspaceDesign.design.inspirationImageUrl}
 						alt={workspaceDesign.design.name}
 					/>
-
-					<!-- <div class="absolute right-0 bottom-0 left-0 z-1 flex flex-wrap gap-1 p-2">
-						{#each workspaceDesign.design.styles ?? [] as style, index (`${index}-${style}`)}
-							{@render WorkspaceDesignStyle(style)}
-						{/each}
-					</div> -->
 				</button>
 
 				<div class="space-y-2 px-2">
 					<h4 class="text-lg font-medium">{workspaceDesign.design.name}</h4>
+					<div class="flex flex-1 flex-wrap gap-1">
+						{#each workspaceDesign.designTags as designTag (designTag._id)}
+							{@render WorkspaceDesignTag(designTag)}
+						{/each}
 
-					<div class="flex items-start gap-x-1">
-						<p class="text-[10px] font-medium text-color-text-placeholder">Tags:</p>
-						<div class="flex flex-1 flex-wrap gap-1">
-							{#each workspaceDesign.designTags as designTag (designTag._id)}
-								{@render WorkspaceDesignTag(designTag)}
-							{/each}
-
-							<DesignAddTagPopover
-								designId={workspaceDesign.design._id}
-								designTags={workspaceDesign.designTags.map((designTag) => designTag.tag)}
-							>
-								<p
-									class="cursor-pointer rounded-full border border-color-border px-2 py-px text-[10px] font-semibold"
-								>
-									Add Tag
-								</p>
-							</DesignAddTagPopover>
-						</div>
-					</div>
-
-					<!-- <div class="flex items-start gap-x-1">
-						<p class="text-[10px] font-medium text-color-text-placeholder">Styles:</p>
-						<div class="flex flex-1 flex-wrap gap-1">
-							{#each workspaceDesign.design.styles ?? [] as style, index (`${index}-${style}`)}
-								{@render WorkspaceDesignStyle(style)}
-							{/each}
-						</div>
-					</div> -->
-
-					<!-- <div class="relative h-8">
-						<p
-							class="absolute top-0 z-1 line-clamp-2 bg-color-background px-2 text-xs text-color-text-muted group-hover:line-clamp-none group-hover:rounded-b-md group-hover:pb-2"
+						<DesignAddTagPopover
+							designId={workspaceDesign.design._id}
+							designTags={workspaceDesign.designTags.map((designTag) => designTag.tag)}
 						>
-							{workspaceDesign.design.description}
-						</p>
-					</div> -->
+							<p
+								class="cursor-pointer rounded-full border border-color-border px-2 py-px text-[10px] font-semibold"
+							>
+								Add Tag
+							</p>
+						</DesignAddTagPopover>
+					</div>
 				</div>
 			</div>
 		{/each}
@@ -253,7 +246,6 @@
 					<th scope="col" class="px-4 py-3"></th>
 					<th scope="col" class="px-4 py-3">Name</th>
 					<th scope="col" class="px-4 py-3">Tags</th>
-					<th scope="col" class="px-4 py-3">Styles</th>
 					<th scope="col" class="px-4 py-3"></th>
 				</tr>
 			</thead>
@@ -283,13 +275,6 @@
 								{/each}
 							</div>
 						</td>
-						<td class="max-w-[24%] px-4 py-1">
-							<!-- <div class="flex flex-wrap gap-1">
-								{#each workspaceDesign.design.styles ?? [] as style, index (`${index}-${style}`)}
-									{@render WorkspaceDesignStyle(style)}
-								{/each}
-							</div> -->
-						</td>
 
 						<td class="justify-items-end px-4 py-1 opacity-0 group-hover:opacity-100">
 							<ArrowRightIcon />
@@ -299,14 +284,6 @@
 			</tbody>
 		</table>
 	</div>
-{/snippet}
-
-{#snippet WorkspaceDesignStyle(style: string)}
-	<p
-		class="rounded-full bg-color-action-background/50 px-2 py-px text-[10px] font-semibold text-color-action-text"
-	>
-		{style}
-	</p>
 {/snippet}
 
 {#snippet WorkspaceDesignTag(designTag: DesignTag)}

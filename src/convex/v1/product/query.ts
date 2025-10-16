@@ -28,6 +28,16 @@ export const getPoProductsBySkus = query({
 	}
 });
 
+export const getProductCategories = query({
+	handler: async (ctx) => {
+		await authorization.userIsAuthenticated(ctx);
+
+		const productCategories = productModel.getProductCategories();
+
+		return SuccessData(productCategories ?? []);
+	}
+});
+
 export const getProductCategoriesForSpace = query({
 	args: {
 		spaceType: vSpaceType
