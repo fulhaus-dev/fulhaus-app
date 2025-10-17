@@ -14,6 +14,7 @@
 	import type { DesignTag, SpaceType } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import { ArrowRightIcon, LayoutGridIcon, ListIcon, SearchIcon, TagsIcon } from '@lucide/svelte';
+	import type { Id } from '../../../convex/_generated/dataModel';
 
 	type WorkspaceDesignsView = 'grid' | 'list';
 
@@ -27,6 +28,8 @@
 	let workspaceDesignsView = $state<WorkspaceDesignsView>('grid');
 	let searchValue = $state<string>();
 	let searchIsActive = $state(false);
+	let hoveredDesignTags = $state<Id<'designs'>>();
+	let openAddDesignTag = $state<Id<'designs'>>();
 
 	const workspaceUniqueDesignSpaces = $derived.by(
 		() => uniqueDesignSpacesForWorkspaceQuery.uniqueSpaces
@@ -85,12 +88,16 @@
 							<p class="text-sm font-medium">Tags:</p>
 						</div>
 
-						<div class="flex max-w-full items-center gap-x-2 overflow-x-auto px-2 py-1">
+						<div class="flex items-center gap-x-2 px-2 py-1">
 							{@render WorkspaceDesignsTagFilterButton('All')}
 
-							{#each designTagsForWorkspace as designTag, index (`${index}-${designTag}`)}
-								{@render WorkspaceDesignsTagFilterButton(designTag)}
-							{/each}
+							<div
+								class="scrollbar-thin flex max-w-[1000px] items-center gap-x-2 overflow-x-auto scrollbar-thumb-transparent scrollbar-track-transparent"
+							>
+								{#each designTagsForWorkspace as designTag, index (`${index}-${designTag}`)}
+									{@render WorkspaceDesignsTagFilterButton(designTag)}
+								{/each}
+							</div>
 						</div>
 					</div>
 				{/if}
@@ -178,7 +185,7 @@
 
 {#snippet WorkspaceDesignsTagFilterButton(tagName: string)}
 	<Button
-		class="h-6 px-2 text-xs font-medium ring-0"
+		class="h-6 w-fit px-2 text-xs font-medium ring-0"
 		variant={activeSpaceTag === tagName ? 'filled' : 'outlined'}
 		onclick={() => (activeSpaceTag = tagName)}>{tagName}</Button
 	>
@@ -214,14 +221,25 @@
 
 				<div class="space-y-2 px-2">
 					<h4 class="text-lg font-medium">{workspaceDesign.design.name}</h4>
-					<div class="flex flex-1 flex-wrap gap-1">
-						{#each workspaceDesign.designTags as designTag (designTag._id)}
+					<div
+						role="group"
+						class="flex flex-1 flex-wrap gap-1"
+						onmouseenter={() => (hoveredDesignTags = workspaceDesign.design._id)}
+						onmouseleave={() => (hoveredDesignTags = undefined)}
+						onfocus={() => (hoveredDesignTags = workspaceDesign.design._id)}
+						onblur={() => (hoveredDesignTags = undefined)}
+					>
+						{#each hoveredDesignTags === workspaceDesign.design._id || openAddDesignTag === workspaceDesign.design._id ? workspaceDesign.designTags : workspaceDesign.designTags.slice(0, 3) as designTag (designTag._id)}
 							{@render WorkspaceDesignTag(designTag)}
 						{/each}
 
 						<DesignAddTagPopover
 							designId={workspaceDesign.design._id}
 							designTags={workspaceDesign.designTags.map((designTag) => designTag.tag)}
+							onOpen={(open) =>
+								open
+									? (openAddDesignTag = workspaceDesign.design._id)
+									: (openAddDesignTag = undefined)}
 						>
 							<p
 								class="cursor-pointer rounded-full border border-color-border px-2 py-px text-[10px] font-semibold"

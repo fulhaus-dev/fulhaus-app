@@ -13,9 +13,10 @@
 		children: Snippet;
 		designId: Id<'designs'>;
 		designTags: string[];
+		onOpen?: (open: boolean) => void;
 	};
 
-	let { children, designId, designTags }: DesignTagPopoverProps = $props();
+	let { children, designId, designTags, onOpen = () => {} }: DesignTagPopoverProps = $props();
 
 	let isOpen = $state(false);
 	let tagsToAdd = $state<string[]>([]);
@@ -30,7 +31,7 @@
 	const hasTags = $derived(designTagsForWorkspaceQuery.designTags.length > 0 || newTags.length > 0);
 </script>
 
-<Popover.Root bind:open={isOpen}>
+<Popover.Root bind:open={isOpen} onOpenChange={onOpen}>
 	<Popover.Trigger>{@render children()}</Popover.Trigger>
 	<Popover.Portal>
 		<Popover.Content
