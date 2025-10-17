@@ -122,7 +122,7 @@ export function usePaginatedProductsByCategoryQuery(
 				: undefined;
 
 			return {
-				currencyCode: 'CAD' as CurrencyCode,
+				currencyCode: 'USD' as CurrencyCode,
 				category,
 				productFilter: args.productFilter?.(),
 				paginationOptions: {
@@ -196,7 +196,7 @@ export function useProductsQuery(args: {
 				: undefined;
 
 			return {
-				currencyCode: 'CAD' as CurrencyCode,
+				currencyCode: 'USD' as CurrencyCode,
 				productFilter: args.productFilter(),
 				paginationOptions: {
 					cursor: effectiveCursor,

@@ -8,6 +8,7 @@ export const getCartByWorkspaceId = internalQuery({
 		workspaceId: v.id('workspaces'),
 		currencyCode: vCurrencyCode
 	},
-	handler: async (ctx, args) =>
-		await cartModel.getCartByWorkspaceId(ctx, args.workspaceId, args.currencyCode)
+	handler: async (ctx, args) => {
+		return await cartModel.getCartByWorkspaceId(ctx, args.workspaceId, args.currencyCode);
+	}
 });

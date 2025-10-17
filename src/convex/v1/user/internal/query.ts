@@ -6,5 +6,7 @@ export const getUser = internalQuery({
 	args: {
 		userId: v.id('users')
 	},
-	handler: async (ctx, { userId }) => userModel.getUserById(ctx, userId)
+	handler: async (ctx, { userId }) => {
+		return await userModel.getUserById(ctx, userId);
+	}
 });

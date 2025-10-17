@@ -6,5 +6,7 @@ export const deleteCart = internalMutation({
 	args: {
 		workspaceId: v.id('workspaces')
 	},
-	handler: async (ctx, args) => await cartModel.deleteCart(ctx, args.workspaceId)
+	handler: async (ctx, args) => {
+		return await cartModel.deleteCart(ctx, args.workspaceId);
+	}
 });

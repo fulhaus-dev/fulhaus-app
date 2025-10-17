@@ -12,6 +12,6 @@ export const createVendor = mutation({
 	handler: async (ctx, args) => {
 		authorization.authorizeProductOnboarding(args.poApiKey);
 
-		await productVendorModel.createProductVendor(ctx, args.data);
+		return await productVendorModel.createProductVendor(ctx, args.data);
 	}
 });

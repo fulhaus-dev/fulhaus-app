@@ -7,7 +7,7 @@ import ServerError from '../response/error';
 type StripeCurrencyCode = Extract<CurrencyCode, 'USD' | 'CAD'>;
 
 const stripeClient: Record<StripeCurrencyCode, Stripe> = {
-	USD: new Stripe(process.env.STRIPE_SECRET_KEY_USD!),
+	USD: new Stripe(process.env.STRIPE_SECRET_KEY_CAD!),
 	CAD: new Stripe(process.env.STRIPE_SECRET_KEY_CAD!)
 };
 

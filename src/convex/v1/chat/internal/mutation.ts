@@ -20,7 +20,7 @@ export const updateChatById = internalMutation({
 	},
 	handler: async (ctx, args) => {
 		const { chatId, ...update } = args;
-		await chatModel.updateChatById(ctx, chatId, update);
+		return await chatModel.updateChatById(ctx, chatId, update);
 	}
 });
 
@@ -30,7 +30,9 @@ export const saveChatUsage = internalMutation({
 		chatId: v.id('chats'),
 		usage: vChatUsage
 	},
-	handler: async (ctx, args) => await chatModel.saveChatUsage(ctx, args)
+	handler: async (ctx, args) => {
+		return await chatModel.saveChatUsage(ctx, args);
+	}
 });
 
 export const saveChatUiMessage = internalMutation({
@@ -40,5 +42,7 @@ export const saveChatUiMessage = internalMutation({
 		chatId: v.id('chats'),
 		message: vChatUiMessage
 	},
-	handler: async (ctx, args) => await chatModel.saveChatUiMessage(ctx, args)
+	handler: async (ctx, args) => {
+		return await chatModel.saveChatUiMessage(ctx, args);
+	}
 });

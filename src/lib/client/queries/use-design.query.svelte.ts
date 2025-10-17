@@ -17,7 +17,7 @@ export function useDesignQuery() {
 		api.v1.design.query.getDesignDataByChatId,
 		() => ({
 			chatId: ludwigChatId!,
-			currencyCode: 'CAD' as CurrencyCode
+			currencyCode: 'USD' as CurrencyCode
 		}),
 		{
 			requiredArgsKeys: ['chatId', 'currencyCode']

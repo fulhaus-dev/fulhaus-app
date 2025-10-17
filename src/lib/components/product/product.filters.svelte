@@ -354,7 +354,7 @@
 		<div class="flex items-center gap-x-4 border-b border-color-border p-4">
 			{@render MinMaxFilterTextInput({
 				type: 'Min',
-				metric: 'CAD',
+				metric: 'USD',
 				name: 'minPrice',
 				defaultValue: parsedProductFilters.minPrice,
 				bindableValueKey: 'minPrice',
@@ -362,7 +362,7 @@
 			})}
 			{@render MinMaxFilterTextInput({
 				type: 'Max',
-				metric: 'CAD',
+				metric: 'USD',
 				name: 'maxPrice',
 				defaultValue: parsedProductFilters.maxPrice,
 				bindableValueKey: 'maxPrice',

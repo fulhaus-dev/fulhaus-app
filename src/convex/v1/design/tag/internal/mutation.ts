@@ -8,6 +8,7 @@ export const saveDesignTags = internalMutation({
 		designId: v.id('designs'),
 		tags: v.array(v.string())
 	},
-	handler: async (ctx, args) =>
-		await designTagModel.saveDesignTags(ctx, args.workspaceId, args.designId, args.tags)
+	handler: async (ctx, args) => {
+		return await designTagModel.saveDesignTags(ctx, args.workspaceId, args.designId, args.tags);
+	}
 });

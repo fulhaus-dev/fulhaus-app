@@ -9,9 +9,10 @@ export const workspaceMemberIsAuthorizedToPerformFunction = internalQuery({
 		workspaceId: v.id('workspaces'),
 		functionName: vFunctionName
 	},
-	handler: async (ctx, { userId, workspaceId, functionName }) =>
-		await userPermissionModel.isAuthorizedToPerformFunction(ctx, functionName, {
+	handler: async (ctx, { userId, workspaceId, functionName }) => {
+		return await userPermissionModel.isAuthorizedToPerformFunction(ctx, functionName, {
 			userId,
 			workspaceId
-		})
+		});
+	}
 });

@@ -1,4 +1,3 @@
-import { googleGenerativeAIGemini2_5Flash } from '../../../config/google';
 import {
 	createDesignTool,
 	redirectToStartNewDesignChatTool,
@@ -9,10 +8,11 @@ import { generateDesignFurnitureRecommendationTool } from './tool/recommendation
 import uiTools from './tool/ui';
 import { AgentConfig } from '../../../type';
 import { Id } from '../../../_generated/dataModel';
+import { anthropicClaudeHaiku } from '../../../config/anthropic';
 
 export const ludwigAgent: AgentConfig = {
 	options: {
-		model: googleGenerativeAIGemini2_5Flash,
+		model: anthropicClaudeHaiku,
 		systemPromptFileId: process.env.LUDWIG_SYSTEM_PROMPT_FILE_ID! as Id<'_storage'>,
 		maxToolCallSteps: 200,
 		providerOptions: {

@@ -5,6 +5,6 @@ import { workspaceAssetTable } from '../table';
 export const saveWorkspaceAsset = internalMutation({
 	args: workspaceAssetTable.validator,
 	handler: async (ctx, args) => {
-		await workspaceAssetModel.saveWorkspaceAsset(ctx, args);
+		return await workspaceAssetModel.saveWorkspaceAsset(ctx, args);
 	}
 });

@@ -12,6 +12,7 @@ import { productVendorTable } from './v1/product/vendor/table';
 import { cartItemTable } from './v1/cart/table';
 import { designTagTable } from './v1/design/tag/table';
 import { stripeUserTable } from './v1/user/stripe/table';
+import { productEmbeddingTable } from './v1/product/embedding/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -29,5 +30,6 @@ export default defineSchema({
 	ludwigChatTempAssets: ludwigChatTempAssetTable,
 	productVendors: productVendorTable,
 	products: productTable,
+	productEmbeddings: productEmbeddingTable,
 	cartItems: cartItemTable
 });

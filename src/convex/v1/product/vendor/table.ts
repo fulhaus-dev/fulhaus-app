@@ -5,7 +5,6 @@ export const productVendorTable = defineTable({
 	vId: v.string(),
 	name: v.string(),
 	r2FolderId: v.string(),
-	createdAt: v.number(),
 	updatedAt: v.number(),
 	deletedAt: v.optional(v.number())
 })

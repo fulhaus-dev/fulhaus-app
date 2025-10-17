@@ -1,27 +1,33 @@
 import { v } from 'convex/values';
-import { mutation } from '../../_generated/server';
 import productModel from './model';
 import authorization from '../../middleware/authorization';
 import { vCreateProduct, vUpdateProduct } from './validator';
 import { SuccessData } from '../../response/success';
+import { productMutation } from './aggregate';
 
-export const createPoProducts = mutation({
+export const createPoProducts = productMutation({
 	args: {
 		poApiKey: v.string(),
-		data: v.array(vCreateProduct)
+		data: v.array(
+			v.object({
+				productData: vCreateProduct,
+				embeddingData: v.object({
+					imageEmbedding: v.array(v.float64()),
+					textEmbedding: v.array(v.float64())
+				})
+			})
+		)
 	},
 	handler: async (ctx, args) => {
 		authorization.authorizeProductOnboarding(args.poApiKey);
 
-		const productIds = await Promise.all(
-			args.data.map((product) => productModel.createProduct(ctx, product))
-		);
+		const productIds = await Promise.all(args.data.map((d) => productModel.createProduct(ctx, d)));
 
 		return SuccessData(productIds);
 	}
 });
 
-export const updatePoProductsById = mutation({
+export const updatePoProductsById = productMutation({
 	args: {
 		poApiKey: v.string(),
 		data: v.array(
