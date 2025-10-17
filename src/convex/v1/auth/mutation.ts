@@ -87,7 +87,7 @@ export const deleteOtp = internalMutation({
 		otpId: v.id('otps')
 	},
 	handler: async (ctx, { otpId }) => {
-		await authModel.deleteOtp(ctx, otpId);
+		return await authModel.deleteOtp(ctx, otpId);
 	}
 });
 
@@ -95,7 +95,9 @@ export const refreshAuthSession = mutation({
 	args: {
 		sessionId: v.id('sessions')
 	},
-	handler: async (ctx, { sessionId }) => await authModel.refreshSession(ctx, sessionId)
+	handler: async (ctx, { sessionId }) => {
+		return await authModel.refreshSession(ctx, sessionId);
+	}
 });
 
 export const logout = mutation({

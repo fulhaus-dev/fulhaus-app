@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/anthropic':
+        specifier: ^2.0.31
+        version: 2.0.31(zod@4.1.11)
       '@ai-sdk/google':
         specifier: ^2.0.17
         version: 2.0.17(zod@4.1.11)
@@ -29,9 +32,12 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.888.0
         version: 3.888.0
+      '@convex-dev/aggregate':
+        specifier: ^0.1.25
+        version: 0.1.25(convex@1.28.0(react@19.1.1))
       '@convex-dev/rate-limiter':
         specifier: ^0.2.12
-        version: 0.2.12(convex@1.27.4(react@19.1.1))(react@19.1.1)
+        version: 0.2.12(convex@1.28.0(react@19.1.1))(react@19.1.1)
       '@react-email/render':
         specifier: ^1.2.3
         version: 1.2.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -48,11 +54,11 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       convex:
-        specifier: ^1.27.4
-        version: 1.27.4(react@19.1.1)
+        specifier: ^1.28.0
+        version: 1.28.0(react@19.1.1)
       convex-helpers:
         specifier: ^0.1.104
-        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.4(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11)
+        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.28.0(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11)
       dompurify:
         specifier: ^3.2.6
         version: 3.2.6
@@ -180,6 +186,12 @@ importers:
 
 packages:
 
+  '@ai-sdk/anthropic@2.0.31':
+    resolution: {integrity: sha512-k/5JX5ktl8cDURYowwtahuRlKJ/Z+hsAeZmKFoxyb/SRLthdbW01Pqs6eIgPB8PH/c1B6uhFcW1jvld6zCzj8g==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
   '@ai-sdk/gateway@1.0.30':
     resolution: {integrity: sha512-QdrSUryr/CLcsCISokLHOImcHj1adGXk1yy4B3qipqLhcNc33Kj/O/3crI790Qp85oDx7sc4vm7R4raf9RA/kg==}
     engines: {node: '>=18'}
@@ -212,6 +224,12 @@ packages:
 
   '@ai-sdk/provider-utils@3.0.10':
     resolution: {integrity: sha512-T1gZ76gEIwffep6MWI0QNy9jgoybUHE7TRaHB5k54K8mF91ciGFlbtCGxDYhMH3nCRergKwYFIDeFF0hJSIQHQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/provider-utils@3.0.12':
+    resolution: {integrity: sha512-ZtbdvYxdMoria+2SlNarEk6Hlgyf+zzcznlD55EAl+7VZvJaSg2sqPvwArY7L6TfDEDJsnCq0fdhBSkYo0Xqdg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -409,6 +427,11 @@ packages:
   '@aws/lambda-invoke-store@0.0.1':
     resolution: {integrity: sha512-ORHRQ2tmvnBXc8t/X9Z8IcSbBA4xTLKuN873FopzklHMeqBst7YG0d+AX97inkvDX+NChYtSr+qGfcqGFaI8Zw==}
     engines: {node: '>=18.0.0'}
+
+  '@convex-dev/aggregate@0.1.25':
+    resolution: {integrity: sha512-HNO4Ft/mNvVnnXT4W+CLCcD5LH0r8x8bY77w0CmdVx9GRmU3SaLICP87GQzonnHHalgTelq8HQB04RzdmygzqQ==}
+    peerDependencies:
+      convex: ~1.16.5 || >=1.17.0 <1.35.0
 
   '@convex-dev/rate-limiter@0.2.12':
     resolution: {integrity: sha512-Z7YXDSPa28/8eqVJYUWQBwK9hTiJcXfWY2qZ44Im3VpuBFJZCqYjem7QWjvoTlBjVGqK7FKw26xRneei09hm2w==}
@@ -1595,8 +1618,8 @@ packages:
       zod:
         optional: true
 
-  convex@1.27.4:
-    resolution: {integrity: sha512-aPP3uxOF5v+K4uftXxRh8GAYepsjsFgU+S9IpAyLVNaFU3Z72WB1rIhaSzPAo4Q0TJWsOKANFGU903IU92QDTA==}
+  convex@1.28.0:
+    resolution: {integrity: sha512-40FgeJ/LxP9TxnkDDztU/A5gcGTdq1klcTT5mM0Ak+kSlQiDktMpjNX1TfkWLxXaE3lI4qvawKH95v2RiYgFxA==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -2743,6 +2766,12 @@ packages:
 
 snapshots:
 
+  '@ai-sdk/anthropic@2.0.31(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.12(zod@4.1.11)
+      zod: 4.1.11
+
   '@ai-sdk/gateway@1.0.30(zod@4.1.11)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
@@ -2775,6 +2804,13 @@ snapshots:
       zod: 4.1.11
 
   '@ai-sdk/provider-utils@3.0.10(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@standard-schema/spec': 1.0.0
+      eventsource-parser: 3.0.6
+      zod: 4.1.11
+
+  '@ai-sdk/provider-utils@3.0.12(zod@4.1.11)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@standard-schema/spec': 1.0.0
@@ -3301,9 +3337,13 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.0.1': {}
 
-  '@convex-dev/rate-limiter@0.2.12(convex@1.27.4(react@19.1.1))(react@19.1.1)':
+  '@convex-dev/aggregate@0.1.25(convex@1.28.0(react@19.1.1))':
     dependencies:
-      convex: 1.27.4(react@19.1.1)
+      convex: 1.28.0(react@19.1.1)
+
+  '@convex-dev/rate-limiter@0.2.12(convex@1.28.0(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      convex: 1.28.0(react@19.1.1)
     optionalDependencies:
       react: 19.1.1
 
@@ -4427,16 +4467,16 @@ snapshots:
 
   confbox@0.2.2: {}
 
-  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.4(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11):
+  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.28.0(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(zod@4.1.11):
     dependencies:
-      convex: 1.27.4(react@19.1.1)
+      convex: 1.28.0(react@19.1.1)
     optionalDependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.1.1
       typescript: 5.9.2
       zod: 4.1.11
 
-  convex@1.27.4(react@19.1.1):
+  convex@1.28.0(react@19.1.1):
     dependencies:
       esbuild: 0.25.4
       prettier: 3.6.2

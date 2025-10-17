@@ -7,7 +7,9 @@ export const getDesignById = internalQuery({
 	args: {
 		designId: v.id('designs')
 	},
-	handler: async (ctx, args) => await designModel.getDesignById(ctx, args.designId)
+	handler: async (ctx, args) => {
+		return await designModel.getDesignById(ctx, args.designId);
+	}
 });
 
 export const updateDesignById = internalMutation({
@@ -16,6 +18,7 @@ export const updateDesignById = internalMutation({
 		userId: v.id('users'),
 		updates: vUpdateDesign
 	},
-	handler: async (ctx, args) =>
-		await designModel.updateDesignById(ctx, args.designId, args.userId, args.updates)
+	handler: async (ctx, args) => {
+		return await designModel.updateDesignById(ctx, args.designId, args.userId, args.updates);
+	}
 });

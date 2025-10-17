@@ -9,5 +9,7 @@ export const createStripeUserById = internalMutation({
 		stripeCustomerId: v.string(),
 		currencyCode: vCurrencyCode
 	},
-	handler: async (ctx, args) => await stripeUserModel.createStripeUser(ctx, args)
+	handler: async (ctx, args) => {
+		return await stripeUserModel.createStripeUser(ctx, args);
+	}
 });

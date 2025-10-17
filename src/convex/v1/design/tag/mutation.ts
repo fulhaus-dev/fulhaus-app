@@ -16,7 +16,7 @@ export const saveDesignTags = mutation({
 			'createDesign'
 		);
 
-		await designTagModel.saveDesignTags(ctx, args.workspaceId, args.designId, args.tagNames);
+		return await designTagModel.saveDesignTags(ctx, args.workspaceId, args.designId, args.tagNames);
 	}
 });
 
@@ -32,6 +32,6 @@ export const deleteDesignTag = mutation({
 			'createDesign'
 		);
 
-		await designTagModel.deleteDesignTag(ctx, args.designTagId);
+		return await designTagModel.deleteDesignTag(ctx, args.designTagId);
 	}
 });

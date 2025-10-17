@@ -7,7 +7,9 @@ export const getLudwigChatTempAssetsByChatId = internalQuery({
 	args: {
 		chatId: v.id('chats')
 	},
-	handler: async (ctx, args) => await ludwigModel.getChatTempAssetsByChatId(ctx, args.chatId)
+	handler: async (ctx, args) => {
+		return await ludwigModel.getChatTempAssetsByChatId(ctx, args.chatId);
+	}
 });
 
 export const getLudwigDesignChatContext = internalQuery({

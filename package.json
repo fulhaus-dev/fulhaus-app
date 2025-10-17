@@ -55,6 +55,7 @@
 		]
 	},
 	"dependencies": {
+		"@ai-sdk/anthropic": "^2.0.31",
 		"@ai-sdk/google": "^2.0.17",
 		"@ai-sdk/openai": "^2.0.32",
 		"@ai-sdk/provider-utils": "^3.0.10",
@@ -62,13 +63,14 @@
 		"@ai-sdk/xai": "^2.0.20",
 		"@aws-sdk/client-s3": "^3.888.0",
 		"@aws-sdk/s3-request-presigner": "^3.888.0",
+		"@convex-dev/aggregate": "^0.1.25",
 		"@convex-dev/rate-limiter": "^0.2.12",
 		"@react-email/render": "^1.2.3",
 		"@sveltejs/adapter-node": "^5.3.2",
 		"ai": "^5.0.56",
 		"bits-ui": "^2.9.6",
 		"compressorjs": "^1.2.1",
-		"convex": "^1.27.4",
+		"convex": "^1.28.0",
 		"convex-helpers": "^0.1.104",
 		"dompurify": "^3.2.6",
 		"i": "^0.3.7",

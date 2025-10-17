@@ -64,9 +64,7 @@ export const vCreateProductFields = {
 	stockQtyUSD: v.number(),
 	stockQtyCAD: v.number(),
 	restockDateUSD: v.optional(v.number()),
-	restockDateCAD: v.optional(v.number()),
-	imageEmbedding: v.array(v.float64()),
-	textEmbedding: v.array(v.float64())
+	restockDateCAD: v.optional(v.number())
 };
 
 export const vCreateProduct = v.object(vCreateProductFields);

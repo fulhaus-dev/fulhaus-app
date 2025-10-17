@@ -126,7 +126,7 @@ export const generateDesignFurnitureRecommendation = internalAction({
 		const recommendations = await ctx.runAction(
 			internal.v1.product.internal.action.getLudwigProductRecommendationsByCategory,
 			{
-				currencyCode: 'CAD',
+				currencyCode: 'USD',
 				limit: 1,
 				categoryList: design.productCategories.map((productCategory) => ({
 					imageEmbedding: inspoVector,
@@ -136,11 +136,13 @@ export const generateDesignFurnitureRecommendation = internalAction({
 		);
 
 		const products = await Promise.all(
-			recommendations.data.map(({ result }) =>
-				ctx.runQuery(internal.v1.product.internal.query.getProductById, {
-					productId: result[0]._id
-				})
-			)
+			recommendations.data
+				.filter((data) => data.result.length > 0)
+				.map(({ result }) =>
+					ctx.runQuery(internal.v1.product.internal.query.getProductById, {
+						productId: result[0]._id
+					})
+				)
 		);
 
 		const availableProducts = products.filter((product) => !!product);

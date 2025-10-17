@@ -121,16 +121,18 @@ export async function getDesignRenderedImage(args: {
 	originalInspirationImageUrl: string;
 }) {
 	const systemPrompt = `
-You are an expert interior designer and 3D visualization specialist.
+You are an expert interior/exterior space designer and visualization specialist.
 
-Your task is to generate a photorealistic rendered image of a design space based on:
-- The space name and description provided
-- The furniture/product images shown
+Your task is to generate a photorealistic rendered image of a design space.
 
-Create a cohesive, aesthetically pleasing room design that incorporates all the provided products in a natural and functional layout taking your design cue from the design name and description.
+You will be provided with the following information:
+- The design name and description.
+- The list of product images
+- The users inspiration image
 
-**IMPORTANT**
-The orientation of the generated design image MUST be LANDSCAPE.
+**Guidelines:**
+- Use the provided space name and description as guide to inform your visualization decisions.
+- Any items in the provided inspiration image should not be part of the final visualization, only use it to guide your decision on style, colors, mood and layout.
 `;
 
 	const designProductCategoriesImagePart: ImagePart[] = args.productImages.map((productImage) => ({
@@ -152,23 +154,20 @@ The orientation of the generated design image MUST be LANDSCAPE.
 					content: [
 						{
 							type: 'text',
-							text: `Generate a rendered image for this design:
+							text: `Create a cohesive, aesthetically pleasing space design that incorporates all the provided product images in a natural and functional layout:
               
               **Design Name**: ${args.designName}
-              
               **Design Description**:${args.designDescription}
               
-              **The ${args.productImages.length} Products to include (images attached below):**
+              **The ${args.productImages.length} Products to include (images attached):**
               ${productList}
 
-              The last image is the original inspiration image, should not be part of the design but should be used to guide the space aesthetics, like wall, floor etc.
-              
-              Please create a design based on the design name and description that naturally incorporates all these furniture pieces.`
+              The last image is the inspiration image, items in this image should not be part of the design but should be used to guide the space aesthetics, layout, style, color, wall, floor etc.`
 						},
 						...designProductCategoriesImagePart,
 						{
 							type: 'text',
-							text: 'This image is the original inspiration image, should not be part of the design but should be used to guide the space aesthetics, like wall, floor etc.'
+							text: 'This image is the inspiration image, items in this image should not be part of the final visualization. It should be used to guide your decision on layout, style, color, space aesthetics, like wall, floor etc.'
 						},
 						{
 							type: 'image',

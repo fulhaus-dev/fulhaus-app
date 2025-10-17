@@ -1,4 +1,4 @@
-import { ActionCtx, MutationCtx, QueryCtx } from '../../_generated/server';
+import { MutationCtx, QueryCtx } from '../../_generated/server';
 import { Infer } from 'convex/values';
 import { Doc, Id } from '../../_generated/dataModel';
 import { vCreateProduct, vUpdateProduct } from './validator';
@@ -12,7 +12,6 @@ import {
 	ProductCategory,
 	ProductFilter,
 	ProductPaginationOptions,
-	ProductRecommendationFilter,
 	ProductSortOptions
 } from './type';
 import { paginator } from 'convex-helpers/server/pagination';
@@ -20,10 +19,37 @@ import schema from '../../schema';
 import type { PaginationResult } from 'convex/server';
 import { CurrencyCode } from '../../type';
 import { productCategories } from './constant';
+import { productCategoryAggregate } from './aggregate';
+import productEmbeddingModel from './embedding/model';
 
-async function createProduct(ctx: MutationCtx, args: Infer<typeof vCreateProduct>) {
+async function createProduct(
+	ctx: MutationCtx,
+	args: {
+		productData: Infer<typeof vCreateProduct>;
+		embeddingData: {
+			imageEmbedding: number[];
+			textEmbedding: number[];
+		};
+	}
+) {
+	const { productData, embeddingData } = args;
+
+	const productEmbeddingId = await productEmbeddingModel.createProductEmbedding(ctx, {
+		categoryUSD: productData.hasUSD ? productData.category : undefined,
+		categoryCAD: productData.hasCAD ? productData.category : undefined,
+		retailPriceCAD: productData.retailPriceCAD,
+		retailPriceUSD: productData.retailPriceUSD,
+		width: productData.width,
+		height: productData.height,
+		depth: productData.depth,
+		weight: productData.weight,
+		imageEmbedding: embeddingData.imageEmbedding,
+		textEmbedding: embeddingData.textEmbedding
+	});
+
 	return await ctx.db.insert('products', {
-		...args,
+		...productData,
+		embeddingId: productEmbeddingId,
 		status: 'Active',
 		stockDate: date.now(),
 		updatedAt: date.now()
@@ -314,21 +340,20 @@ async function getProductBrands(
 	};
 }
 
-async function getLudwigProductRecommendationByCategory(
-	ctx: ActionCtx,
-	args: {
-		imageEmbedding: number[];
-		category: ProductCategory;
-		currencyCode: CurrencyCode;
-		limit: number;
-		filter?: ProductRecommendationFilter;
-	}
-) {
-	return await ctx.vectorSearch('products', 'by_image_embedding', {
-		vector: args.imageEmbedding,
-		limit: args.limit,
-		filter: (q) => q.eq('category', args.category)
-	});
+async function getProductByEmbeddingId(ctx: QueryCtx, embeddingId: Id<'productEmbeddings'>) {
+	return await ctx.db
+		.query('products')
+		.withIndex('by_embedding_id', (q) => q.eq('embeddingId', embeddingId))
+		.first();
+}
+
+async function getTotalProductCategory(ctx: QueryCtx, category: ProductCategory) {
+	const count = await productCategoryAggregate.count(ctx, { namespace: category });
+
+	return {
+		category,
+		total: count
+	};
 }
 
 const productModel = {
@@ -344,7 +369,8 @@ const productModel = {
 	getClientProductsByCategory,
 	getClientProductsByCategoryWithFilters,
 	getProductBrands,
-	getLudwigProductRecommendationByCategory
+	getProductByEmbeddingId,
+	getTotalProductCategory
 };
 
 export default productModel;

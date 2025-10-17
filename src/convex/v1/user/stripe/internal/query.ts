@@ -8,5 +8,7 @@ export const getStripeUser = internalQuery({
 		userId: v.id('users'),
 		currencyCode: vCurrencyCode
 	},
-	handler: async (ctx, args) => await stripeUserModel.getStripeUserByUserId(ctx, args)
+	handler: async (ctx, args) => {
+		return await stripeUserModel.getStripeUserByUserId(ctx, args);
+	}
 });

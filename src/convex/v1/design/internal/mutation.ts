@@ -8,7 +8,9 @@ export const createDesign = internalMutation({
 		userId: v.id('users'),
 		create: vCreateDesign
 	},
-	handler: async (ctx, args) => await designModel.createDesign(ctx, args.userId, args.create)
+	handler: async (ctx, args) => {
+		return await designModel.createDesign(ctx, args.userId, args.create);
+	}
 });
 
 export const updateDesignById = internalMutation({
@@ -17,6 +19,7 @@ export const updateDesignById = internalMutation({
 		userId: v.id('users'),
 		update: vUpdateDesign
 	},
-	handler: async (ctx, args) =>
-		await designModel.updateDesignById(ctx, args.designId, args.userId, args.update)
+	handler: async (ctx, args) => {
+		return await designModel.updateDesignById(ctx, args.designId, args.userId, args.update);
+	}
 });

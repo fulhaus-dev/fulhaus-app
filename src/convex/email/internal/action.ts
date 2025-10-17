@@ -9,5 +9,7 @@ export const sendEmail = internalAction({
 		subject: v.string(),
 		html: v.string()
 	},
-	handler: async (_, args) => await resend.emails.send(args)
+	handler: async (_, args) => {
+		await resend.emails.send(args);
+	}
 });

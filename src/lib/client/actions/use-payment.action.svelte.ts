@@ -22,7 +22,7 @@ export function usePaymentAction() {
 		const { data: response, error } = await asyncTryCatch(() =>
 			convexClient.action(api.v1.payment.action.getCartPaymentCheckoutUrl, {
 				workspaceId: currentWorkspaceId,
-				currencyCode: 'CAD',
+				currencyCode: 'USD',
 				successUrl: `${window.location.origin}/payment/success`
 			})
 		);

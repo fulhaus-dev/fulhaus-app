@@ -11,7 +11,7 @@ export function useWorkspaceCartQuery() {
 		api.v1.cart.query.getCartByWorkspaceId,
 		() => ({
 			workspaceId: currentWorkspaceId!,
-			currencyCode: 'CAD' as CurrencyCode
+			currencyCode: 'USD' as CurrencyCode
 		}),
 		{
 			requiredArgsKeys: ['workspaceId', 'currencyCode']
@@ -44,7 +44,7 @@ export function useDesignCartQuery(designId: () => Id<'designs'>) {
 		() => ({
 			workspaceId: currentWorkspaceId!,
 			designId: designId(),
-			currencyCode: 'CAD' as CurrencyCode
+			currencyCode: 'USD' as CurrencyCode
 		}),
 		{
 			requiredArgsKeys: ['workspaceId', 'designId', 'currencyCode']
