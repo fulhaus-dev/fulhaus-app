@@ -1,5 +1,3 @@
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - esbuild
-  - pngquant-bin
-  - sharp
