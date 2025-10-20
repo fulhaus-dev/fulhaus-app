@@ -5,7 +5,7 @@
 
 	onMount(() => {
 		setTimeout(() => {
-			goto('/shop-designs');
+			goto('/ludwig');
 		}, 3000);
 	});
 </script>

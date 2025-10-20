@@ -23,6 +23,7 @@ export type AiToolCtxParams = {
 	workspaceId: Id<'workspaces'>;
 	userId: Id<'users'>;
 	chatId: Id<'chats'>;
+	currencyCode: CurrencyCode;
 };
 
 export type ToolFnSet = Record<string, (toolCtxParams: AiToolCtxParams) => ToolSet[keyof ToolSet]>;

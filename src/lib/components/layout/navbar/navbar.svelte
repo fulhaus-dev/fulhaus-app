@@ -19,11 +19,11 @@
 		</Link>
 	</div>
 
-	<menu class="flex flex-1 items-center justify-center gap-x-8">
+	<!-- <menu class="flex flex-1 items-center justify-center gap-x-8">
 		<Link href={`/${workspaceId}/ludwig`}>Ludwig</Link>
 		<Link href="/shop-designs">Shop Designs</Link>
 		<Link href="/inspiration">Inspiration</Link>
-	</menu>
+	</menu> -->
 
 	<menu class="flex flex-1 items-center justify-end gap-x-6">
 		<Link href={`/${workspaceId}/cart`}>

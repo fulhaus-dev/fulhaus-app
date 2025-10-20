@@ -14,15 +14,15 @@ export const ludwigAgent: AgentConfig = {
 	options: {
 		model: anthropicClaudeHaiku,
 		systemPromptFileId: process.env.LUDWIG_SYSTEM_PROMPT_FILE_ID! as Id<'_storage'>,
-		maxToolCallSteps: 200,
-		providerOptions: {
-			google: {
-				thinkingConfig: {
-					thinkingBudget: 0,
-					includeThoughts: false
-				}
-			}
-		}
+		maxToolCallSteps: 200
+		// providerOptions: {
+		// 	google: {
+		// 		thinkingConfig: {
+		// 			thinkingBudget: 0,
+		// 			includeThoughts: false
+		// 		}
+		// 	}
+		// }
 	},
 	toolFnSet: {
 		...uiTools,

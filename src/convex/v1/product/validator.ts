@@ -42,6 +42,7 @@ export const vCreateProductFields = {
 	unitPerBox: v.number(),
 	imageUrls: v.array(v.string()),
 	mainImageUrl: v.string(),
+	mainImageNoBgUrl: v.optional(v.string()),
 	warehouseCountryCodes: v.array(vCountryAlpha2Code),
 	shippingCountryCodes: v.array(vCountryAlpha2Code),
 	dimension: v.optional(v.string()),
