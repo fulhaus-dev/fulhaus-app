@@ -3,7 +3,7 @@ import { FloorPlanFile } from '../../../type';
 import { SpaceType } from '../../design/type';
 import { ProductCategory } from '../../product/type';
 import { asyncTryCatch } from '../../../util/async';
-import { generateObject, generateText, ImagePart } from 'ai';
+import { generateObject, generateText } from 'ai';
 import {
 	googleGenerativeAIGemini2_5FlashImagePreview,
 	googleGenerativeAIGemini2_5Flash
@@ -114,35 +114,70 @@ ${productStyles.join('\n')}
 	};
 }
 
+// You will be provided with the following information:
+// - The design name and description.
+// - Space type.
+// - The list of product images.
+
+// You will be provided with the following information:
+// - The design name and description.
+// - The list of product images
+// - The users inspiration image
+
+// **Guidelines:**
+// - Use the provided space type and design name and description as guide to inform your visualization decisions.
+// - Any items in the provided inspiration image should not be part of the final visualization, only use it to guide your decision on style, colors, mood and layout.
+
+// **Guidelines:**
+// - Use the provided space type and design name and description as guide to inform your visualization decisions.
+// - Use the exact product list of product images in the generated design visualization for the space.
+
+//   **Space Type**: ${args.spaceType}
+//   **Design Name**: ${args.designName}
+//   **Design Description**:${args.designDescription}
+
+//   **The ${args.productImages.length} Products to include (images attached):**
+//   ${productList}
+
+//   The last image is the inspiration image, items in this image should not be part of the design but should be used to guide the space aesthetics, layout, style, color, wall, floor etc.`
+
 export async function getDesignRenderedImage(args: {
 	designName: string;
+	spaceType: SpaceType;
 	designDescription: string;
 	productImages: { category: string; url: string; name: string }[];
 	originalInspirationImageUrl: string;
 }) {
 	const systemPrompt = `
-You are an expert interior/exterior space designer and visualization specialist.
+You are an expert interior/exterior space design visualization expert for this design:
 
-Your task is to generate a photorealistic rendered image of a design space.
+**Space Type**: ${args.spaceType}
+**Design Name**: ${args.designName}
+**Design Description**:${args.designDescription}
 
-You will be provided with the following information:
-- The design name and description.
-- The list of product images
-- The users inspiration image
-
-**Guidelines:**
-- Use the provided space name and description as guide to inform your visualization decisions.
-- Any items in the provided inspiration image should not be part of the final visualization, only use it to guide your decision on style, colors, mood and layout.
+Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images. All product images must appear in the visualization. Do not replace the provided product images with a different product image, however you can add other items to complement the space as long as the provided product images are in the visualization.
 `;
 
-	const designProductCategoriesImagePart: ImagePart[] = args.productImages.map((productImage) => ({
-		type: 'image',
-		image: productImage.url
-	}));
+	// const designProductCategoriesImagePart: ImagePart[] = args.productImages.map((productImage) => ({
+	// 	type: 'image',
+	// 	image: productImage.url
+	// }));
 
-	const productList = args.productImages
-		.map((productImage, index) => `${index + 1}. ${productImage.category} - ${productImage.name}`)
-		.join('\n');
+	const designProductCategoriesImagePart = args.productImages.flatMap((product) => [
+		{
+			type: 'text' as const,
+			text: `Product: ${product.name}, Category: ${product.category}`
+		},
+		{
+			type: 'image' as const,
+			image: new URL(product.url)
+			// providerOptions is available but Google doesn't use it for metadata
+		}
+	]);
+
+	// const productList = args.productImages
+	// 	.map((productImage, index) => `${index + 1}. ${productImage.category} - ${productImage.name}`)
+	// 	.join('\n');
 
 	const { data: result, error } = await asyncTryCatch(() =>
 		generateText({
@@ -152,22 +187,21 @@ You will be provided with the following information:
 				{
 					role: 'user',
 					content: [
-						{
-							type: 'text',
-							text: `Create a cohesive, aesthetically pleasing space design that incorporates all the provided product images in a natural and functional layout:
-              
-              **Design Name**: ${args.designName}
-              **Design Description**:${args.designDescription}
-              
-              **The ${args.productImages.length} Products to include (images attached):**
-              ${productList}
+						// 			{
+						// 				type: 'text',
+						// 				text: `Create a cohesive, aesthetically pleasing space design that incorporates all the provided product images in a natural and functional layout:
 
-              The last image is the inspiration image, items in this image should not be part of the design but should be used to guide the space aesthetics, layout, style, color, wall, floor etc.`
-						},
+						//   **Space Type**: ${args.spaceType}
+						//   **Design Name**: ${args.designName}
+						//   **Design Description**:${args.designDescription}
+
+						//   **The ${args.productImages.length} Products to include (images attached):**
+						//   ${productList}`
+						// 			},
 						...designProductCategoriesImagePart,
 						{
 							type: 'text',
-							text: 'This image is the inspiration image, items in this image should not be part of the final visualization. It should be used to guide your decision on layout, style, color, space aesthetics, like wall, floor etc.'
+							text: 'This image is the inspiration image. It should be used to guide your decision on space layout only.'
 						},
 						{
 							type: 'image',

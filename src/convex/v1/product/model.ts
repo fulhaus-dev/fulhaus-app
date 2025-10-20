@@ -71,6 +71,17 @@ async function updateProductById(
 	});
 }
 
+async function updateProductMainImageNoBgUrl(
+	ctx: MutationCtx,
+	productId: Id<'products'>,
+	mainImageNoBgUrl: string
+) {
+	return await ctx.db.patch(productId, {
+		mainImageNoBgUrl,
+		updatedAt: date.now()
+	});
+}
+
 async function getProductBySku(ctx: QueryCtx, sku: string) {
 	return await ctx.db
 		.query('products')
@@ -360,6 +371,7 @@ const productModel = {
 	createProduct,
 	getProductById,
 	updateProductById,
+	updateProductMainImageNoBgUrl,
 	getProductBySku,
 	getProductCategories,
 	getProductCategoriesForSpace,

@@ -57,7 +57,10 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 
 	const { options: agentOptions, toolFnSet: agentToolFnSet } = agentConfig['Ludwig'];
 
-	const agentTools = getAiAgentTools({ ctx, workspaceId, chatId, userId }, agentToolFnSet);
+	const agentTools = getAiAgentTools(
+		{ ctx, workspaceId, chatId, userId, currencyCode: 'USD' },
+		agentToolFnSet
+	);
 
 	const { systemPromptFileId, maxToolCallSteps, ...otherAgentOptions } = agentOptions;
 

@@ -49,18 +49,12 @@
 		"vite": "^7.0.4",
 		"vite-plugin-devtools-json": "^1.0.0"
 	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
-	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "^2.0.31",
 		"@ai-sdk/google": "^2.0.17",
 		"@ai-sdk/openai": "^2.0.32",
 		"@ai-sdk/provider-utils": "^3.0.10",
 		"@ai-sdk/svelte": "^3.0.60",
-		"@ai-sdk/xai": "^2.0.20",
 		"@aws-sdk/client-s3": "^3.888.0",
 		"@aws-sdk/s3-request-presigner": "^3.888.0",
 		"@convex-dev/aggregate": "^0.1.25",
@@ -73,12 +67,14 @@
 		"convex": "^1.28.0",
 		"convex-helpers": "^0.1.104",
 		"dompurify": "^3.2.6",
-		"i": "^0.3.7",
 		"image-size": "^2.0.2",
+		"jimp": "^1.6.0",
 		"jose": "^6.1.0",
 		"marked": "^16.2.1",
 		"mime": "^4.1.0",
 		"npm": "^11.6.1",
+		"optional": "^0.1.4",
+		"replicate": "^1.3.0",
 		"resend": "^6.0.3",
 		"stripe": "^19.1.0",
 		"tw-animate-css": "^1.3.8",

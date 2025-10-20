@@ -195,7 +195,7 @@ export function useAuthMutation() {
 			asyncTryCatch(() => convexClient.mutation(api.v1.auth.mutation.logout, {}))
 		]);
 
-		await redirectAfterAuth('/shop-designs');
+		await redirectAfterAuth('/auth');
 	}
 
 	async function redirectAfterAuth(url: string) {

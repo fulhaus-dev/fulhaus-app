@@ -15,11 +15,12 @@ export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolC
 			})
 			.strip(),
 		execute: async (input) => {
-			const { ctx, userId } = toolCtxParams;
+			const { ctx, userId, currencyCode } = toolCtxParams;
 
 			const { error } = await ctx.runAction(
 				internal.v1.design.internal.action.generateDesignFurnitureRecommendation,
 				{
+					currencyCode,
 					designId: input.designId as Id<'designs'>,
 					userId
 				}
