@@ -166,7 +166,7 @@ Your task is to generate a photorealistic visualization of a ${args.spaceType} s
 	const designProductCategoriesImagePart = args.productImages.flatMap((product) => [
 		{
 			type: 'text' as const,
-			text: `Product: ${product.name}, Category: ${product.category}`
+			text: `Category: ${product.category}`
 		},
 		{
 			type: 'image' as const,

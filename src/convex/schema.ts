@@ -13,6 +13,8 @@ import { cartItemTable } from './v1/cart/table';
 import { designTagTable } from './v1/design/tag/table';
 import { stripeUserTable } from './v1/user/stripe/table';
 import { productEmbeddingTable } from './v1/product/embedding/table';
+import { productErrorLogTable } from './v1/product/error/table';
+import { productCategoryStatisticTable } from './v1/product/statistics/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -31,5 +33,7 @@ export default defineSchema({
 	productVendors: productVendorTable,
 	products: productTable,
 	productEmbeddings: productEmbeddingTable,
+	productErrorLogs: productErrorLogTable,
+	productCategoryStatistics: productCategoryStatisticTable,
 	cartItems: cartItemTable
 });

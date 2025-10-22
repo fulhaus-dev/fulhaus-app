@@ -11,8 +11,6 @@ import {
 	vProductSortOptions
 } from './validator';
 import { vCurrencyCode } from '../../validator';
-import { productCategories } from './constant';
-import { ProductCategory } from './type';
 
 export const getPoProductsBySkus = query({
 	args: {
@@ -27,30 +25,6 @@ export const getPoProductsBySkus = query({
 		);
 
 		return SuccessData(products);
-	}
-});
-
-export const getProductCategoryCountAggregate = query({
-	args: {
-		poApiKey: v.string()
-	},
-	handler: async (ctx, args) => {
-		authorization.authorizeProductOnboarding(args.poApiKey);
-
-		const counts = await Promise.all(
-			productCategories.map((category) => productModel.getTotalProductCategory(ctx, category))
-		);
-
-		const productCategoryCountAggregate = counts.reduce(
-			(acc, count) => {
-				acc[count.category] = count.total;
-
-				return acc;
-			},
-			{} as Record<ProductCategory, number>
-		);
-
-		return SuccessData(productCategoryCountAggregate);
 	}
 });
 

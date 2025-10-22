@@ -316,7 +316,7 @@ async function getLudwigRecommendedProducts(
 
 	const responseJson = (await response.json()) as LudwigRecommendationResponse;
 
-	const recommendations = responseJson.recommendations.data;
+	const recommendations = responseJson.recommendations?.data;
 	if (!recommendations) return;
 
 	const products = await Promise.all(

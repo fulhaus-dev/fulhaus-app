@@ -1,8 +1,9 @@
 import { defineTable } from 'convex/server';
 import { vCreateProductEmbeddingFields } from './validator';
 
-export const productEmbeddingTable = defineTable(vCreateProductEmbeddingFields)
-	.vectorIndex('by_image_embedding', {
+export const productEmbeddingTable = defineTable(vCreateProductEmbeddingFields).vectorIndex(
+	'by_image_embedding',
+	{
 		vectorField: 'imageEmbedding',
 		dimensions: 512,
 		filterFields: [
@@ -15,8 +16,5 @@ export const productEmbeddingTable = defineTable(vCreateProductEmbeddingFields)
 			'height',
 			'depth'
 		]
-	})
-	.vectorIndex('by_text_embedding', {
-		vectorField: 'textEmbedding',
-		dimensions: 768
-	});
+	}
+);

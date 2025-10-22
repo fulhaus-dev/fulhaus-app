@@ -7,4 +7,7 @@ export const designTagTable = defineTable({
 	tag: v.string()
 })
 	.index('by_workspace_tag', ['workspaceId', 'tag'])
-	.index('by_design_id', ['designId']);
+	.index('by_design_id', ['designId'])
+	.searchIndex('by_full_text_search', {
+		searchField: 'tag'
+	});
