@@ -19,20 +19,16 @@ import schema from '../../schema';
 import type { PaginationResult } from 'convex/server';
 import { CurrencyCode } from '../../type';
 import { productCategories } from './constant';
-import { productCategoryAggregate } from './aggregate';
 import productEmbeddingModel from './embedding/model';
 
 async function createProduct(
 	ctx: MutationCtx,
 	args: {
 		productData: Infer<typeof vCreateProduct>;
-		embeddingData: {
-			imageEmbedding: number[];
-			textEmbedding: number[];
-		};
+		imageEmbedding: number[];
 	}
 ) {
-	const { productData, embeddingData } = args;
+	const { productData, imageEmbedding } = args;
 
 	const productEmbeddingId = await productEmbeddingModel.createProductEmbedding(ctx, {
 		categoryUSD: productData.hasUSD ? productData.category : undefined,
@@ -43,14 +39,14 @@ async function createProduct(
 		height: productData.height,
 		depth: productData.depth,
 		weight: productData.weight,
-		imageEmbedding: embeddingData.imageEmbedding,
-		textEmbedding: embeddingData.textEmbedding
+		imageEmbedding
 	});
 
 	return await ctx.db.insert('products', {
 		...productData,
 		embeddingId: productEmbeddingId,
 		status: 'Active',
+		fullTextSearch: `${productData.name} ${productData.description} ${productData.category}`,
 		stockDate: date.now(),
 		updatedAt: date.now()
 	});
@@ -358,15 +354,6 @@ async function getProductByEmbeddingId(ctx: QueryCtx, embeddingId: Id<'productEm
 		.first();
 }
 
-async function getTotalProductCategory(ctx: QueryCtx, category: ProductCategory) {
-	const count = await productCategoryAggregate.count(ctx, { namespace: category });
-
-	return {
-		category,
-		total: count
-	};
-}
-
 const productModel = {
 	createProduct,
 	getProductById,
@@ -381,8 +368,7 @@ const productModel = {
 	getClientProductsByCategory,
 	getClientProductsByCategoryWithFilters,
 	getProductBrands,
-	getProductByEmbeddingId,
-	getTotalProductCategory
+	getProductByEmbeddingId
 };
 
 export default productModel;

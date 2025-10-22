@@ -10,8 +10,7 @@ export const vCreateProductEmbeddingFields = {
 	height: v.number(),
 	depth: v.number(),
 	weight: v.number(),
-	imageEmbedding: v.array(v.float64()),
-	textEmbedding: v.array(v.float64())
+	imageEmbedding: v.array(v.float64())
 };
 
 export const vCreateProductEmbedding = v.object(vCreateProductEmbeddingFields);

@@ -3,7 +3,7 @@ import productModel from './model';
 import authorization from '../../middleware/authorization';
 import { vCreateProduct, vUpdateProduct } from './validator';
 import { SuccessData } from '../../response/success';
-import { productMutation } from './aggregate';
+import { productMutation } from './statistics/trigger';
 
 export const createPoProducts = productMutation({
 	args: {
@@ -11,10 +11,7 @@ export const createPoProducts = productMutation({
 		data: v.array(
 			v.object({
 				productData: vCreateProduct,
-				embeddingData: v.object({
-					imageEmbedding: v.array(v.float64()),
-					textEmbedding: v.array(v.float64())
-				})
+				imageEmbedding: v.array(v.float64())
 			})
 		)
 	},

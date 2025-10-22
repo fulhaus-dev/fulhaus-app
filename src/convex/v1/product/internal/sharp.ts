@@ -5,7 +5,8 @@ import { internalAction } from '../../../_generated/server';
 import { replicate } from '../../../config/replicate';
 import { r2 } from '../../../util/r2';
 import { internal } from '../../../_generated/api';
-import { Jimp } from 'jimp';
+// import { Jimp } from 'jimp';
+import sharp from 'sharp';
 import { Id } from '../../../_generated/dataModel';
 
 export const updateProductMainImageNoBgUrls = internalAction({
@@ -50,18 +51,36 @@ async function uploadToR2(replicateOutput: object, productId: Id<'products'>) {
 	const outputBlob = (await (replicateOutput as any).blob()) as Blob;
 	const outputBuffer = await outputBlob.arrayBuffer();
 
-	const image = await Jimp.read(outputBuffer);
-	image.autocrop();
+	const trimmed = await sharp(outputBuffer).trim().toBuffer();
+	const { width, height } = await sharp(trimmed).metadata();
 
-	const { width, height } = image;
+	let resizeOptions = width >= height ? { width } : { height };
 
-	let resizeOptions = width >= height ? { w: width } : { h: height };
+	if (width > 1080 || height > 1080)
+		resizeOptions = width >= height ? { width: 1080 } : { height: 1080 };
 
-	if (width > 1080 || height > 1080) resizeOptions = width >= height ? { w: 1080 } : { h: 1080 };
+	const pngBuffer = await sharp(trimmed)
+		.resize(resizeOptions)
+		.png({
+			palette: true,
+			colours: 256,
+			compressionLevel: 9,
+			dither: 1.0
+		})
+		.toBuffer();
 
-	image.resize(resizeOptions);
+	// const image = await Jimp.read(outputBuffer);
+	// image.autocrop();
 
-	const pngBuffer = await image.getBuffer('image/png');
+	// const { width, height } = image;
+
+	// let resizeOptions = width >= height ? { w: width } : { h: height };
+
+	// if (width > 1080 || height > 1080) resizeOptions = width >= height ? { w: 1080 } : { h: 1080 };
+
+	// image.resize(resizeOptions);
+
+	// const pngBuffer = await image.getBuffer('image/png');
 
 	const resultUint8Array = new Uint8Array(pngBuffer);
 	const resultBlob = new Blob([resultUint8Array], { type: 'image/png' });

@@ -7,6 +7,7 @@ export const productTable = defineTable({
 	embeddingId: v.id('productEmbeddings'),
 	stockDate: v.number(),
 	status: vProductStatus,
+	fullTextSearch: v.string(),
 	updatedAt: v.number()
 })
 	.index('by_sku', ['sku'])
@@ -17,4 +18,7 @@ export const productTable = defineTable({
 	.index('by_category_price_usd', ['category', 'retailPriceUSD'])
 	.index('by_category_price_cad', ['category', 'retailPriceCAD'])
 	.index('by_category_brand', ['category', 'brand'])
-	.index('by_embedding_id', ['embeddingId']);
+	.index('by_embedding_id', ['embeddingId'])
+	.searchIndex('by_full_text_search', {
+		searchField: 'fullTextSearch'
+	});

@@ -15,6 +15,7 @@ async function createDesign(
 	return await ctx.db.insert('designs', {
 		...args,
 		floorPlanUrl: args.floorPlanFile?.url,
+		fullTextSearch: `${args.name} ${args.description} ${args.spaceType}`,
 		createdById: userId,
 		updatedById: userId,
 		updatedAt: date.now()

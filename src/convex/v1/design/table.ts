@@ -19,6 +19,7 @@ export const designTable = defineTable({
 	renderingImage: v.optional(v.boolean()),
 	generateRender: v.optional(v.boolean()),
 	publishedAt: v.optional(v.number()),
+	fullTextSearch: v.string(),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),
 	updatedAt: v.number(),
@@ -27,4 +28,7 @@ export const designTable = defineTable({
 	.index('by_workspace_id', ['workspaceId'])
 	.index('by_workspace_space', ['workspaceId', 'spaceType'])
 	.index('by_chat_id', ['chatId'])
-	.index('by_floor_plan_url', ['floorPlanUrl']);
+	.index('by_floor_plan_url', ['floorPlanUrl'])
+	.searchIndex('by_full_text_search', {
+		searchField: 'fullTextSearch'
+	});
