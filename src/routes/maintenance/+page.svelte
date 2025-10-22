@@ -4,8 +4,6 @@
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
 
 	const sampleInspoImages = page.data.sampleInspoImages;
-
-	$inspect(sampleInspoImages);
 </script>
 
 <section class="h-full p-20 pt-0 pb-12">
