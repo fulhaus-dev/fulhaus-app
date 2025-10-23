@@ -25,7 +25,7 @@ export function useCurrentWorkspaceQuery() {
 			return query.error;
 		},
 		get currentWorkspace() {
-			return query.response?.data ?? ({} as Doc<'workspaces'>);
+			return query.response ?? ({} as Doc<'workspaces'>);
 		}
 	});
 
@@ -43,7 +43,7 @@ export function useUserWorkspacesQuery() {
 			return query.error;
 		},
 		get userWorkspaces() {
-			return query.response?.data ?? [];
+			return query.response?.userClientWorkspaces ?? [];
 		}
 	});
 

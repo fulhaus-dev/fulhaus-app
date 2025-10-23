@@ -7,7 +7,6 @@ import authorization from '../../middleware/authorization';
 import paymentModel from './model';
 import { SuccessData } from '../../response/success';
 import ServerError from '../../response/error';
-import { HttpStatusCode } from '../../type';
 
 export const getCartPaymentCheckoutUrl = action({
 	args: {
@@ -15,10 +14,7 @@ export const getCartPaymentCheckoutUrl = action({
 		currencyCode: vCurrencyCode,
 		successUrl: v.string()
 	},
-	handler: async (
-		ctx,
-		args
-	): Promise<{ statusCode: HttpStatusCode; data: { checkoutUrl: string } }> => {
+	handler: async (ctx, args): Promise<{ checkoutUrl: string }> => {
 		const userId = await authorization.userIsAuthenticated(ctx);
 
 		const { data: checkoutUrl, error } = await paymentModel.getCartPaymentCheckoutUrl(ctx, {

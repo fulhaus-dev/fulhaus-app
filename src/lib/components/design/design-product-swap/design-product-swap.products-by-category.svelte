@@ -28,6 +28,8 @@
 
 	const { productToSwapCategory, onSelectProduct }: DesignProductsProps = $props();
 
+	const currencyCode = page.data.currencyCode;
+
 	const productFilters = $derived(
 		page.url.searchParams.get(QueryParams.PRODUCT_FILTERS) ?? ''
 	) as ProductFilterQueryString;
@@ -41,6 +43,7 @@
 	let getProductsByCategoryPaginationCursor = $state<string>();
 
 	const paginatedProductsByCategoryQuery = usePaginatedProductsByCategoryQuery(
+		currencyCode,
 		productToSwapCategory,
 		{
 			cursor: () => getProductsByCategoryPaginationCursor,

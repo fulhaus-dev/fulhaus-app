@@ -2,7 +2,7 @@
 // for information about these interfaces
 
 import type { Id } from './convex/_generated/dataModel';
-import type { ImageData } from '$lib/types';
+import type { CurrencyCode, ImageData } from '$lib/types';
 
 declare global {
 	namespace App {
@@ -10,12 +10,14 @@ declare global {
 			currentUserId?: Id<'users'>;
 			activeWorkspaceId?: Id<'workspaces'>;
 			authToken?: string;
+			currencyCode: CurrencyCode;
 		}
 
 		interface PageData {
 			currentUserId?: Id<'users'>;
 			activeWorkspaceId?: Id<'workspaces'>;
 			authToken?: string;
+			currencyCode: CurrencyCode;
 			sampleInspoImages: ImageData[];
 		}
 	}

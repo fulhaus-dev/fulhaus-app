@@ -11,7 +11,10 @@ export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolC
 			.object({
 				designId: z
 					.string()
-					.describe('The ID of the design to generate furniture recommendations for.')
+					.describe('The ID of the design to generate furniture recommendations for.'),
+				designBudget: z
+					.optional(z.number().default(0))
+					.describe('The budget for the design in if any.')
 			})
 			.strip(),
 		execute: async (input) => {
@@ -22,7 +25,8 @@ export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolC
 				{
 					currencyCode,
 					designId: input.designId as Id<'designs'>,
-					userId
+					userId,
+					designBudget: input.designBudget
 				}
 			);
 			if (error)

@@ -1,6 +1,5 @@
 import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte';
 import type { FunctionArgs, FunctionReference, FunctionReturnType } from 'convex/server';
-import type { Value } from 'convex/values';
 import { onDestroy } from 'svelte';
 
 export function useConvexQuerySubscription<Query extends FunctionReference<'query'>>(
@@ -16,9 +15,12 @@ export function useConvexQuerySubscription<Query extends FunctionReference<'quer
 ) {
 	const client = useConvexClient();
 
+	type QueryReturnType = FunctionReturnType<Query>;
+	type QueryArgs = FunctionArgs<Query>;
+
 	const state = $state({
 		loading: true,
-		response: undefined as FunctionReturnType<Query> | undefined,
+		response: undefined as QueryReturnType | undefined,
 		error: undefined as Error | undefined
 	});
 
@@ -70,13 +72,13 @@ export function useConvexQuerySubscription<Query extends FunctionReference<'quer
 		options?.onLoading?.(loading);
 	}
 
-	function getArgsSnapshot(args: Record<string, Value> | (() => Record<string, Value>)) {
-		if (typeof args === 'function') args = args();
+	function getArgsSnapshot(args: QueryArgs | (() => QueryArgs)) {
+		const resolvedArgs = typeof args === 'function' ? (args as () => QueryArgs)() : args;
 
-		return $state.snapshot(args);
+		return $state.snapshot(resolvedArgs) as QueryArgs;
 	}
 
-	function checkCanSubscribe(argsSnapshot: Record<string, Value>, requiredArgsKeys?: string[]) {
+	function checkCanSubscribe(argsSnapshot: QueryArgs, requiredArgsKeys?: string[]) {
 		if (!requiredArgsKeys) return true;
 
 		for (const argKey of requiredArgsKeys) {

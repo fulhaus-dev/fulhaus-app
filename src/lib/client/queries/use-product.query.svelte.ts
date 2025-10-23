@@ -8,6 +8,7 @@ import type {
 	SpaceType
 } from '$lib/types.js';
 import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte.js';
+import { page } from '$app/state';
 
 export function useProductCategoriesQuery() {
 	const { query } = useConvexQuerySubscription(api.v1.product.query.getProductCategories, {});
@@ -20,7 +21,7 @@ export function useProductCategoriesQuery() {
 			return query.error;
 		},
 		get categories() {
-			return query.response?.data ?? [];
+			return query.response?.categories ?? [];
 		}
 	});
 
@@ -46,7 +47,7 @@ export function useProductCategoriesBySpaceQuery(spaceType: SpaceType) {
 			return query.error;
 		},
 		get categories() {
-			return query.response?.data ?? [];
+			return query.response?.categories ?? ({} as Record<'all' | 'recommended', ProductCategory[]>);
 		}
 	});
 
@@ -78,7 +79,7 @@ export function useProductBrandsQuery(
 			return query.error;
 		},
 		get productBrands() {
-			return query.response?.data ?? ({} as ProductBrandsResponse);
+			return query.response ?? ({} as ProductBrandsResponse);
 		}
 	});
 
@@ -86,6 +87,7 @@ export function useProductBrandsQuery(
 }
 
 export function usePaginatedProductsByCategoryQuery(
+	currencyCode: CurrencyCode,
 	category: ProductCategory,
 	args: {
 		cursor?: () => string | undefined;
@@ -122,7 +124,7 @@ export function usePaginatedProductsByCategoryQuery(
 				: undefined;
 
 			return {
-				currencyCode: 'USD' as CurrencyCode,
+				currencyCode,
 				category,
 				productFilter: args.productFilter?.(),
 				paginationOptions: {
@@ -140,15 +142,15 @@ export function usePaginatedProductsByCategoryQuery(
 			},
 			onData: (response) => {
 				if (freshLoad)
-					paginatedProductsByCategoryQuery.clientProducts = response.data.clientProducts ?? [];
+					paginatedProductsByCategoryQuery.clientProducts = response.clientProducts ?? [];
 				else
 					paginatedProductsByCategoryQuery.clientProducts = [
 						...paginatedProductsByCategoryQuery.clientProducts,
-						...(response.data.clientProducts ?? [])
+						...(response.clientProducts ?? [])
 					];
 
-				paginatedProductsByCategoryQuery.isDone = response.data.isDone;
-				paginatedProductsByCategoryQuery.continueCursor = response.data.continueCursor;
+				paginatedProductsByCategoryQuery.isDone = response.isDone;
+				paginatedProductsByCategoryQuery.continueCursor = response.continueCursor;
 
 				freshLoad = false;
 			},
@@ -166,6 +168,8 @@ export function useProductsQuery(args: {
 	productFilter: () => ProductFilter | undefined;
 	sortOptions?: () => ProductSortOptions | undefined;
 }) {
+	const currencyCode = page.data.currencyCode;
+
 	const productsQuery = $state({
 		clientProducts: [] as Product[],
 		isDone: false,
@@ -196,7 +200,7 @@ export function useProductsQuery(args: {
 				: undefined;
 
 			return {
-				currencyCode: 'USD' as CurrencyCode,
+				currencyCode,
 				productFilter: args.productFilter(),
 				paginationOptions: {
 					cursor: effectiveCursor,
@@ -211,15 +215,15 @@ export function useProductsQuery(args: {
 				productsQuery.loading = loading;
 			},
 			onData: (response) => {
-				if (freshLoad) productsQuery.clientProducts = response.data.clientProducts ?? [];
+				if (freshLoad) productsQuery.clientProducts = response.clientProducts ?? [];
 				else
 					productsQuery.clientProducts = [
 						...productsQuery.clientProducts,
-						...(response.data.clientProducts ?? [])
+						...(response.clientProducts ?? [])
 					];
 
-				productsQuery.isDone = response.data.isDone;
-				productsQuery.continueCursor = response.data.continueCursor;
+				productsQuery.isDone = response.isDone;
+				productsQuery.continueCursor = response.continueCursor;
 
 				freshLoad = false;
 			},

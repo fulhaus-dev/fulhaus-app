@@ -3,8 +3,9 @@ import { mutation } from '../../../_generated/server';
 import authorization from '../../../middleware/authorization';
 import productErrorModel from './model';
 import { SuccessMessage } from '../../../response/success';
+import { vReturnedSuccessMessage } from '../../../response/validator';
 
-export const logProductError = mutation({
+export const logPoProductError = mutation({
 	args: {
 		poApiKey: v.string(),
 		data: v.object({
@@ -12,6 +13,7 @@ export const logProductError = mutation({
 			details: v.optional(v.array(v.any()))
 		})
 	},
+	returns: vReturnedSuccessMessage(),
 	handler: async (ctx, args) => {
 		authorization.authorizeProductOnboarding(args.poApiKey);
 

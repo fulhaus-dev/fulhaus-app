@@ -39,5 +39,5 @@ export const getLudwigProductRecommendationsByCategory = httpAction(async (ctx, 
 		}
 	);
 
-	return new Response(JSON.stringify(recommendationResult.data), { status: 200 });
+	return new Response(JSON.stringify(recommendationResult.recommendations), { status: 200 });
 });

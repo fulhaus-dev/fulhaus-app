@@ -24,7 +24,7 @@ export function useDesignAssetQuery() {
 			return query.error;
 		},
 		get designAssets() {
-			return query.response?.data ?? [];
+			return query.response?.workspaceAssets ?? [];
 		}
 	});
 

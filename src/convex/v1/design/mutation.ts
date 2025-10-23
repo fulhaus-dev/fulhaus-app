@@ -32,7 +32,7 @@ export const updateDesignById = mutation({
 				0,
 				internal.v1.design.internal.action.generateDesignFurnitureRecommendation,
 				{
-					currencyCode: 'USD',
+					currencyCode: currentDesign.currencyCode,
 					designId: args.designId,
 					userId
 				}

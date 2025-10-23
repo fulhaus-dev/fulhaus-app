@@ -2,10 +2,12 @@ import { api } from '../../../convex/_generated/api.js';
 import { page } from '$app/state';
 import { QueryParams } from '$lib/enums.js';
 import type { Id } from '../../../convex/_generated/dataModel.js';
-import type { CurrencyCode, Design } from '$lib/types.js';
+import type { Design } from '$lib/types.js';
 import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte.js';
 
 export function useDesignQuery() {
+	const currencyCode = page.data.currencyCode;
+
 	const ludwigChatId = $derived.by(
 		() =>
 			(page.url.searchParams.get(QueryParams.LUDWIG_CHAT_ID) ?? undefined) as
@@ -17,7 +19,7 @@ export function useDesignQuery() {
 		api.v1.design.query.getDesignDataByChatId,
 		() => ({
 			chatId: ludwigChatId!,
-			currencyCode: 'USD' as CurrencyCode
+			currencyCode
 		}),
 		{
 			requiredArgsKeys: ['chatId', 'currencyCode']
@@ -32,10 +34,10 @@ export function useDesignQuery() {
 			return query.error;
 		},
 		get designProducts() {
-			return query.response?.data?.designProducts ?? [];
+			return query.response?.designProducts ?? [];
 		},
 		get design() {
-			return query.response?.data?.design ?? ({} as Design);
+			return query.response?.design ?? ({} as Design);
 		}
 	});
 
@@ -61,7 +63,7 @@ export function useWorkspaceDesignsQuery() {
 			return query.error;
 		},
 		get workspaceDesigns() {
-			return query.response?.data ?? [];
+			return query.response?.designsWithTags ?? [];
 		}
 	});
 
@@ -87,7 +89,7 @@ export function useUniqueDesignSpacesForWorkspaceQuery() {
 			return query.error;
 		},
 		get uniqueSpaces() {
-			return query.response?.data ?? [];
+			return query.response?.spaces ?? [];
 		}
 	});
 
@@ -113,7 +115,7 @@ export function useDesignTagsForWorkspaceQuery() {
 			return query.error;
 		},
 		get designTags() {
-			return query.response?.data ?? [];
+			return query.response?.designTags ?? [];
 		}
 	});
 

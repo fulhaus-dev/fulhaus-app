@@ -21,7 +21,7 @@
 	const productCategoriesBySpaceQuery = useProductCategoriesBySpaceQuery(spaceType);
 
 	const filteredProductCategories = $derived.by(() => {
-		const availableProductCategories = productCategoriesBySpaceQuery.categories.filter(
+		const availableProductCategories = productCategoriesBySpaceQuery.categories.all.filter(
 			(productCategory) =>
 				!updates.productCategories
 					?.map((productCategory) => productCategory.category)

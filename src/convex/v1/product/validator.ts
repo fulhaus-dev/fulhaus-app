@@ -1,6 +1,6 @@
 import { v } from 'convex/values';
 import { productCategories, productStyles } from './constant';
-import { vCountryAlpha2Code, vCurrencyCode } from '../../validator';
+import { vCurrencyCode } from '../../validator';
 
 export const vProductStatus = v.union(
 	v.literal('Active'),
@@ -43,8 +43,6 @@ export const vCreateProductFields = {
 	imageUrls: v.array(v.string()),
 	mainImageUrl: v.string(),
 	mainImageNoBgUrl: v.optional(v.string()),
-	warehouseCountryCodes: v.array(vCountryAlpha2Code),
-	shippingCountryCodes: v.array(vCountryAlpha2Code),
 	dimension: v.optional(v.string()),
 	width: v.number(),
 	height: v.number(),
@@ -76,7 +74,6 @@ export const vClientProduct = v.object({
 	brand: v.optional(v.string()),
 	name: v.string(),
 	description: v.string(),
-	pdpLink: v.optional(v.string()),
 	retailPrice: v.number(),
 	unitPerBox: v.number(),
 	stockQty: v.number(),

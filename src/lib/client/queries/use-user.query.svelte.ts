@@ -13,7 +13,7 @@ export function useUserQuery() {
 			return query.error;
 		},
 		get userProfile() {
-			return query.response?.data ?? ({} as UserProfile);
+			return query.response ?? ({} as UserProfile);
 		}
 	});
 
