@@ -32,6 +32,8 @@ export const handle = async ({ event, resolve }) => {
 	const { data: geo } = await asyncTryCatch(() => geoip.lookup(clientIp));
 
 	let countryCode = geo?.country ?? 'US';
+	console.log('countryCode', countryCode);
+
 	if (countryCode !== 'CA') countryCode = 'US';
 
 	event.locals.currentUserId = authenticated?.currentUserId;

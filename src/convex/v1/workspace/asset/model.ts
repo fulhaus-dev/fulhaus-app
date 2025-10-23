@@ -8,7 +8,17 @@ async function saveWorkspaceAsset(
 	ctx: MutationCtx,
 	args: Infer<typeof workspaceAssetTable.validator>
 ) {
+	const currentWorkspaceAsset = await getWorkspaceAssetByUrl(ctx, args.url);
+	if (currentWorkspaceAsset) return currentWorkspaceAsset._id;
+
 	return await ctx.db.insert('workspaceAssets', args);
+}
+
+async function getWorkspaceAssetByUrl(ctx: QueryCtx, url: string) {
+	return await ctx.db
+		.query('workspaceAssets')
+		.withIndex('by_url', (q) => q.eq('url', url))
+		.first();
 }
 
 async function getWorkspaceAssets(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
@@ -32,6 +42,7 @@ async function getWorkspaceAssetsByType(
 
 const workspaceAssetModel = {
 	saveWorkspaceAsset,
+	getWorkspaceAssetByUrl,
 	getWorkspaceAssets,
 	getWorkspaceAssetsByType
 };
