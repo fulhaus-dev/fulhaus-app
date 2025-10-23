@@ -7,6 +7,4 @@ export const productVendorTable = defineTable({
 	r2FolderId: v.string(),
 	updatedAt: v.number(),
 	deletedAt: v.optional(v.number())
-})
-	.index('by_vendor_id', ['vId'])
-	.index('by_deleted_at', ['deletedAt']);
+}).index('by_vendor_id', ['vId']);

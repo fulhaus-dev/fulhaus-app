@@ -25,6 +25,7 @@ import type * as middleware_http_authorization from "../middleware/http/authoriz
 import type * as middleware_internal_query from "../middleware/internal/query.js";
 import type * as response_error from "../response/error.js";
 import type * as response_success from "../response/success.js";
+import type * as response_validator from "../response/validator.js";
 import type * as type from "../type.js";
 import type * as util_array from "../util/array.js";
 import type * as util_async from "../util/async.js";
@@ -177,6 +178,7 @@ declare const fullApi: ApiFromModules<{
   "middleware/internal/query": typeof middleware_internal_query;
   "response/error": typeof response_error;
   "response/success": typeof response_success;
+  "response/validator": typeof response_validator;
   type: typeof type;
   "util/array": typeof util_array;
   "util/async": typeof util_async;

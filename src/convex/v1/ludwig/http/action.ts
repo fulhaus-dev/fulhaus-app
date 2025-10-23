@@ -12,7 +12,7 @@ import httpAuthorization from '../../../middleware/http/authorization';
 import ServerError from '../../../response/error';
 import { agentConfig } from '../../../agent';
 import { getAiAgentTools } from '../../chat/util';
-import { FloorPlanFile } from '../../../type';
+import { CurrencyCode, FloorPlanFile } from '../../../type';
 import { internal } from '../../../_generated/api';
 import { Infer } from 'convex/values';
 import { vChatUiMessage } from '../../chat/validator';
@@ -22,6 +22,7 @@ type LudwigChatMetadata = {
 	chatId: Id<'chats'>;
 	inspoImageUrl?: string;
 	floorPlanFile?: FloorPlanFile;
+	currencyCode: CurrencyCode;
 };
 
 export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
@@ -38,7 +39,8 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 
 	const { message }: { message: UIMessage } = await request.json();
 
-	const { chatId, inspoImageUrl, floorPlanFile } = (message?.metadata ?? {}) as LudwigChatMetadata;
+	const { chatId, inspoImageUrl, floorPlanFile, currencyCode } = (message?.metadata ??
+		{}) as LudwigChatMetadata;
 	if (!chatId || chatId === '') throw ServerError.BadRequest('Chat ID not found');
 
 	if (inspoImageUrl)
@@ -58,7 +60,7 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 	const { options: agentOptions, toolFnSet: agentToolFnSet } = agentConfig['Ludwig'];
 
 	const agentTools = getAiAgentTools(
-		{ ctx, workspaceId, chatId, userId, currencyCode: 'USD' },
+		{ ctx, workspaceId, chatId, userId, currencyCode },
 		agentToolFnSet
 	);
 

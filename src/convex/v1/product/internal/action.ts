@@ -78,11 +78,11 @@ export const getLudwigProductRecommendationsByCategory = internalAction({
 			)
 		);
 
-		return SuccessData(
-			recommendationResult.map((result, index) => ({
+		return SuccessData({
+			recommendations: recommendationResult.map((result, index) => ({
 				result,
 				category: args.categoryList[index].category
 			}))
-		);
+		});
 	}
 });

@@ -4,6 +4,7 @@ import authorization from '../../middleware/authorization';
 import { vCreateProduct, vUpdateProduct } from './validator';
 import { SuccessData } from '../../response/success';
 import { productMutation } from './statistics/trigger';
+import { vReturnedSuccessData } from '../../response/validator';
 
 export const createPoProducts = productMutation({
 	args: {
@@ -15,12 +16,13 @@ export const createPoProducts = productMutation({
 			})
 		)
 	},
+	returns: vReturnedSuccessData(v.object({ productIds: v.array(v.id('products')) })),
 	handler: async (ctx, args) => {
 		authorization.authorizeProductOnboarding(args.poApiKey);
 
 		const productIds = await Promise.all(args.data.map((d) => productModel.createProduct(ctx, d)));
 
-		return SuccessData(productIds);
+		return SuccessData({ productIds });
 	}
 });
 
@@ -34,6 +36,7 @@ export const updatePoProductsById = productMutation({
 			})
 		)
 	},
+	returns: v.null(),
 	handler: async (ctx, args) => {
 		authorization.authorizeProductOnboarding(args.poApiKey);
 

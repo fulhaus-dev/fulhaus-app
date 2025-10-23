@@ -28,6 +28,7 @@ export function useLudwigChatMutation() {
 
 	const convexClient = useConvexClient();
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'> | undefined;
+	const currencyCode = page.data.currencyCode;
 	const userQuery = useUserQuery();
 	const { updateRouteQuery } = useRouteMutation();
 
@@ -142,14 +143,14 @@ export function useLudwigChatMutation() {
 			return;
 		}
 
-		chat.messages = response.data.messages;
+		chat.messages = response.messages;
 		state.chatUsers = [
 			{
 				userId: userQuery.userProfile._id,
 				fullName: userQuery.userProfile.fullName,
 				imageUrl: userQuery.userProfile.imageUrl
 			},
-			...response.data.users
+			...response.users
 		];
 		state.chatIsLoading = false;
 	}
@@ -198,6 +199,7 @@ export function useLudwigChatMutation() {
 				text: message,
 				files,
 				metadata: {
+					currencyCode,
 					chatId,
 					userId: userQuery.userProfile._id,
 					inspoImageUrl: file?.type === 'inspo' ? file.url : undefined,
@@ -222,7 +224,7 @@ export function useLudwigChatMutation() {
 
 		if (error) state.error = error.message;
 
-		return response?.data.chatId;
+		return response?.chatId;
 	}
 
 	async function getChatFileUiPart(fileUrl: string) {

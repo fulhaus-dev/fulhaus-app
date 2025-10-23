@@ -57,6 +57,8 @@
 
 	const { productCategory }: { productCategory?: ProductCategory } = $props();
 
+	const currencyCode = page.data.currencyCode;
+
 	const { updateRouteQuery } = useRouteMutation();
 
 	let cursor = $state<string | undefined>(undefined);
@@ -354,7 +356,7 @@
 		<div class="flex items-center gap-x-4 border-b border-color-border p-4">
 			{@render MinMaxFilterTextInput({
 				type: 'Min',
-				metric: 'USD',
+				metric: currencyCode,
 				name: 'minPrice',
 				defaultValue: parsedProductFilters.minPrice,
 				bindableValueKey: 'minPrice',
@@ -362,7 +364,7 @@
 			})}
 			{@render MinMaxFilterTextInput({
 				type: 'Max',
-				metric: 'USD',
+				metric: currencyCode,
 				name: 'maxPrice',
 				defaultValue: parsedProductFilters.maxPrice,
 				bindableValueKey: 'maxPrice',

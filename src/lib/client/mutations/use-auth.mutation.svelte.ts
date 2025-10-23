@@ -85,7 +85,7 @@ export function useAuthMutation() {
 			return;
 		}
 
-		state.isSignUp = response.data.isSignUp;
+		state.isSignUp = response.isSignUp;
 		state.step = 'otp';
 		updateRouteQuery({ queryString: `${QueryParams.AUTH_STEP}=otp` });
 	}
@@ -126,7 +126,7 @@ export function useAuthMutation() {
 		}
 
 		const { error: setCookieError } = await asyncFetch.post('/api/auth/cookies/set', {
-			body: JSON.stringify(response.data),
+			body: JSON.stringify(response),
 			headers: { 'Content-Type': 'application/json' }
 		});
 
@@ -137,7 +137,7 @@ export function useAuthMutation() {
 		}
 
 		if (state.isSignUp) {
-			state.userId = response.data.userId;
+			state.userId = response.userId;
 			state.step = 'name';
 			state.loading = false;
 			updateRouteQuery({ queryString: `${QueryParams.AUTH_STEP}=name` });

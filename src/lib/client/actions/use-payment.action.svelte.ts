@@ -7,6 +7,7 @@ import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js'
 export function usePaymentAction() {
 	const convexClient = useConvexClient();
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'> | undefined;
+	const currencyCode = page.data.currencyCode;
 
 	const state = $state({
 		loading: false,
@@ -22,7 +23,7 @@ export function usePaymentAction() {
 		const { data: response, error } = await asyncTryCatch(() =>
 			convexClient.action(api.v1.payment.action.getCartPaymentCheckoutUrl, {
 				workspaceId: currentWorkspaceId,
-				currencyCode: 'USD',
+				currencyCode,
 				successUrl: `${window.location.origin}/payment/success`
 			})
 		);
@@ -33,7 +34,7 @@ export function usePaymentAction() {
 			return;
 		}
 
-		window.location.href = response.data.checkoutUrl;
+		window.location.href = response.checkoutUrl;
 	}
 
 	return {

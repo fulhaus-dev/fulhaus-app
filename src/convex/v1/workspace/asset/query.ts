@@ -12,7 +12,7 @@ export const getWorkspaceAssets = query({
 
 		const workspaceAssets = await workspaceAssetModel.getWorkspaceAssets(ctx, workspaceId);
 
-		return SuccessData(workspaceAssets);
+		return SuccessData({ workspaceAssets });
 	}
 });
 
@@ -23,6 +23,6 @@ export const getWorkspaceAssetsByType = query({
 
 		const workspaceAssets = await workspaceAssetModel.getWorkspaceAssetsByType(ctx, args);
 
-		return SuccessData(workspaceAssets);
+		return SuccessData({ workspaceAssets });
 	}
 });

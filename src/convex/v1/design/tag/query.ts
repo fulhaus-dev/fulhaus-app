@@ -13,6 +13,6 @@ export const getDesignTagsForWorkspace = query({
 
 		const designTags = await designTagModel.getDesignTagsForWorkspace(ctx, args.workspaceId);
 
-		return SuccessData(designTags);
+		return SuccessData({ designTags });
 	}
 });
