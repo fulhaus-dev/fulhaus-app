@@ -39,7 +39,7 @@ export const getDesignsByWorkspaceId = query({
 			}))
 		);
 
-		return SuccessData(designsWithTags);
+		return SuccessData({ designsWithTags });
 	}
 });
 
@@ -52,6 +52,6 @@ export const getUniqueDesignSpacesForWorkspace = query({
 
 		const spaces = await designModel.getUniqueDesignSpacesForWorkspace(ctx, args.workspaceId);
 
-		return SuccessData(spaces);
+		return SuccessData({ spaces });
 	}
 });

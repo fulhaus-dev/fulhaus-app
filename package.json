@@ -66,6 +66,7 @@
 		"convex": "^1.28.0",
 		"convex-helpers": "^0.1.104",
 		"dompurify": "^3.2.6",
+		"fast-geoip": "^1.1.88",
 		"image-size": "^2.0.2",
 		"jimp": "^1.6.0",
 		"jose": "^6.1.0",

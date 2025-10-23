@@ -11,3 +11,5 @@ export const httpStatusCode = {
 } as const;
 
 export const functionNames = ['createDesign', 'getDesign'] as const;
+
+export const currencyCodes = ['USD', 'CAD'] as const;

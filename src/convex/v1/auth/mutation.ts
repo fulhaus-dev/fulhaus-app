@@ -5,10 +5,10 @@ import authModel from './model';
 import authScheduler from './scheduler';
 import userModel from '../user/model';
 import ServerError from '../../response/error';
-import { SuccessData, SuccessMessage } from '../../response/success';
 import { Id } from '../../_generated/dataModel';
 import authorization from '../../middleware/authorization';
 import { internal } from '../../_generated/api';
+import { SuccessData, SuccessMessage } from '../../response/success';
 
 export const sendAuthOtp = mutation({
 	args: {
@@ -96,7 +96,9 @@ export const refreshAuthSession = mutation({
 		sessionId: v.id('sessions')
 	},
 	handler: async (ctx, { sessionId }) => {
-		return await authModel.refreshSession(ctx, sessionId);
+		const tokenResponse = await authModel.refreshSession(ctx, sessionId);
+
+		return SuccessData(tokenResponse);
 	}
 });
 

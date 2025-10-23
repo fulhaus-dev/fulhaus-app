@@ -11,12 +11,18 @@ import {
 	vProductSortOptions
 } from './validator';
 import { vCurrencyCode } from '../../validator';
+import { vReturnedSuccessData } from '../../response/validator';
+import { doc } from 'convex-helpers/validators';
+import schema from '../../schema';
 
 export const getPoProductsBySkus = query({
 	args: {
 		poApiKey: v.string(),
 		skus: v.array(v.string())
 	},
+	returns: vReturnedSuccessData(
+		v.object({ products: v.array(v.union(doc(schema, 'products'), v.null())) })
+	),
 	handler: async (ctx, args) => {
 		authorization.authorizeProductOnboarding(args.poApiKey);
 
@@ -24,7 +30,7 @@ export const getPoProductsBySkus = query({
 			args.skus.map((sku) => productModel.getProductBySku(ctx, sku))
 		);
 
-		return SuccessData(products);
+		return SuccessData({ products });
 	}
 });
 
@@ -34,7 +40,7 @@ export const getProductCategories = query({
 
 		const productCategories = productModel.getProductCategories();
 
-		return SuccessData(productCategories ?? []);
+		return SuccessData({ categories: productCategories ?? [] });
 	}
 });
 
@@ -47,7 +53,7 @@ export const getProductCategoriesForSpace = query({
 
 		const productCategories = productModel.getProductCategoriesForSpace(args.spaceType);
 
-		return SuccessData(productCategories.all ?? []);
+		return SuccessData({ categories: productCategories ?? [] });
 	}
 });
 

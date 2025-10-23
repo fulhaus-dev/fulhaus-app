@@ -31,7 +31,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 			})
 			.strip(),
 		execute: async (input) => {
-			const { ctx, userId, workspaceId, chatId } = toolCtxParams;
+			const { ctx, userId, workspaceId, chatId, currencyCode } = toolCtxParams;
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { floorPlanUrl, inspirationImageUrl: _, styles, ...otherInput } = input;
 
@@ -67,7 +67,8 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 						workspaceId,
 						chatId,
 						inspirationImageUrl,
-						floorPlanFile
+						floorPlanFile,
+						currencyCode
 					},
 					styles
 				}

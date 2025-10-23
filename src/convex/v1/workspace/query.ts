@@ -36,6 +36,6 @@ export const getUserWorkspaces = query({
 				logoUrl: userWorkspace.logoUrl
 			}));
 
-		return SuccessData(userClientWorkspaces);
+		return SuccessData({ userClientWorkspaces });
 	}
 });

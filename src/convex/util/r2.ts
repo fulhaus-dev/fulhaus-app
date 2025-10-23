@@ -23,9 +23,11 @@ async function upload({
 	const fileArrayBuffer = await fileBlob.arrayBuffer();
 	const fileBytes = new Uint8Array(fileArrayBuffer);
 
+	const fileKey = `${process.env.APP_ENVIRONMENT}/${fileNameWithExt}`;
+
 	const command = new PutObjectCommand({
 		Bucket: bucketName,
-		Key: fileNameWithExt,
+		Key: fileKey,
 		Body: fileBytes,
 		ContentType: fileMime
 	});
@@ -33,14 +35,14 @@ async function upload({
 	const { error } = await asyncTryCatch(() => r2Client.send(command));
 	if (error) return { error };
 
-	const fileUrl = `${bucketUrl}/${fileNameWithExt}`;
+	const fileUrl = `${bucketUrl}/${fileKey}`;
 
 	const fileSize = fileBlob.size;
 	let fileMetadata: Infer<typeof vAssetMetadata> = {
 		image: false,
 		name: name.split('.')[0],
 		description: '',
-		key: fileNameWithExt,
+		key: fileKey,
 		mime: fileMime,
 		size: fileSize
 	};
