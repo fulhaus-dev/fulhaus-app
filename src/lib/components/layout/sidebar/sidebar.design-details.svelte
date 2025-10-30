@@ -67,7 +67,7 @@
 					</div>
 
 					<div class="flex items-center gap-x-4">
-						<IconTooltipButton
+						<!-- <IconTooltipButton
 							content={design?.publishedAt ? 'Unpublish design' : 'Publish design'}
 							onclick={() => {}}
 						>
@@ -77,7 +77,7 @@
 						</IconTooltipButton>
 						<IconTooltipButton content="Duplicate design" onclick={() => {}}>
 							<CopyIcon class="size-4" />
-						</IconTooltipButton>
+						</IconTooltipButton> -->
 
 						<IconTooltipButton content="Edit design" onclick={() => (inEditMode = true)}>
 							<PencilLineIcon class="size-4" />
@@ -189,9 +189,9 @@
 					>
 				</div>
 
-				{#if page.route.id !== '/[workspaceId]/ludwig' && design?.chatId}
+				{#if page.route.id !== '/(main)/[workspaceId]/ludwig' && design?.chatId}
 					<Button
-						class={cn(inEditMode && 'hidden')}
+						class={cn('hidden lg:flex', inEditMode && 'hidden')}
 						onclick={() =>
 							goto(
 								`/${page.params.workspaceId}/ludwig?${QueryParams.LUDWIG_CHAT_ID}=${design.chatId}`
@@ -202,7 +202,7 @@
 					</Button>
 				{/if}
 
-				{#if page.route.id === '/[workspaceId]/ludwig' && design?.chatId && hasProducts}
+				{#if page.route.id === '/(main)/[workspaceId]/ludwig' && design?.chatId && hasProducts}
 					<Button
 						class={cn(inEditMode && 'hidden')}
 						onclick={() =>

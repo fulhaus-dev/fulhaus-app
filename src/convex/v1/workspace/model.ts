@@ -1,19 +1,26 @@
+import { Infer } from 'convex/values';
 import { Id } from '../../_generated/dataModel';
 import { MutationCtx, QueryCtx } from '../../_generated/server';
+import { CurrencyCode } from '../../type';
 import date from '../../util/date';
 import userPermissionModel from '../user/permission/model';
+import { vUpdateWorkspace } from './validator';
+import workspacePlanModel from './plan/model';
 
 async function createWorkspace(
 	ctx: MutationCtx,
-	{ name, userId }: { name: string; userId: Id<'users'> }
+	args: { name: string; userId: Id<'users'>; currencyCode: CurrencyCode }
 ) {
 	const workspaceId = await ctx.db.insert('workspaces', {
-		name,
+		name: args.name,
 		members: [],
-		createdById: userId,
-		updatedById: userId,
+		currencyCodes: [args.currencyCode],
+		createdById: args.userId,
+		updatedById: args.userId,
 		updatedAt: date.now()
 	});
+
+	await workspacePlanModel.createWorkspacePlan(ctx, workspaceId);
 
 	return workspaceId;
 }
@@ -31,9 +38,18 @@ async function getUserWorkspaces(ctx: QueryCtx, userId: Id<'users'>) {
 	);
 }
 
+async function updateWorkspace(
+	ctx: MutationCtx,
+	workspaceId: Id<'workspaces'>,
+	args: Infer<typeof vUpdateWorkspace>
+) {
+	return await ctx.db.patch(workspaceId, args);
+}
+
 const workspaceModel = {
 	createWorkspace,
 	getWorkspaceById,
-	getUserWorkspaces
+	getUserWorkspaces,
+	updateWorkspace
 };
 export default workspaceModel;

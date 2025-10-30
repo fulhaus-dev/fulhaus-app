@@ -11,6 +11,22 @@
 	import UserChatMessageCard from '$lib/components/chat/user-chat-message-card.svelte';
 	import AiChatMessageCard from '$lib/components/chat/ai-chat-message-card.svelte';
 	import LudwigWorkspaceDesigns from '$lib/components/ludwig/ludwig-workspace-designs.svelte';
+	import { useDesignQuery } from '$lib/client/queries/use-design.query.svelte';
+	import { page } from '$app/state';
+	import { QueryParams } from '$lib/enums';
+	import type { Id } from '../../../../convex/_generated/dataModel';
+	import { SofaIcon } from '@lucide/svelte';
+	import { goto } from '$app/navigation';
+
+	const ludwigChatId = $derived.by(
+		() =>
+			(page.url.searchParams.get(QueryParams.LUDWIG_CHAT_ID) ?? undefined) as
+				| Id<'chats'>
+				| undefined
+	);
+
+	const designQuery = useDesignQuery();
+	const canViewDesign = $derived(!!ludwigChatId && !!designQuery.design?._id);
 
 	const {
 		chatMutationState,
@@ -111,17 +127,34 @@
 
 		<div
 			class={cn(
-				'w-full transition-all delay-300 ease-in',
-				chatHasMessages && 'sticky bottom-0 z-1 bg-color-background pb-2',
+				'w-full space-y-4 transition-all delay-300 ease-in',
+				chatHasMessages && 'sticky bottom-0 z-1 lg:bg-color-background lg:pb-2',
 				currentUiTool && 'opacity-0'
 			)}
 		>
-			<ChatForm
-				bind:value={chatMutationState.userPrompt}
-				placeholder={chatHasMessages ? 'Reply to Ludwig...' : 'Something else?'}
-				loading={chatIsStreaming}
-				onsubmit={onSubmitLudwigChatMessage}
-			/>
+			{#if canViewDesign}
+				<div class="mr-4 flex justify-end lg:hidden">
+					<button
+						class="rounded-full bg-color-action-background p-1 text-color-action-text"
+						type="button"
+						onclick={() =>
+							goto(
+								`/${page.params.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${ludwigChatId}`
+							)}
+					>
+						<SofaIcon />
+					</button>
+				</div>
+			{/if}
+
+			<div class="bg-color-background pb-2 lg:bg-transparent lg:pb-0">
+				<ChatForm
+					bind:value={chatMutationState.userPrompt}
+					placeholder={chatHasMessages ? 'Reply to Ludwig...' : 'Something else?'}
+					loading={chatIsStreaming}
+					onsubmit={onSubmitLudwigChatMessage}
+				/>
+			</div>
 		</div>
 	</div>
 
@@ -131,7 +164,7 @@
 </section>
 
 {#snippet LudwigChatUiToolInput({ type }: { type: 'inspo' | 'floorplan' })}
-	<div class="w-2/5 pl-4">
+	<div class="w-4/5 pl-4 lg:w-2/5">
 		{#if type === 'inspo'}
 			<LudwigChatFileInputDialog
 				{type}

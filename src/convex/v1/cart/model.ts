@@ -27,7 +27,9 @@ async function getCartByWorkspaceId(
 ) {
 	const cartItems = await ctx.db
 		.query('cartItems')
-		.withIndex('by_workspace_design', (q) => q.eq('workspaceId', workspaceId))
+		.withIndex('by_workspace_design_currency', (q) =>
+			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode)
+		)
 		.collect();
 
 	const cartProductIds = cartItems.map((cartItem) => cartItem.productId);
@@ -55,8 +57,8 @@ async function getCartByDesignId(
 ) {
 	const cartItems = await ctx.db
 		.query('cartItems')
-		.withIndex('by_workspace_design', (q) =>
-			q.eq('workspaceId', workspaceId).eq('designId', designId)
+		.withIndex('by_workspace_design_currency', (q) =>
+			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode).eq('designId', designId)
 		)
 		.collect();
 
@@ -89,10 +91,16 @@ async function deleteCartItem(ctx: MutationCtx, cartItemId: Id<'cartItems'>) {
 	return await ctx.db.delete(cartItemId);
 }
 
-async function deleteCart(ctx: MutationCtx, workspaceId: Id<'workspaces'>) {
+async function deleteCart(
+	ctx: MutationCtx,
+	workspaceId: Id<'workspaces'>,
+	currencyCode: CurrencyCode
+) {
 	const cartItems = await ctx.db
 		.query('cartItems')
-		.withIndex('by_workspace_design', (q) => q.eq('workspaceId', workspaceId))
+		.withIndex('by_workspace_design_currency', (q) =>
+			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode)
+		)
 		.collect();
 
 	await Promise.all(cartItems.map((cartItem) => ctx.db.delete(cartItem._id)));

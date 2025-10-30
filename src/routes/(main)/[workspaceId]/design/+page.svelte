@@ -5,13 +5,24 @@
 	import Button from '$lib/components/button.svelte';
 	import DesignProductView from '$lib/components/design/design-product-view.svelte';
 	import DesignViewSidebar from '$lib/components/design/design-view-sidebar/design-view-sidebar.svelte';
+	import SidebarMobile from '$lib/components/layout/sidebar/sidebar-mobile.svelte';
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
+	import { QueryParams } from '$lib/enums';
 	import { cn } from '$lib/utils/cn';
+	import {
+		Columns3CogIcon,
+		Icon,
+		MessageCircleIcon,
+		SofaIcon,
+		WallpaperIcon
+	} from '@lucide/svelte';
 
 	type DesignView = 'product' | 'canvas';
+	type MobileTab = 'products' | 'details' | 'visualize' | 'chat';
 
 	let activeDesignView = $state<DesignView>('product');
+	let activeMobileTab = $state<MobileTab>('products');
 
 	const designQuery = useDesignQuery();
 
@@ -44,7 +55,7 @@
 	)}
 >
 	<div class="sticky top-0 z-2 flex h-[2.8rem] items-center bg-color-background/80 px-8">
-		<h4 class="flex-1 text-sm font-medium">{design.name}</h4>
+		<h4 class="flex-1 text-sm font-medium text-nowrap">{design.name}</h4>
 
 		<div class="flex flex-1 items-center justify-center">
 			<!-- <Button
@@ -69,12 +80,12 @@
 
 	<div
 		class={cn(
-			'flex min-h-[calc(100%-2.8rem)]  w-full gap-x-2 px-2',
+			'flex min-h-[calc(100%-5.6rem)]  w-full gap-x-2 px-2',
 			activeDesignView === 'canvas' && 'h-full'
 		)}
 	>
 		{#if activeDesignView === 'product'}
-			<div class="flex-1 border-r border-color-border p-2">
+			<div class="flex-1 border-color-border lg:border-r lg:p-2">
 				<DesignProductView
 					designId={design._id}
 					{designProducts}
@@ -90,8 +101,75 @@
 			</div>
 		{/if}
 
-		<div class="sticky top-[2.8rem] z-1 h-[calc(100%-2.8rem)] w-[24rem] pt-2">
+		<div class="sticky top-[2.8rem] z-1 hidden h-[calc(100%-2.8rem)] w-[24rem] pt-2 lg:block">
 			<DesignViewSidebar {design} {totalDesignPrice} />
 		</div>
 	</div>
+
+	<div
+		class={cn(
+			'fixed right-0 bottom-0 left-0 z-50 flex h-[2.8rem] items-center justify-center gap-x-12 border-t border-color-border bg-color-action-background px-2 text-color-action-text lg:hidden'
+		)}
+	>
+		{@render DesignMobileFooterMenuItem({
+			MenuIcon: SofaIcon,
+			label: 'Products',
+			active: activeMobileTab === 'products',
+			onClick: () => (activeMobileTab = 'products')
+		})}
+		{@render DesignMobileFooterMenuItem({
+			MenuIcon: Columns3CogIcon,
+			label: 'Details',
+			active: activeMobileTab === 'details',
+			onClick: () => (activeMobileTab = 'details')
+		})}
+		{@render DesignMobileFooterMenuItem({
+			MenuIcon: WallpaperIcon,
+			label: 'Visualize',
+			active: activeMobileTab === 'visualize',
+			onClick: () => (activeMobileTab = 'visualize')
+		})}
+		{@render DesignMobileFooterMenuItem({
+			MenuIcon: MessageCircleIcon,
+			label: 'Chat',
+			active: activeMobileTab === 'chat',
+			onClick: () => {
+				activeMobileTab = 'products';
+				goto(`/${page.params.workspaceId}/ludwig?${QueryParams.LUDWIG_CHAT_ID}=${design.chatId}`);
+			}
+		})}
+	</div>
 </section>
+
+<SidebarMobile open={activeMobileTab === 'details'} />
+
+<div
+	class={cn(
+		'fixed inset-0 z-40 hidden bg-color-background',
+		activeMobileTab === 'visualize' ? 'block' : 'hidden',
+		'lg:hidden'
+	)}
+>
+	<DesignViewSidebar {design} {totalDesignPrice} />
+</div>
+
+{#snippet DesignMobileFooterMenuItem({
+	MenuIcon,
+	label,
+	active,
+	onClick = () => {}
+}: {
+	MenuIcon: typeof Icon;
+	label: string;
+	active: boolean;
+	onClick?: () => void;
+})}
+	<button
+		type="button"
+		class={cn('text-center text-[10px] font-medium', !active && 'text-color-action-text-muted')}
+		onclick={onClick}
+	>
+		<MenuIcon class="mx-auto" />
+		<p>{label}</p>
+	</button>
+{/snippet}

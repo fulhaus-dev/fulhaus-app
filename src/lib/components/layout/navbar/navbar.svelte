@@ -5,6 +5,7 @@
 	import NavbarUserDropdownMenu from '$lib/components/layout/navbar/navbar.user-dropdown-menu.svelte';
 	import Link from '$lib/components/link.svelte';
 	import { cn } from '$lib/utils/cn';
+	import NavbarWorkspacePlan from '$lib/components/layout/navbar/navbar.workspace-plan-dropdown.svelte';
 
 	const { class: className = '' }: { class?: string } = $props();
 
@@ -32,7 +33,10 @@
 			<!-- <Link href="/#">
 			{@render NavbarIcon(CircleQuestionMarkIcon)}
 		</Link> -->
-			<NavbarUserDropdownMenu />
+			<div class="flex items-center gap-x-2">
+				<NavbarWorkspacePlan />
+				<NavbarUserDropdownMenu />
+			</div>
 		</menu>
 	{/if}
 </nav>

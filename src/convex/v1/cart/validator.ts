@@ -1,9 +1,11 @@
 import { v } from 'convex/values';
+import { vCurrencyCode } from '../../validator';
 
 export const vSaveCartItem = v.object({
 	designId: v.id('designs'),
 	productId: v.id('products'),
-	quantity: v.number()
+	quantity: v.number(),
+	currencyCode: vCurrencyCode
 });
 
 export const vUpdateCartItem = v.object({

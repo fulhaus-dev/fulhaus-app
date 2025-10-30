@@ -17,6 +17,8 @@ type AuthStep = 'email' | 'otp' | 'name';
 const OTP_LENGTH = 6;
 
 export function useAuthMutation() {
+	const currencyCode = page.data.currencyCode;
+
 	const convexClient = useConvexClient();
 	const { updateRouteQuery } = useRouteMutation();
 
@@ -148,7 +150,8 @@ export function useAuthMutation() {
 		const { data: response, error } = await asyncTryCatch(() =>
 			convexClient.mutation(api.v1.auth.mutation.signInWithOtp, {
 				email: userEmail,
-				otp: otpValue
+				otp: otpValue,
+				currencyCode
 			})
 		);
 		if (error) {

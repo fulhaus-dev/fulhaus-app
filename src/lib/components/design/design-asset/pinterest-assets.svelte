@@ -12,9 +12,9 @@
 	});
 </script>
 
-<div class="h-full w-full space-y-8 py-20">
+<div class="h-full w-full space-y-8 px-4 py-20 lg:px-0">
 	<div class="mx-auto w-fit">
-		<h3>Get recommendations right from your Pinterest Boards</h3>
+		<h3 class="leading-none">Get recommendations right from your Pinterest Boards</h3>
 		<p class="text-color-text-muted">
 			Connect your account to design from your existing Pinterest inspiration.
 		</p>

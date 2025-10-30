@@ -6,10 +6,11 @@ import date from '../../util/date';
 import workspaceModel from '../workspace/model';
 import { WORKSPACE_OWNER_PERMISSIONS } from './permission/constant';
 import userPermissionModel from './permission/model';
+import { CurrencyCode } from '../../type';
 
-async function createUser(ctx: MutationCtx, email: string) {
+async function createUser(ctx: MutationCtx, args: { email: string; currencyCode: CurrencyCode }) {
 	const userId = await ctx.db.insert('users', {
-		email: email.toLowerCase(),
+		email: args.email.toLowerCase(),
 		emailVerifiedAt: date.now(),
 		lastLoginAt: date.now(),
 		updatedAt: date.now()
@@ -17,7 +18,8 @@ async function createUser(ctx: MutationCtx, email: string) {
 
 	const workspaceId = await workspaceModel.createWorkspace(ctx, {
 		name: 'Personal',
-		userId
+		userId,
+		currencyCode: args.currencyCode
 	});
 
 	await updateUserById(ctx, { userId, updates: { currentWorkspaceId: workspaceId } });

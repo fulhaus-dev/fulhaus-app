@@ -142,8 +142,13 @@ import type * as v1_workspace_asset_query from "../v1/workspace/asset/query.js";
 import type * as v1_workspace_asset_table from "../v1/workspace/asset/table.js";
 import type * as v1_workspace_asset_validator from "../v1/workspace/asset/validator.js";
 import type * as v1_workspace_model from "../v1/workspace/model.js";
+import type * as v1_workspace_plan_model from "../v1/workspace/plan/model.js";
+import type * as v1_workspace_plan_query from "../v1/workspace/plan/query.js";
+import type * as v1_workspace_plan_table from "../v1/workspace/plan/table.js";
+import type * as v1_workspace_plan_validator from "../v1/workspace/plan/validator.js";
 import type * as v1_workspace_query from "../v1/workspace/query.js";
 import type * as v1_workspace_table from "../v1/workspace/table.js";
+import type * as v1_workspace_validator from "../v1/workspace/validator.js";
 import type * as validator from "../validator.js";
 
 import type {
@@ -295,8 +300,13 @@ declare const fullApi: ApiFromModules<{
   "v1/workspace/asset/table": typeof v1_workspace_asset_table;
   "v1/workspace/asset/validator": typeof v1_workspace_asset_validator;
   "v1/workspace/model": typeof v1_workspace_model;
+  "v1/workspace/plan/model": typeof v1_workspace_plan_model;
+  "v1/workspace/plan/query": typeof v1_workspace_plan_query;
+  "v1/workspace/plan/table": typeof v1_workspace_plan_table;
+  "v1/workspace/plan/validator": typeof v1_workspace_plan_validator;
   "v1/workspace/query": typeof v1_workspace_query;
   "v1/workspace/table": typeof v1_workspace_table;
+  "v1/workspace/validator": typeof v1_workspace_validator;
   validator: typeof validator;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

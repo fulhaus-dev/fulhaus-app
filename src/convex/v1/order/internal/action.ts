@@ -11,7 +11,8 @@ export const createOrder = internalAction({
 		if (!workspaceId) return;
 
 		await ctx.runMutation(internal.v1.cart.internal.mutation.deleteCart, {
-			workspaceId
+			workspaceId,
+			currencyCode: args.paymentData.metadata.currencyCode
 		});
 	}
 });

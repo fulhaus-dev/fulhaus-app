@@ -49,3 +49,31 @@ export function useUserWorkspacesQuery() {
 
 	return userWorkspacesQuery;
 }
+
+export function useWorkspacePlanQuery() {
+	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'>;
+
+	const { query } = useConvexQuerySubscription(
+		api.v1.workspace.plan.query.getWorkspacePlan,
+		{
+			workspaceId: currentWorkspaceId
+		},
+		{
+			requiredArgsKeys: ['workspaceId']
+		}
+	);
+
+	const workspacePlanQuery = $state({
+		get loading() {
+			return query.loading;
+		},
+		get error() {
+			return query.error;
+		},
+		get workspacePlan() {
+			return query.response;
+		}
+	});
+
+	return workspacePlanQuery;
+}

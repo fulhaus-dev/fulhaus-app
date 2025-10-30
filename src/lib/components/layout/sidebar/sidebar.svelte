@@ -27,7 +27,7 @@
 
 <aside
 	class={cn(
-		'relative z-40 h-full overflow-x-hidden border-r border-color-border bg-color-background opacity-100 transition-all duration-300 ease-in-out',
+		'relative z-40 hidden h-full overflow-x-hidden border-r border-color-border bg-color-background opacity-100 transition-all duration-300 ease-in-out lg:block',
 		className,
 		manuallyCollapsed ? 'w-12' : 'w-96',
 		!canOpen && 'w-0 opacity-0'
@@ -52,12 +52,13 @@
 			manuallyCollapsed && 'w-full px-0'
 		)}
 	>
-		{#if currentWorkspaceQuery.currentWorkspace}
+		<div class={cn('flex-1 text-start', manuallyCollapsed && 'hidden')}></div>
+		<!-- {#if currentWorkspaceQuery.currentWorkspace}
 			<SidebarWorkspaceDropdownMenu
 				class={cn('flex-1 text-start', manuallyCollapsed && 'hidden')}
 				currentWorkspace={currentWorkspaceQuery.currentWorkspace}
 			/>
-		{/if}
+		{/if} -->
 
 		<div
 			class={cn('flex w-fit items-center justify-center gap-x-2', manuallyCollapsed && 'w-full')}

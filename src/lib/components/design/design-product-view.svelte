@@ -45,9 +45,9 @@
 	}
 </script>
 
-<div class="@container min-h-full w-full">
+<div class="@container min-h-full w-full pb-40 lg:pb-0">
 	<div
-		class="grid w-full gap-2 @3xs:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-4 @min-[120rem]:grid-cols-5"
+		class="@4xs:grid-cols-2 grid w-full grid-cols-1 gap-2 @5xl:grid-cols-3 @7xl:grid-cols-4 @min-[120rem]:grid-cols-5"
 	>
 		{#each designProducts as designProduct (designProduct._id)}
 			<div
