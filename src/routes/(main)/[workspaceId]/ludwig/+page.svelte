@@ -41,7 +41,7 @@
 
 <section
 	use:chatAutoScroll
-	class="relative scrollbar-thin h-full w-full space-y-12 overflow-y-scroll"
+	class="relative scrollbar-thin h-full w-full space-y-12 overflow-y-scroll px-2"
 >
 	{#if chatMutationState.chatIsLoading}
 		<FulhausLoader class="mx-auto mt-40 size-10" />
@@ -55,7 +55,7 @@
 		)}
 	>
 		{#if !chatHasMessages}
-			<div class="pt-32 pb-12">
+			<div class="pt-12 pb-12 lg:pt-32">
 				<LudwigStartChat
 					onSelectPredefinedPrompt={(predefinedPrompt) =>
 						sendLudwigChatMessage({ message: predefinedPrompt })}

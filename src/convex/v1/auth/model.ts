@@ -4,8 +4,22 @@ import ServerError from '../../response/error';
 import { authJwtManager } from '../../auth.config';
 import generator from '../../util/generator';
 
+async function getOtpByEmail(ctx: QueryCtx, email: string) {
+	return await ctx.db
+		.query('otps')
+		.withIndex('email', (q) => q.eq('email', email.toLowerCase()))
+		.first();
+}
+
+async function getOtpById(ctx: QueryCtx, otpId: Id<'otps'>) {
+	return await ctx.db.get(otpId);
+}
+
 async function createOtp(ctx: MutationCtx, email: string) {
 	const otp = generator.otp();
+
+	const existingOtp = await getOtpByEmail(ctx, email);
+	if (existingOtp?._id) await deleteOtp(ctx, existingOtp._id);
 
 	const otpId = await ctx.db.insert('otps', {
 		email: email.toLowerCase(),
@@ -24,6 +38,9 @@ export async function updateOtp(
 }
 
 async function deleteOtp(ctx: MutationCtx, otpId: Id<'otps'>) {
+	const otp = await getOtpById(ctx, otpId);
+	if (!otp) return;
+
 	await ctx.db.delete(otpId);
 }
 
@@ -90,6 +107,8 @@ async function deleteSession(ctx: MutationCtx, sessionId: Id<'sessions'>) {
 }
 
 const authModel = {
+	getOtpByEmail,
+	getOtpById,
 	createOtp,
 	updateOtp,
 	deleteOtp,

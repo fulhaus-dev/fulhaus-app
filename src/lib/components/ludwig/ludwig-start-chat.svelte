@@ -32,7 +32,7 @@
 	</h1>
 
 	<div class="w-fit space-y-4">
-		<div class="mx-auto flex w-fit flex-wrap gap-2">
+		<div class="mx-auto flex w-fit flex-wrap justify-center gap-2">
 			{#each PREDEFINED_PROMPTS as prompt (prompt.id)}
 				{@render PredefinedPromptButton(prompt.value)}
 			{/each}
@@ -41,7 +41,7 @@
 		<div class="flex gap-x-4">
 			<LudwigChatFileInputDialog
 				type="inspo"
-				label="Start with inspiration"
+				label="Start with an inspiration"
 				description="Use sample images, Pinterest boards, or your own photos"
 				onSelect={onSelectInspirationImage}
 			/>
@@ -58,7 +58,7 @@
 
 {#snippet PredefinedPromptButton(prompt: string)}
 	<Button
-		class=" h-10 w-fit rounded-sm px-4 text-sm font-medium shadow-xs"
+		class="h-8 w-fit rounded-sm px-4 text-sm font-medium shadow-xs lg:h-10"
 		onclick={() => onSelectPredefinedPrompt(prompt)}
 	>
 		{prompt}

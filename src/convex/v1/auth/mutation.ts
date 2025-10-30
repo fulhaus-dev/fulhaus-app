@@ -45,10 +45,7 @@ export const signInWithOtp = mutation({
 		otp: v.string()
 	},
 	handler: async (ctx, { email, otp }) => {
-		const actualOtp = await ctx.db
-			.query('otps')
-			.withIndex('email', (q) => q.eq('email', email.toLowerCase()))
-			.first();
+		const actualOtp = await authModel.getOtpByEmail(ctx, email);
 		if (!actualOtp) throw ServerError.NotFound('OTP has expired.');
 		if (actualOtp.otp !== otp) throw ServerError.BadRequest('Invalid OTP.');
 
