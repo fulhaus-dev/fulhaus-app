@@ -19,7 +19,11 @@ export const getDesignDataByChatId = query({
 			designModel.getDesignProductsByChatId(ctx, args.chatId, args.currencyCode)
 		]);
 
-		return SuccessData({ design, designProducts });
+		const designTags = design?._id
+			? await designTagModel.getDesignTagsByDesignId(ctx, design?._id)
+			: [];
+
+		return SuccessData({ design, designProducts, designTags });
 	}
 });
 
@@ -53,5 +57,24 @@ export const getUniqueDesignSpacesForWorkspace = query({
 		const spaces = await designModel.getUniqueDesignSpacesForWorkspace(ctx, args.workspaceId);
 
 		return SuccessData({ spaces });
+	}
+});
+
+export const getSharedDesign = query({
+	args: {
+		designId: v.id('designs'),
+		currencyCode: vCurrencyCode
+	},
+	handler: async (ctx, args) => {
+		const [design, designProducts] = await Promise.all([
+			designModel.getDesignById(ctx, args.designId),
+			designModel.getDesignProducts(ctx, args.designId, args.currencyCode)
+		]);
+
+		const designTags = design?._id
+			? await designTagModel.getDesignTagsByDesignId(ctx, design?._id)
+			: [];
+
+		return SuccessData({ design, designProducts, designTags });
 	}
 });

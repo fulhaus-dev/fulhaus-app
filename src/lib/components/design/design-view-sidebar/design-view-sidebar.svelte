@@ -7,15 +7,20 @@
 	import { cn } from '$lib/utils/cn';
 	import { SparklesIcon } from '@lucide/svelte';
 
-	const { design, totalDesignPrice }: { design: Design; totalDesignPrice: number } = $props();
+	type DesignViewSidebarProps = {
+		design: Design;
+		totalDesignPrice: number;
+	};
+
+	const { design, totalDesignPrice }: DesignViewSidebarProps = $props();
 </script>
 
-<div class="space-y-4">
+<div class="h-full space-y-4 overflow-y-auto pb-40">
 	<div
 		class={cn(
 			'w-full rounded-md',
 			design.renderingImage &&
-				'flex h-60 animate-pulse items-center justify-center border border-color-border bg-color-disabled-background'
+				'flex animate-pulse items-center justify-center border border-color-border bg-color-disabled-background lg:h-60'
 		)}
 	>
 		<DesignRenderViewerDialog
@@ -24,7 +29,7 @@
 		>
 			<img
 				class={cn(
-					'h-auto max-h-96 w-full rounded-md object-cover',
+					'h-auto w-full object-cover lg:max-h-96 lg:rounded-md',
 					design.renderingImage && 'hidden'
 				)}
 				src={design.renderedImageUrl ?? design.inspirationImageUrl}

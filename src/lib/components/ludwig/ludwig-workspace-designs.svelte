@@ -13,15 +13,26 @@
 	import { QueryParams } from '$lib/enums';
 	import type { DesignTag, SpaceType } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
-	import { ArrowRightIcon, LayoutGridIcon, ListIcon, SearchIcon, TagsIcon } from '@lucide/svelte';
+	import {
+		ArrowRightIcon,
+		LayoutGridIcon,
+		ListIcon,
+		SearchIcon,
+		Share2Icon,
+		TagsIcon,
+		Trash2Icon
+	} from '@lucide/svelte';
 	import type { Id } from '../../../convex/_generated/dataModel';
+	import DesignTagButton from '$lib/components/design/design-tag-button.svelte';
+	import Checkbox from '$lib/components/checkbox.svelte';
+	import DesignSharePopover from '$lib/components/design/design-share-popover.svelte';
 
 	type WorkspaceDesignsView = 'grid' | 'list';
 
 	const uniqueDesignSpacesForWorkspaceQuery = useUniqueDesignSpacesForWorkspaceQuery();
 	const designTagsForWorkspaceQuery = useDesignTagsForWorkspaceQuery();
 	const workspaceDesignsQuery = useWorkspaceDesignsQuery();
-	const { deleteDesignTag } = useDesignMutation();
+	const { deleteDesignTags, addTagsToDesign, archiveDesigns } = useDesignMutation();
 
 	let activeSpaceType = $state<string>('All');
 	let activeSpaceTag = $state<string>('All');
@@ -30,6 +41,8 @@
 	let searchIsActive = $state(false);
 	let hoveredDesignTags = $state<Id<'designs'>>();
 	let openAddDesignTag = $state<Id<'designs'>>();
+
+	let selectedDesignIds = $state<Id<'designs'>[]>([]);
 
 	const workspaceUniqueDesignSpaces = $derived.by(
 		() => uniqueDesignSpacesForWorkspaceQuery.uniqueSpaces
@@ -58,14 +71,27 @@
 
 		return reversedWorkspaceDesigns;
 	});
+
+	function onSelectDesign(designId: Id<'designs'>, selected: boolean) {
+		if (selected) selectedDesignIds = [...selectedDesignIds, designId];
+		else selectedDesignIds = selectedDesignIds.filter((id) => id !== designId);
+	}
 </script>
 
-<div class={cn('hidden w-full px-4', workspaceDesignsQuery.workspaceDesigns.length > 0 && 'block')}>
-	<div class="sticky top-0 z-4 rounded-t-md bg-color-background">
-		<div class="flex items-start gap-x-12 px-12">
-			<h2 class="py-4 text-2xl leading-none">My Designs</h2>
+<div
+	class={cn('hidden w-full lg:px-4', workspaceDesignsQuery.workspaceDesigns.length > 0 && 'block')}
+>
+	<div class="sticky top-0 z-4 w-full rounded-t-md bg-color-background">
+		<div class="flex w-full items-start justify-between gap-x-4 px-4 lg:gap-x-12 lg:px-12">
+			<h2 class="py-4 text-lg leading-none text-nowrap lg:text-2xl">My Designs</h2>
 
-			<div class={cn('flex-1', searchIsActive && 'opacity-10')}>
+			<div
+				class={cn(
+					'fixed right-0 bottom-0 left-0 w-screen border-t  border-color-border bg-color-background lg:relative lg:flex-1 lg:border-0',
+					searchIsActive && 'opacity-0 lg:opacity-10',
+					selectedDesignIds.length > 0 && 'opacity-0 lg:opacity-100'
+				)}
+			>
 				<div class="flex w-full items-start justify-center gap-x-4 overflow-x-auto px-2 py-4">
 					{@render WorkspaceDesignSpaceFilterButton({
 						spaceType: 'All',
@@ -82,8 +108,8 @@
 				</div>
 
 				{#if designTagsForWorkspace.length > 0}
-					<div class="flex w-full items-center justify-center gap-x-2 pt-2 pb-4">
-						<div class="flex items-center text-color-text-placeholder">
+					<div class="flex w-full items-center gap-x-2 px-2 pt-2 pb-4 lg:justify-center lg:px-0">
+						<div class="hidden items-center text-color-text-placeholder lg:flex">
 							<TagsIcon class="size-4" />
 							<p class="text-sm font-medium">Tags:</p>
 						</div>
@@ -92,7 +118,7 @@
 							{@render WorkspaceDesignsTagFilterButton('All')}
 
 							<div
-								class="scrollbar-thin flex max-w-[1000px] items-center gap-x-2 overflow-x-auto scrollbar-thumb-transparent scrollbar-track-transparent"
+								class="scrollbar-thin flex max-w-screen flex-1 items-center gap-x-2 overflow-x-auto pr-40 scrollbar-thumb-transparent scrollbar-track-transparent lg:max-w-[1000px] lg:pr-0"
 							>
 								{#each designTagsForWorkspace as designTag, index (`${index}-${designTag}`)}
 									{@render WorkspaceDesignsTagFilterButton(designTag)}
@@ -106,7 +132,7 @@
 			<div class="flex items-center gap-x-4 py-4">
 				<Tooltip content="Search designs">
 					<SearchInputPopover
-						inputClassName="w-[36rem]"
+						inputClassName="lg:w-[36rem]"
 						placeholder="Search designs by name"
 						align="end"
 						bind:value={searchValue}
@@ -116,7 +142,10 @@
 					</SearchInputPopover>
 				</Tooltip>
 
-				<Tooltip content={workspaceDesignsView === 'grid' ? 'List view' : 'Grid view'}>
+				<Tooltip
+					class="hidden lg:block"
+					content={workspaceDesignsView === 'grid' ? 'List view' : 'Grid view'}
+				>
 					<Button
 						variant="text"
 						onclick={() =>
@@ -151,6 +180,40 @@
 	{/if}
 </div>
 
+{#if selectedDesignIds.length > 0}
+	<div
+		class="fixed right-0 bottom-0 left-0 z-40 flex items-center justify-center gap-x-12 border-t border-color-border bg-color-action-background px-12 py-2 text-sm text-color-action-text"
+	>
+		<DesignAddTagPopover
+			designId={selectedDesignIds[0]}
+			designTags={[]}
+			onAddTags={(tags) => {
+				addTagsToDesign(selectedDesignIds.map((designId) => ({ designId, tagNames: tags })));
+				selectedDesignIds = [];
+			}}
+		>
+			<div class="flex items-center gap-x-1">
+				<TagsIcon />
+				<p class="cursor-pointer font-medium">Add Tag</p>
+			</div>
+		</DesignAddTagPopover>
+
+		<Button
+			class="gap-x-1 text-sm text-red-300"
+			variant="text"
+			onclick={() => {
+				archiveDesigns(selectedDesignIds);
+				selectedDesignIds = [];
+			}}
+		>
+			<Trash2Icon />
+			<span>
+				{selectedDesignIds.length === 1 ? 'Delete Design' : 'Delete Designs'}
+			</span>
+		</Button>
+	</div>
+{/if}
+
 {#snippet WorkspaceDesignSpaceFilterButton({
 	spaceType,
 	imageUrl
@@ -159,13 +222,13 @@
 	imageUrl: string;
 })}
 	<button
-		class="group block w-16 cursor-pointer space-y-1"
+		class="group block w-12 cursor-pointer space-y-1 lg:w-16"
 		type="button"
 		onclick={() => (activeSpaceType = spaceType)}
 	>
 		<div
 			class={cn(
-				'size-16 rounded-full',
+				'size-12 rounded-full lg:size-16',
 				activeSpaceType === spaceType &&
 					'ring-2 ring-color-focus-ring ring-offset-1 ring-offset-color-background'
 			)}
@@ -177,7 +240,9 @@
 			/>
 		</div>
 
-		<p class="line-clamp-1 w-full text-center text-[10px] font-medium group-hover:line-clamp-none">
+		<p
+			class="w-full text-center text-[10px] font-medium group-hover:line-clamp-none lg:line-clamp-1"
+		>
 			{spaceType}
 		</p>
 	</button>
@@ -193,31 +258,47 @@
 
 {#snippet WorkspaceDesignsGrid()}
 	<div
-		class="grid min-h-[calc(100vh-12rem)] grid-cols-1 gap-8 bg-color-background px-8 pb-20 text-sm lg:grid-cols-3 2xl:grid-cols-5"
+		class="grid min-h-[calc(100vh-12rem)] grid-cols-1 gap-8 bg-color-background px-2 pt-2 pb-80 text-sm lg:grid-cols-3 lg:px-8 lg:pb-20 2xl:grid-cols-5"
 	>
 		{#each workspaceDesigns as workspaceDesign (workspaceDesign.design._id)}
 			<div class="relative flex flex-col gap-y-4 text-start">
-				<button
-					class="group relative cursor-pointer"
-					type="button"
-					onclick={() =>
-						goto(
-							`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
-						)}
-				>
-					<p
-						class="absolute top-4 right-4 z-1 hidden h-fit w-fit cursor-pointer rounded-full bg-color-action-background px-2 py-1 text-xs font-medium text-color-action-text group-hover:block"
-					>
-						<span>View Design</span>
-					</p>
+				<div class="group relative cursor-pointer">
+					<div class="absolute top-0 right-0 left-0 z-1 flex justify-between overflow-auto p-4">
+						<Checkbox
+							value={workspaceDesign.design._id}
+							checked={selectedDesignIds.includes(workspaceDesign.design._id)}
+							onchange={(e) => onSelectDesign(workspaceDesign.design._id, e.currentTarget.checked)}
+						/>
+
+						<Button
+							class="h-fit w-fit rounded-full px-2 py-1 text-xs"
+							type="button"
+							onclick={() =>
+								goto(
+									`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
+								)}
+						>
+							<span>View Design</span>
+						</Button>
+					</div>
 
 					<img
-						class="h-88 w-full rounded-md object-cover transition-all duration-700 ease-in-out group-hover:opacity-50"
+						class="h-88 w-full rounded-md object-cover transition-all duration-700 ease-in-out"
 						src={workspaceDesign.design.renderedImageUrl ??
 							workspaceDesign.design.inspirationImageUrl}
 						alt={workspaceDesign.design.name}
 					/>
-				</button>
+
+					<div class="absolute right-2 bottom-2 z-1">
+						<DesignSharePopover designId={workspaceDesign.design._id}>
+							<Tooltip content="Share design">
+								<div class="size-6 rounded-full bg-color-background p-1 text-xs">
+									<Share2Icon class="size-full" />
+								</div>
+							</Tooltip>
+						</DesignSharePopover>
+					</div>
+				</div>
 
 				<div class="space-y-2 px-2">
 					<h4 class="text-lg font-medium">{workspaceDesign.design.name}</h4>
@@ -261,9 +342,11 @@
 				class="border-b border-color-border bg-color-background-surface text-xs text-color-text-placeholder uppercase"
 			>
 				<tr>
+					<th scope="col" class="px-4 py-3"> </th>
 					<th scope="col" class="px-4 py-3"></th>
 					<th scope="col" class="px-4 py-3">Name</th>
 					<th scope="col" class="px-4 py-3">Tags</th>
+					<th scope="col" class="px-4 py-3"></th>
 					<th scope="col" class="px-4 py-3"></th>
 				</tr>
 			</thead>
@@ -271,12 +354,16 @@
 			<tbody class="text-xs">
 				{#each workspaceDesigns as workspaceDesign (workspaceDesign.design._id)}
 					<tr
-						class="group cursor-pointer border-b border-color-border bg-color-background hover:bg-color-background-surface"
-						onclick={() =>
-							goto(
-								`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
-							)}
+						class="group border-b border-color-border bg-color-background hover:bg-color-background-surface"
 					>
+						<td class="w-20 px-4 py-1">
+							<Checkbox
+								value={workspaceDesign.design._id}
+								checked={selectedDesignIds.includes(workspaceDesign.design._id)}
+								onchange={(e) =>
+									onSelectDesign(workspaceDesign.design._id, e.currentTarget.checked)}
+							/>
+						</td>
 						<td class="w-20 px-4 py-1">
 							<img
 								class="h-12 w-12 rounded-md border border-color-border object-cover"
@@ -285,7 +372,13 @@
 								alt={workspaceDesign.design.name}
 							/>
 						</td>
-						<td class="px-4 py-1 font-medium">{workspaceDesign.design.name}</td>
+						<td
+							class="cursor-pointer px-4 py-1 font-medium underline-offset-2 group-hover:underline"
+							onclick={() =>
+								goto(
+									`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
+								)}>{workspaceDesign.design.name}</td
+						>
 						<td class="max-w-[24%] px-4 py-1">
 							<div class="flex flex-wrap gap-1">
 								{#each workspaceDesign.designTags as designTag (designTag._id)}
@@ -294,7 +387,23 @@
 							</div>
 						</td>
 
-						<td class="justify-items-end px-4 py-1 opacity-0 group-hover:opacity-100">
+						<td class="cursor-pointer justify-items-end px-4 py-1">
+							<Tooltip content="Share design">
+								<DesignSharePopover designId={workspaceDesign.design._id}>
+									<div class="size-6 rounded-full bg-color-background p-1 text-xs">
+										<Share2Icon class="size-full" />
+									</div>
+								</DesignSharePopover>
+							</Tooltip>
+						</td>
+
+						<td
+							class="cursor-pointer justify-items-end px-4 py-1 opacity-0 group-hover:opacity-100"
+							onclick={() =>
+								goto(
+									`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
+								)}
+						>
 							<ArrowRightIcon />
 						</td>
 					</tr>
@@ -305,11 +414,5 @@
 {/snippet}
 
 {#snippet WorkspaceDesignTag(designTag: DesignTag)}
-	<button
-		class="cursor-pointer rounded-full border border-color-action-border bg-color-action-background px-2 py-px text-[10px] font-semibold text-color-action-text hover:border-color-error-border hover:bg-color-error-background hover:text-color-error-text hover:line-through"
-		type="button"
-		onclick={() => deleteDesignTag(designTag._id)}
-	>
-		{designTag.tag}
-	</button>
+	<DesignTagButton tag={designTag.tag} onDelete={() => deleteDesignTags([designTag._id])} />
 {/snippet}

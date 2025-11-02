@@ -12,7 +12,7 @@ async function saveDesignTags(
 
 	if (tagsToAdd.length < 1) return;
 
-	return await Promise.all(
+	const newDesignTags = await Promise.all(
 		tagsToAdd.map((tag) =>
 			ctx.db.insert('designTags', {
 				workspaceId,
@@ -21,6 +21,8 @@ async function saveDesignTags(
 			})
 		)
 	);
+
+	return newDesignTags;
 }
 
 async function getDesignTagsForWorkspace(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {

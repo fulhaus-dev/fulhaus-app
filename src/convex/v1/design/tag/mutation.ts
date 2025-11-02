@@ -6,8 +6,12 @@ import designTagModel from './model';
 export const saveDesignTags = mutation({
 	args: {
 		workspaceId: v.id('workspaces'),
-		designId: v.id('designs'),
-		tagNames: v.array(v.string())
+		data: v.array(
+			v.object({
+				designId: v.id('designs'),
+				tagNames: v.array(v.string())
+			})
+		)
 	},
 	handler: async (ctx, args) => {
 		await authorization.workspaceMemberIsAuthorizedToPerformFunction(
@@ -16,14 +20,20 @@ export const saveDesignTags = mutation({
 			'createDesign'
 		);
 
-		return await designTagModel.saveDesignTags(ctx, args.workspaceId, args.designId, args.tagNames);
+		const newTagIds = await Promise.all(
+			args.data.map((data) =>
+				designTagModel.saveDesignTags(ctx, args.workspaceId, data.designId, data.tagNames)
+			)
+		);
+
+		return newTagIds.filter((id) => !!id).flat();
 	}
 });
 
-export const deleteDesignTag = mutation({
+export const deleteDesignTags = mutation({
 	args: {
 		workspaceId: v.id('workspaces'),
-		designTagId: v.id('designTags')
+		designTagIds: v.array(v.id('designTags'))
 	},
 	handler: async (ctx, args) => {
 		await authorization.workspaceMemberIsAuthorizedToPerformFunction(
@@ -32,6 +42,6 @@ export const deleteDesignTag = mutation({
 			'createDesign'
 		);
 
-		return await designTagModel.deleteDesignTag(ctx, args.designTagId);
+		await Promise.all(args.designTagIds.map((id) => designTagModel.deleteDesignTag(ctx, id)));
 	}
 });

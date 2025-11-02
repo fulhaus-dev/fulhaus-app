@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Design, UpdateDesign } from '$lib/types';
+	import type { Design, DesignTag, UpdateDesign } from '$lib/types';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
-	import { CopyIcon, DownloadIcon, MoveRightIcon, PencilLineIcon, RssIcon } from '@lucide/svelte';
+	import { DownloadIcon, MoveRightIcon, PencilLineIcon, RssIcon } from '@lucide/svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import SidebarDesignEditMode from '$lib/components/layout/sidebar/sidebar.design-edit-mode.svelte';
 	import { cn } from '$lib/utils/cn';
@@ -16,14 +16,20 @@
 	type SidebarDesignDetailsProps = {
 		design?: Design;
 		hasProducts: boolean;
+		designTags: DesignTag[];
 	};
 
-	const { design, hasProducts }: SidebarDesignDetailsProps = $props();
+	const { design, hasProducts, designTags }: SidebarDesignDetailsProps = $props();
 	const hasDesign = $derived(!!design?._id);
 
 	let inEditMode = $state(false);
 
 	let updates = $state<UpdateDesign>({});
+	let designTagsToDelete = $state<DesignTag[]>([]);
+	let designTagsToAdd = $state<string[]>([]);
+
+	const { addTagsToDesign } = useDesignMutation();
+	const { deleteDesignTags } = useDesignMutation();
 
 	const { updateDesign } = useDesignMutation();
 	const { downloadFileInBrowser } = useFileMutation();
@@ -92,6 +98,20 @@
 				class={cn('min-h-full space-y-8 px-4 pt-4 pb-96', inEditMode && 'min-h-auto pt-0 pb-20')}
 			>
 				{#if !inEditMode}
+					<!-- Design Tags -->
+					<div class="space-y-1">
+						<h5 class="font-medium">Tags</h5>
+						<div class="flex flex-wrap items-center gap-2 p-2">
+							{#each designTags as designTag (designTag._id)}
+								<p
+									class="rounded-full bg-color-action-background px-2 text-[10px] font-semibold text-color-action-text"
+								>
+									{designTag.tag}
+								</p>
+							{/each}
+						</div>
+					</div>
+
 					<!-- Product Categories -->
 					<div class="space-y-1">
 						<h5 class="font-medium">Product Categories</h5>
@@ -164,7 +184,14 @@
 				{/if}
 
 				{#if inEditMode && design}
-					<SidebarDesignEditMode spaceType={design.spaceType} bind:updates />
+					<SidebarDesignEditMode
+						designId={design._id}
+						spaceType={design.spaceType}
+						bind:updates
+						bind:designTagsToAdd
+						bind:designTagsToDelete
+						{designTags}
+					/>
 				{/if}
 			</div>
 
@@ -183,7 +210,11 @@
 					<Button
 						class="w-[55%]"
 						onclick={() => {
-							if (design?._id) updateDesign(design._id, updates);
+							if (design?._id) {
+								addTagsToDesign([{ designId: design._id, tagNames: designTagsToAdd }]);
+								deleteDesignTags(designTagsToDelete.map((tag) => tag._id));
+								updateDesign(design._id, updates);
+							}
 							inEditMode = false;
 						}}>Save</Button
 					>

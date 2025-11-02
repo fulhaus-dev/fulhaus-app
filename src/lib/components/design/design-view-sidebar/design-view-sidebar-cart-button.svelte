@@ -18,25 +18,54 @@
 	const { designId, productIds, totalDesignPrice }: DesignViewSidebarCartButtonProps = $props();
 
 	const designCartQuery = useDesignCartQuery(() => designId);
-	const { saveCartItems } = useCartMutation();
+	const { saveCartItems, updateCartItems } = useCartMutation();
 
-	const hasCartItems = $derived(designCartQuery.cartItems.length > 0);
+	const cartItems = $derived(
+		designCartQuery.cartItems.filter((cartItem) => cartItem.savedForLater === 'no')
+	);
+
+	const hasCartItems = $derived(cartItems.length > 0);
 
 	const totalCart = $derived.by(() =>
-		designCartQuery.cartItems
+		cartItems
 			.map((cartItem) => cartItem.product.retailPrice * (cartItem.quantity ?? 0))
 			.reduce((a, b) => a + b, 0)
 	);
 
 	function onclick() {
-		if (!hasCartItems)
-			saveCartItems(productIds.map((productId) => ({ designId, productId, quantity: 1 })));
+		if (hasCartItems) {
+			goto(`/${workspaceId}/cart`);
+			return;
+		}
 
-		if (hasCartItems) goto(`/${workspaceId}/cart`);
+		const cartItemsToUpdate = designCartQuery.cartItems.filter(
+			(cartItem) => cartItem.savedForLater === 'yes'
+		);
+		const cartProductIdsToSave = productIds.filter(
+			(productId) => !cartItemsToUpdate.some((cartItem) => cartItem.productId === productId)
+		);
+
+		if (cartProductIdsToSave.length > 0)
+			saveCartItems(
+				cartProductIdsToSave.map((productId) => ({
+					designId,
+					productId,
+					quantity: 1,
+					savedForLater: 'no'
+				}))
+			);
+
+		if (cartItemsToUpdate.length > 0)
+			updateCartItems(
+				cartItemsToUpdate.map((cartItem) => ({
+					cartItemId: cartItem._id,
+					update: { savedForLater: 'no' }
+				}))
+			);
 	}
 </script>
 
-<div class="w-full">
+<div class="hidden w-full lg:block">
 	<Button class="gap-x-4" {onclick}>
 		{#if !hasCartItems}
 			<span

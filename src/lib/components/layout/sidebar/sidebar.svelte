@@ -115,6 +115,7 @@
 			<SidebarDesignDetails
 				design={designQuery.design}
 				hasProducts={(designQuery.designProducts ?? []).length > 0}
+				designTags={designQuery.designTags}
 			/>
 		</div>
 	</div>

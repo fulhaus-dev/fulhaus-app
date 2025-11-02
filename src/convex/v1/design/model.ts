@@ -23,20 +23,27 @@ async function createDesign(
 }
 
 async function getDesignById(ctx: QueryCtx, designId: Id<'designs'>) {
-	return await ctx.db.get(designId);
+	const design = await ctx.db.get(designId);
+	if (design?.deletedAt) return null;
+
+	return design;
 }
 
 async function getDesignByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
-	return await ctx.db
+	const design = await ctx.db
 		.query('designs')
 		.withIndex('by_chat_id', (q) => q.eq('chatId', chatId))
 		.first();
+	if (design?.deletedAt) return null;
+
+	return design;
 }
 
 async function getDesignsByWorkspaceId(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
 	return await ctx.db
 		.query('designs')
 		.withIndex('by_workspace_id', (q) => q.eq('workspaceId', workspaceId))
+		.filter((q) => q.eq(q.field('deletedAt'), undefined))
 		.take(100);
 }
 
@@ -52,6 +59,20 @@ async function updateDesignById(
 		...args,
 		updatedById: userId,
 		updatedAt: date.now()
+	});
+}
+
+async function getDesignProducts(
+	ctx: QueryCtx,
+	designId: Id<'designs'>,
+	currencyCode: CurrencyCode
+) {
+	const design = await getDesignById(ctx, designId);
+	if (!design || !design.productIds) return [];
+
+	return await productModel.getProductsForClientByIds(ctx, {
+		productIds: design.productIds,
+		currencyCode
 	});
 }
 
@@ -73,6 +94,7 @@ async function getExistingDesignsWithFloorPlanUrl(ctx: QueryCtx, floorPlanUrl: s
 	return await ctx.db
 		.query('designs')
 		.withIndex('by_floor_plan_url', (q) => q.eq('floorPlanUrl', floorPlanUrl))
+		.filter((q) => q.eq(q.field('deletedAt'), undefined))
 		.take(100);
 }
 
@@ -82,6 +104,7 @@ async function getUniqueDesignSpacesForWorkspace(ctx: QueryCtx, workspaceId: Id<
 	let doc = await ctx.db
 		.query('designs')
 		.withIndex('by_workspace_space', (q) => q.eq('workspaceId', workspaceId))
+		.filter((q) => q.eq(q.field('deletedAt'), undefined))
 		.order('desc')
 		.first();
 
@@ -96,11 +119,18 @@ async function getUniqueDesignSpacesForWorkspace(ctx: QueryCtx, workspaceId: Id<
 			.withIndex('by_workspace_space', (q) =>
 				q.eq('workspaceId', workspaceId).lt('spaceType', lastSpace)
 			)
+			.filter((q) => q.eq(q.field('deletedAt'), undefined))
 			.order('desc')
 			.first();
 	}
 
 	return uniqueSpaces;
+}
+
+async function archiveDesign(ctx: MutationCtx, designId: Id<'designs'>) {
+	return await ctx.db.patch(designId, {
+		deletedAt: date.now()
+	});
 }
 
 const designModel = {
@@ -109,9 +139,11 @@ const designModel = {
 	getDesignByChatId,
 	getDesignsByWorkspaceId,
 	updateDesignById,
+	getDesignProducts,
 	getDesignProductsByChatId,
 	getExistingDesignsWithFloorPlanUrl,
-	getUniqueDesignSpacesForWorkspace
+	getUniqueDesignSpacesForWorkspace,
+	archiveDesign
 };
 
 export default designModel;

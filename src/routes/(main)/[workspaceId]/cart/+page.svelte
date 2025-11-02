@@ -11,13 +11,16 @@
 	import { Icon, MinusIcon, MoveLeftIcon, PlusIcon, Trash2Icon } from '@lucide/svelte';
 
 	const workspaceCartQuery = useWorkspaceCartQuery();
-	const { updateCartItem, deleteCartItem } = useCartMutation();
+	const { updateCartItems, deleteCartItems } = useCartMutation();
 	const { paymentActionState, handleCartCheckout } = usePaymentAction();
 
-	const hasCartItems = $derived(workspaceCartQuery.cartItems.length > 0);
+	const cartItems = $derived(
+		workspaceCartQuery.cartItems.filter((cartItem) => cartItem.savedForLater === 'no')
+	);
+	const hasCartItems = $derived(cartItems.length > 0);
 
 	const subTotal = $derived.by(() =>
-		workspaceCartQuery.cartItems
+		cartItems
 			.map((cartItem) => cartItem.product.retailPrice * (cartItem.quantity ?? 0))
 			.reduce((a, b) => a + b, 0)
 	);
@@ -34,10 +37,17 @@
 		timeoutId = setTimeout(() => {
 			if (cartItemQuantityChangeType === 'decrement' && cartItem.quantity === 1) return;
 
-			updateCartItem(cartItem._id, {
-				quantity:
-					cartItemQuantityChangeType === 'increment' ? cartItem.quantity + 1 : cartItem.quantity - 1
-			});
+			updateCartItems([
+				{
+					cartItemId: cartItem._id,
+					update: {
+						quantity:
+							cartItemQuantityChangeType === 'increment'
+								? cartItem.quantity + 1
+								: cartItem.quantity - 1
+					}
+				}
+			]);
 		}, 150);
 	}
 </script>
@@ -60,7 +70,7 @@
 				<div
 					class="h-fit flex-1 divide-y divide-color-border rounded-md border border-color-border"
 				>
-					{#each workspaceCartQuery.cartItems as cartItem (cartItem._id)}
+					{#each cartItems as cartItem (cartItem._id)}
 						<div class="flex justify-between p-4">
 							<div class="flex gap-x-4">
 								<div class="h-36 w-36 rounded-md bg-color-background-surface p-2">
@@ -102,7 +112,7 @@
 								<Button
 									class="text-xs text-color-error-text"
 									variant="text"
-									onclick={() => deleteCartItem(cartItem._id)}
+									onclick={() => deleteCartItems([cartItem._id])}
 								>
 									<Trash2Icon class="size-4" />
 									<span>Remove</span>

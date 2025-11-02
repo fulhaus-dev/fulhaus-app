@@ -3,16 +3,20 @@
 	import { page } from '$app/state';
 	import { useDesignQuery } from '$lib/client/queries/use-design.query.svelte';
 	import Button from '$lib/components/button.svelte';
-	import DesignProductView from '$lib/components/design/design-product-view.svelte';
+	import DesignProductGridView from '$lib/components/design/design-product-grid-view.svelte';
+	import DesignProductListView from '$lib/components/design/design-product-list-view.svelte';
 	import DesignViewSidebar from '$lib/components/design/design-view-sidebar/design-view-sidebar.svelte';
 	import SidebarMobile from '$lib/components/layout/sidebar/sidebar-mobile.svelte';
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
+	import Tooltip from '$lib/components/tooltip.svelte';
 	import { QueryParams } from '$lib/enums';
 	import { cn } from '$lib/utils/cn';
 	import {
 		Columns3CogIcon,
 		Icon,
+		LayoutGridIcon,
+		ListIcon,
 		MessageCircleIcon,
 		SofaIcon,
 		WallpaperIcon
@@ -20,9 +24,11 @@
 
 	type DesignView = 'product' | 'canvas';
 	type MobileTab = 'products' | 'details' | 'visualize' | 'chat';
+	type DesignProductView = 'grid' | 'list';
 
 	let activeDesignView = $state<DesignView>('product');
 	let activeMobileTab = $state<MobileTab>('products');
+	let designProductView = $state<DesignProductView>('grid');
 
 	const designQuery = useDesignQuery();
 
@@ -55,7 +61,26 @@
 	)}
 >
 	<div class="sticky top-0 z-2 flex h-[2.8rem] items-center bg-color-background/80 px-8">
-		<h4 class="flex-1 text-sm font-medium text-nowrap">{design.name}</h4>
+		<div class="flex items-center gap-x-2">
+			<Tooltip
+				class="hidden lg:block"
+				content={designProductView !== 'grid' ? 'List view' : 'Grid view'}
+			>
+				<Button
+					variant="text"
+					onclick={() => (designProductView = designProductView === 'grid' ? 'list' : 'grid')}
+					class="cursor-pointer"
+				>
+					{#if designProductView !== 'grid'}
+						<ListIcon />
+					{:else}
+						<LayoutGridIcon />
+					{/if}
+				</Button>
+			</Tooltip>
+
+			<h4 class="flex-1 text-sm font-medium text-nowrap">{design.name}</h4>
+		</div>
 
 		<div class="flex flex-1 items-center justify-center">
 			<!-- <Button
@@ -86,12 +111,23 @@
 	>
 		{#if activeDesignView === 'product'}
 			<div class="flex-1 border-color-border lg:border-r lg:p-2">
-				<DesignProductView
-					designId={design._id}
-					{designProducts}
-					generatingDesignFurnitureRecommendation={design.generatingFurnitureRecommendation ||
-						false}
-				/>
+				{#if designProductView === 'grid'}
+					<DesignProductGridView
+						designId={design._id}
+						{designProducts}
+						generatingDesignFurnitureRecommendation={design.generatingFurnitureRecommendation ||
+							false}
+					/>
+				{/if}
+
+				{#if designProductView === 'list'}
+					<DesignProductListView
+						designId={design._id}
+						{designProducts}
+						generatingDesignFurnitureRecommendation={design.generatingFurnitureRecommendation ||
+							false}
+					/>
+				{/if}
 			</div>
 		{/if}
 

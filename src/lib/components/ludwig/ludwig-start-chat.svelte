@@ -24,9 +24,9 @@
 	}: StartChatProps = $props();
 </script>
 
-<div class="flex flex-col items-center space-y-12 text-center">
+<div class="flex flex-col items-center space-y-8 text-center lg:space-y-12">
 	<h1
-		class="bg-gradient-to-r from-color-success-text to-color-info-text bg-clip-text text-4xl text-transparent"
+		class="bg-gradient-to-r from-color-success-text to-color-info-text bg-clip-text text-2xl text-transparent lg:text-4xl"
 	>
 		Let's design your space together!
 	</h1>

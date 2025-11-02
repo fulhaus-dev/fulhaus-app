@@ -74,7 +74,6 @@ export type UpdateDesign = {
 	floorPlanFile?: FloorPlanFile;
 	productCategories?: DesignProductCategory[];
 	productIds?: Id<'products'>[];
-	tags?: string[];
 };
 
 export type UpdateDesignProduct = {
@@ -125,6 +124,8 @@ export type Cart = {
 	currencyCode: CurrencyCode;
 	items: CartItem[];
 };
+
+export type CartSavedForLater = 'yes' | 'no';
 
 export type CartItemQuantityChangeType = 'increment' | 'decrement';
 

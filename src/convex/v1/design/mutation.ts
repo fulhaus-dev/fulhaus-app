@@ -112,3 +112,19 @@ export const removeProductFromDesignById = mutation({
 		});
 	}
 });
+
+export const archiveDesigns = mutation({
+	args: {
+		workspaceId: v.id('workspaces'),
+		designIds: v.array(v.id('designs'))
+	},
+	handler: async (ctx, args) => {
+		await authorization.workspaceMemberIsAuthorizedToPerformFunction(
+			ctx,
+			args.workspaceId,
+			'createDesign'
+		);
+
+		await Promise.all(args.designIds.map((designId) => designModel.archiveDesign(ctx, designId)));
+	}
+});

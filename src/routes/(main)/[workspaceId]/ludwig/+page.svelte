@@ -26,7 +26,9 @@
 	);
 
 	const designQuery = useDesignQuery();
-	const canViewDesign = $derived(!!ludwigChatId && !!designQuery.design?._id);
+	const canViewDesign = $derived(
+		!!ludwigChatId && (designQuery.design?.productIds?.length ?? 0) > 0
+	);
 
 	const {
 		chatMutationState,
@@ -57,7 +59,7 @@
 
 <section
 	use:chatAutoScroll
-	class="relative scrollbar-thin h-full w-full space-y-12 overflow-y-scroll px-2"
+	class="relative scrollbar-thin h-full w-full space-y-4 overflow-y-scroll px-2 lg:space-y-12"
 >
 	{#if chatMutationState.chatIsLoading}
 		<FulhausLoader class="mx-auto mt-40 size-10" />
@@ -71,7 +73,7 @@
 		)}
 	>
 		{#if !chatHasMessages}
-			<div class="pt-12 pb-12 lg:pt-32">
+			<div class="pt-28 pb-8 lg:pt-32 lg:pb-12">
 				<LudwigStartChat
 					onSelectPredefinedPrompt={(predefinedPrompt) =>
 						sendLudwigChatMessage({ message: predefinedPrompt })}
@@ -90,7 +92,7 @@
 		{/if}
 
 		{#if chatHasMessages}
-			<div class="min-h-full w-full pt-8 pb-40">
+			<div class="min-h-full w-full pt-4 pb-40 lg:pt-8">
 				{#each chat.messages as message (message.id)}
 					{#if message?.role === 'user'}
 						<UserChatMessageCard
@@ -147,7 +149,12 @@
 				</div>
 			{/if}
 
-			<div class="bg-color-background pb-2 lg:bg-transparent lg:pb-0">
+			<div
+				class={cn(
+					'bg-color-background pb-2 lg:bg-transparent lg:pb-0',
+					!chatHasMessages && 'bg-transparent'
+				)}
+			>
 				<ChatForm
 					bind:value={chatMutationState.userPrompt}
 					placeholder={chatHasMessages ? 'Reply to Ludwig...' : 'Something else?'}

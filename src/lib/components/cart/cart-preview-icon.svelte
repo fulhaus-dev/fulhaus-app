@@ -5,7 +5,7 @@
 
 	const { class: className = '' }: { class?: string } = $props();
 
-	const workspaceCartQuery = useWorkspaceCartQuery();
+	const workspaceCartQuery = useWorkspaceCartQuery(() => 'no');
 
 	const totalCartItems = $derived.by(() =>
 		workspaceCartQuery.cartItems

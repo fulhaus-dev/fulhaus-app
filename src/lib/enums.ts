@@ -7,5 +7,6 @@ export const enum QueryParams {
 	ACTIVE_DESIGN_ASSET_TAB = 'dat',
 	FILE_UPLOAD_TYPE = 'fut',
 	PRODUCT_FILTERS = 'pf',
-	PRODUCT_SORT_OPTIONS = 'pso'
+	PRODUCT_SORT_OPTIONS = 'pso',
+	DESIGN_CURRENCY_CODE = 'dcc'
 }

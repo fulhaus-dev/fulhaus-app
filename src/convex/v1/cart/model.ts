@@ -1,34 +1,36 @@
 import { Infer } from 'convex/values';
 import { Id } from '../../_generated/dataModel';
 import { MutationCtx, QueryCtx } from '../../_generated/server';
-import { vSaveCartItem, vUpdateCartItem } from './validator';
+import { vSaveCartItem, vSavedForLater, vUpdateCartItem } from './validator';
 import productModel from '../product/model';
 import { CurrencyCode } from '../../type';
 
-async function saveCartItems(
+async function saveCartItem(
 	ctx: MutationCtx,
 	workspaceId: Id<'workspaces'>,
-	args: Infer<typeof vSaveCartItem>[]
+	args: Infer<typeof vSaveCartItem>
 ) {
-	return await Promise.all(
-		args.map((arg) =>
-			ctx.db.insert('cartItems', {
-				...arg,
-				workspaceId
-			})
-		)
-	);
+	return await ctx.db.insert('cartItems', {
+		...args,
+		workspaceId
+	});
 }
 
 async function getCartByWorkspaceId(
 	ctx: QueryCtx,
 	workspaceId: Id<'workspaces'>,
-	currencyCode: CurrencyCode
+	currencyCode: CurrencyCode,
+	savedForLater?: Infer<typeof vSavedForLater>
 ) {
 	const cartItems = await ctx.db
 		.query('cartItems')
-		.withIndex('by_workspace_design_currency', (q) =>
-			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode)
+		.withIndex('by_workspace_currency', (q) =>
+			savedForLater
+				? q
+						.eq('workspaceId', workspaceId)
+						.eq('currencyCode', currencyCode)
+						.eq('savedForLater', savedForLater)
+				: q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode)
 		)
 		.collect();
 
@@ -53,12 +55,19 @@ async function getCartByDesignId(
 	ctx: QueryCtx,
 	workspaceId: Id<'workspaces'>,
 	designId: Id<'designs'>,
-	currencyCode: CurrencyCode
+	currencyCode: CurrencyCode,
+	savedForLater?: Infer<typeof vSavedForLater>
 ) {
 	const cartItems = await ctx.db
 		.query('cartItems')
 		.withIndex('by_workspace_design_currency', (q) =>
-			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode).eq('designId', designId)
+			savedForLater
+				? q
+						.eq('workspaceId', workspaceId)
+						.eq('currencyCode', currencyCode)
+						.eq('designId', designId)
+						.eq('savedForLater', savedForLater)
+				: q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode).eq('designId', designId)
 		)
 		.collect();
 
@@ -107,7 +116,7 @@ async function deleteCart(
 }
 
 const cartModel = {
-	saveCartItems,
+	saveCartItem,
 	getCartByWorkspaceId,
 	getCartByDesignId,
 	updateCartItem,

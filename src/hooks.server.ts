@@ -10,9 +10,10 @@ const PUBLIC_ROUTES = [
 	'/auth',
 	'/shop-designs',
 	'/inspiration',
-	'/api',
+	'/design',
+	'/maintenance',
 	'/favicon.ico',
-	'/maintenance'
+	'/api'
 ];
 
 export const handle = async ({ event, resolve }) => {
