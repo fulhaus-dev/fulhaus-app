@@ -6,6 +6,8 @@ import { vCreateDesign, vUpdateDesign } from './validator';
 import productModel from '../product/model';
 import { UniqueSpace } from './type';
 import { CurrencyCode } from '../../type';
+import designUtil from './util';
+import designLogModel from './log/model';
 
 async function createDesign(
 	ctx: MutationCtx,
@@ -55,11 +57,22 @@ async function updateDesignById(
 ) {
 	if (args.floorPlanFile) args.floorPlanUrl = args.floorPlanFile?.url;
 
-	return await ctx.db.patch(designId, {
-		...args,
-		updatedById: userId,
-		updatedAt: date.now()
-	});
+	const design = await getDesignById(ctx, designId);
+	if (!design) return;
+
+	const designLog = designUtil.getDesignLog(design, args);
+
+	await Promise.all([
+		ctx.db.patch(designId, {
+			...args,
+			updatedById: userId,
+			updatedAt: date.now()
+		}),
+		designLogModel.saveDesignLogs(ctx, design.workspaceId, designId, {
+			...designLog,
+			createdById: userId
+		})
+	]);
 }
 
 async function getDesignProducts(

@@ -18,6 +18,7 @@ export const designTable = defineTable({
 	generatingFurnitureRecommendation: v.optional(v.boolean()),
 	renderingImage: v.optional(v.boolean()),
 	generateRender: v.optional(v.boolean()),
+	renderSwappedProductIds: v.optional(v.array(v.id('products'))),
 	publishedAt: v.optional(v.number()),
 	fullTextSearch: v.string(),
 	currencyCode: vCurrencyCode,

@@ -25,6 +25,17 @@ export const updateDesignById = mutation({
 		const updates = args.updates;
 		const dataToUpdate = object.getDifference(currentDesign, updates);
 
+		if (
+			dataToUpdate.productIds &&
+			currentDesign.productIds?.length === updates.productIds?.length
+		) {
+			const renderSwappedProductIds = dataToUpdate.productIds.filter(
+				(dataToUpdateProductId) => !currentDesign.productIds?.includes(dataToUpdateProductId)
+			);
+
+			dataToUpdate.renderSwappedProductIds = renderSwappedProductIds;
+		}
+
 		await designModel.updateDesignById(ctx, args.designId, userId, dataToUpdate);
 
 		if (dataToUpdate.productCategories || dataToUpdate.inspirationImageUrl) {
@@ -40,12 +51,6 @@ export const updateDesignById = mutation({
 
 			return;
 		}
-
-		if (dataToUpdate.productIds)
-			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
-				designId: args.designId,
-				userId
-			});
 	}
 });
 
@@ -71,11 +76,6 @@ export const addNewProductToDesignById = mutation({
 		await designModel.updateDesignById(ctx, args.designId, userId, {
 			productIds: [...(currentDesign.productIds ?? []), args.update.productId],
 			productCategories: [...(currentDesign.productCategories ?? []), args.update.productCategory]
-		});
-
-		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
-			designId: args.designId,
-			userId
 		});
 	}
 });
@@ -105,11 +105,6 @@ export const removeProductFromDesignById = mutation({
 				(productCategory) => productCategory.category !== args.remove.productCategory.category
 			)
 		});
-
-		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
-			designId: args.designId,
-			userId
-		});
 	}
 });
 
@@ -126,5 +121,24 @@ export const archiveDesigns = mutation({
 		);
 
 		await Promise.all(args.designIds.map((designId) => designModel.archiveDesign(ctx, designId)));
+	}
+});
+
+export const regenerateRender = mutation({
+	args: {
+		workspaceId: v.id('workspaces'),
+		designId: v.id('designs')
+	},
+	handler: async (ctx, args) => {
+		const userId = await authorization.workspaceMemberIsAuthorizedToPerformFunction(
+			ctx,
+			args.workspaceId,
+			'createDesign'
+		);
+
+		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
+			designId: args.designId,
+			userId
+		});
 	}
 });

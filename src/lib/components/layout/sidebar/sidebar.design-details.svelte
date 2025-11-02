@@ -12,6 +12,7 @@
 	import { QueryParams } from '$lib/enums';
 	import { goto } from '$app/navigation';
 	import { useFileMutation } from '$lib/client/mutations/use-file.mutation.svelte';
+	import DesignLogs from '$lib/components/design/design-view-sidebar/design-logs.svelte';
 
 	type SidebarDesignDetailsProps = {
 		design?: Design;
@@ -179,6 +180,17 @@
 									alt="Inspiration"
 								/>
 							{/if}
+						</div>
+					{/if}
+
+					<!-- Design logs -->
+					{#if design?._id}
+						<div class="space-y-1">
+							<h5 class="font-medium">Changes</h5>
+
+							<div class="rounded-md bg-color-background-surface p-2">
+								<DesignLogs designId={design._id} />
+							</div>
 						</div>
 					{/if}
 				{/if}

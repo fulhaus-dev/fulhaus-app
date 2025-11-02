@@ -114,6 +114,19 @@ export function useDesignMutation() {
 		if (error) state.error = error.message;
 	}
 
+	async function regenerateRender(designId: Id<'designs'>) {
+		if (!activeWorkspaceId) return;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.design.mutation.regenerateRender, {
+				workspaceId: activeWorkspaceId as Id<'workspaces'>,
+				designId
+			})
+		);
+
+		if (error) state.error = error.message;
+	}
+
 	return {
 		designState: state,
 		updateDesign,
@@ -121,6 +134,7 @@ export function useDesignMutation() {
 		removeProductFromDesign,
 		addTagsToDesign,
 		deleteDesignTags,
-		archiveDesigns
+		archiveDesigns,
+		regenerateRender
 	};
 }

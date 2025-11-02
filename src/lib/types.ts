@@ -157,3 +157,10 @@ export type DesignTag = {
 	designId: Id<'designs'>;
 	tag: string;
 };
+
+export type DesignLog = Doc<'designLogs'>['previous'];
+
+export type DesignLogUser = {
+	userId: Id<'users'>;
+	fullName: string;
+};

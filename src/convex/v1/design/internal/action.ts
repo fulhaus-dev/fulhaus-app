@@ -127,10 +127,11 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			}
 		});
 
-		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
-			designId: design._id,
-			userId
-		});
+		if (!design.generateRender)
+			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
+				designId: design._id,
+				userId
+			});
 
 		await updateDesignStatus({
 			ctx,
@@ -217,16 +218,29 @@ export const generateDesignRender = internalAction({
 		// 	);
 		// }
 
+		const products = availableDesignProducts.map((designProduct) => ({
+			category: designProduct.category,
+			url: designProduct.mainImageNoBgUrl ?? designProduct.mainImageUrl,
+			name: designProduct.name
+		}));
+
+		const productsToSwap = availableDesignProducts
+			.filter((designProduct) => design.renderSwappedProductIds?.includes(designProduct._id))
+			.map((designProduct) => ({
+				category: designProduct.category,
+				url: designProduct.mainImageNoBgUrl ?? designProduct.mainImageUrl,
+				name: designProduct.name
+			}));
+
+		const isSwapRender = productsToSwap.length > 0;
+
 		const { data: renderedImageFiles } = await getDesignRenderedImage({
 			spaceType: design.spaceType,
 			designName: design.name,
 			designDescription: design.description,
-			productImages: availableDesignProducts.map((designProduct) => ({
-				category: designProduct.category,
-				url: designProduct.mainImageNoBgUrl ?? designProduct.mainImageUrl,
-				name: designProduct.name
-			})),
-			originalInspirationImageUrl: design.inspirationImageUrl
+			productImages: isSwapRender ? productsToSwap : products,
+			originalInspirationImageUrl: design.inspirationImageUrl,
+			currentRenderedImageUrl: isSwapRender ? design.renderedImageUrl : undefined
 		});
 		const renderedImageBase64 = renderedImageFiles?.[0]?.base64;
 		if (!renderedImageBase64)
@@ -259,12 +273,13 @@ export const generateDesignRender = internalAction({
 				renderedImageUrl
 			});
 
-		return await updateDesignStatus({
+		await updateDesignStatus({
 			ctx,
 			designId,
 			userId,
 			update: {
 				renderingImage: false,
+				renderSwappedProductIds: isSwapRender ? [] : design.renderSwappedProductIds,
 				renderedImageUrl
 			}
 		});
@@ -284,11 +299,12 @@ async function updateDesignStatus({
 		generatingFurnitureRecommendation?: boolean;
 		renderingImage?: boolean;
 		renderedImageUrl?: string;
+		renderSwappedProductIds?: Id<'products'>[];
 		styles?: ProductStyle[];
 	};
 }) {
 	const currentUpdate: UpdateDesign = update;
-	if (update.renderedImageUrl) currentUpdate.generateRender = false;
+	if (update.renderedImageUrl) currentUpdate.generateRender = true;
 
 	await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
 		designId: designId,

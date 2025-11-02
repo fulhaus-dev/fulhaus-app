@@ -35,6 +35,7 @@ export const vUpdateDesign = v.object({
 	renderedImageUrl: v.optional(v.string()),
 	renderingImage: v.optional(v.boolean()),
 	generateRender: v.optional(v.boolean()),
+	renderSwappedProductIds: v.optional(v.array(v.id('products'))),
 	generatingFurnitureRecommendation: v.optional(v.boolean()),
 	currencyCode: v.optional(vCurrencyCode)
 });

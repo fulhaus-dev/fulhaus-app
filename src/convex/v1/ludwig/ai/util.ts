@@ -147,9 +147,10 @@ export async function getDesignRenderedImage(args: {
 	designDescription: string;
 	productImages: { category: string; url: string; name: string }[];
 	originalInspirationImageUrl: string;
+	currentRenderedImageUrl?: string;
 }) {
-	const systemPrompt = `
-You are an expert interior/exterior space design visualization expert for this design:
+	const systemPromptForCompleteRender = `
+You are a interior/exterior space design visualization expert for this design:
 
 **Space Type**: ${args.spaceType}
 **Design Name**: ${args.designName}
@@ -158,10 +159,15 @@ You are an expert interior/exterior space design visualization expert for this d
 Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images. All product images must appear in the visualization. Do not replace the provided product images with a different product image, however you can add other items to complement the space as long as the provided product images are in the visualization.
 `;
 
-	// const designProductCategoriesImagePart: ImagePart[] = args.productImages.map((productImage) => ({
-	// 	type: 'image',
-	// 	image: productImage.url
-	// }));
+	const systemPromptForSwapRender = `
+You are a interior/exterior space design visualization expert for this design:
+
+**Space Type**: ${args.spaceType}
+**Design Name**: ${args.designName}
+**Design Description**:${args.designDescription}
+
+Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images, by replacing the only equivalent items in the current space render with provided product images without changing the space layout or design.
+`;
 
 	const designProductCategoriesImagePart = args.productImages.flatMap((product) => [
 		{
@@ -171,41 +177,31 @@ Your task is to generate a photorealistic visualization of a ${args.spaceType} s
 		{
 			type: 'image' as const,
 			image: new URL(product.url)
-			// providerOptions is available but Google doesn't use it for metadata
 		}
 	]);
-
-	// const productList = args.productImages
-	// 	.map((productImage, index) => `${index + 1}. ${productImage.category} - ${productImage.name}`)
-	// 	.join('\n');
 
 	const { data: result, error } = await asyncTryCatch(() =>
 		generateText({
 			model: googleGenerativeAIGemini2_5FlashImagePreview,
-			system: systemPrompt,
+			system: args.currentRenderedImageUrl
+				? systemPromptForSwapRender
+				: systemPromptForCompleteRender,
 			messages: [
 				{
 					role: 'user',
 					content: [
-						// 			{
-						// 				type: 'text',
-						// 				text: `Create a cohesive, aesthetically pleasing space design that incorporates all the provided product images in a natural and functional layout:
-
-						//   **Space Type**: ${args.spaceType}
-						//   **Design Name**: ${args.designName}
-						//   **Design Description**:${args.designDescription}
-
-						//   **The ${args.productImages.length} Products to include (images attached):**
-						//   ${productList}`
-						// 			},
 						...designProductCategoriesImagePart,
 						{
 							type: 'text',
-							text: 'This image is the inspiration image. It should be used to guide your decision on space layout only.'
+							text: args.currentRenderedImageUrl
+								? 'This image is the current space render'
+								: 'This image is the inspiration image. It should be used to guide your decision on space layout only.'
 						},
 						{
 							type: 'image',
-							image: args.originalInspirationImageUrl
+							image: args.currentRenderedImageUrl
+								? args.currentRenderedImageUrl
+								: args.originalInspirationImageUrl
 						}
 					]
 				}
