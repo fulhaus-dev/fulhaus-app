@@ -68,9 +68,9 @@
 						/>
 
 						<div
-							class="absolute top-1/2 left-1/2 z-1 hidden -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-y-12 group-hover:flex"
+							class="absolute inset-0 flex flex-row items-end justify-center gap-x-4 pb-4 lg:hidden lg:flex-col lg:items-center lg:gap-x-0 lg:gap-y-12 lg:pb-0 lg:group-hover:flex"
 						>
-							<div class="flex items-center justify-center gap-x-2">
+							<div class="flex w-fit items-center justify-center gap-x-4 lg:gap-x-2">
 								<CartSaveForLaterButton {designId} productId={designProduct._id} />
 
 								<ProductDetailDialog product={designProduct}>

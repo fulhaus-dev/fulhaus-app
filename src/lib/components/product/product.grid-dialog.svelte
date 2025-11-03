@@ -32,7 +32,7 @@
 			class="fixed inset-0 z-50 bg-color-overlay-background/20 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
 		/>
 		<Dialog.Content
-			class="fixed top-0 right-0 z-50 flex h-screen w-[56rem] flex-col bg-color-background outline-hidden data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+			class="fixed top-0 right-0 z-50 flex h-screen w-screen flex-col bg-color-background outline-hidden data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 lg:w-[56rem]"
 		>
 			<Dialog.Close class="absolute top-4 right-4 cursor-pointer">
 				<XIcon />

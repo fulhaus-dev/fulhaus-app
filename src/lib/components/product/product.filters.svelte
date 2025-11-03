@@ -225,7 +225,7 @@
 	</div>
 
 	<div class="flex w-full items-center justify-between">
-		<div class="flex w-full items-center gap-x-1">
+		<div class="flex w-full flex-wrap items-center gap-x-1">
 			{#if !productCategory}
 				{@render CategoryFilter()}
 			{/if}

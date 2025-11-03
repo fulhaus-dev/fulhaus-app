@@ -77,7 +77,7 @@
 
 	<div
 		class={cn(
-			'grid w-full grid-cols-4 gap-x-2 gap-y-12 px-2 pt-2',
+			'grid w-full grid-cols-2 gap-x-2 gap-y-12 px-2 pt-2 lg:grid-cols-4',
 			loadingFreshProducts && 'hidden'
 		)}
 	>
@@ -95,7 +95,7 @@
 					/>
 
 					<p
-						class="absolute top-2 right-2 z-1 rounded-full bg-color-action-background px-2 py-px text-xs font-semibold text-color-action-text opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-100"
+						class="absolute top-2 right-2 z-1 rounded-full bg-color-action-background px-2 py-px text-xs font-semibold text-color-action-text transition-all duration-500 ease-in-out group-hover:opacity-100 lg:opacity-0"
 					>
 						Select
 					</p>

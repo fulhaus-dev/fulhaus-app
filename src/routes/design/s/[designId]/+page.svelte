@@ -9,6 +9,8 @@
 	import number from '$lib/utils/number';
 	import { Share2Icon } from '@lucide/svelte';
 	import ProductDetailDialog from '$lib/components/product/product.detail-dialog.svelte';
+	import Button from '$lib/components/button.svelte';
+	import { goto } from '$app/navigation';
 
 	const sharedDesignQuery = useSharedDesignQuery();
 	const totalDesignPrice = $derived(
@@ -69,7 +71,14 @@
 				</div>
 			</div>
 
-			<p class="text-sm text-color-text-muted">{sharedDesignQuery.design.description}</p>
+			<p class="hidden text-sm text-color-text-muted lg:block">
+				{sharedDesignQuery.design.description}
+			</p>
+
+			<Button
+				class="absolute right-4 bottom-4 left-0 z-50 hidden w-auto lg:block"
+				onclick={() => goto('/')}>Discover Fülhaus</Button
+			>
 		</div>
 
 		<div class="@container min-h-full w-full pt-4 pb-40 lg:pb-0">
@@ -122,4 +131,8 @@
 			</div>
 		</div>
 	</section>
+
+	<Button class="fixed right-4 bottom-4 left-4 z-50 w-auto lg:hidden" onclick={() => goto('/')}
+		>Discover Fülhaus</Button
+	>
 </main>

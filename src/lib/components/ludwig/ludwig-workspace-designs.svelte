@@ -310,24 +310,47 @@
 						onfocus={() => (hoveredDesignTags = workspaceDesign.design._id)}
 						onblur={() => (hoveredDesignTags = undefined)}
 					>
-						{#each hoveredDesignTags === workspaceDesign.design._id || openAddDesignTag === workspaceDesign.design._id ? workspaceDesign.designTags : workspaceDesign.designTags.slice(0, 3) as designTag (designTag._id)}
-							{@render WorkspaceDesignTag(designTag)}
-						{/each}
+						<div class="hidden w-fit flex-wrap gap-2 lg:flex">
+							{#each hoveredDesignTags === workspaceDesign.design._id || openAddDesignTag === workspaceDesign.design._id ? workspaceDesign.designTags : workspaceDesign.designTags.slice(0, 3) as designTag (designTag._id)}
+								{@render WorkspaceDesignTag(designTag)}
+							{/each}
 
-						<DesignAddTagPopover
-							designId={workspaceDesign.design._id}
-							designTags={workspaceDesign.designTags.map((designTag) => designTag.tag)}
-							onOpen={(open) =>
-								open
-									? (openAddDesignTag = workspaceDesign.design._id)
-									: (openAddDesignTag = undefined)}
-						>
-							<p
-								class="cursor-pointer rounded-full border border-color-border px-2 py-px text-[10px] font-semibold"
+							<DesignAddTagPopover
+								designId={workspaceDesign.design._id}
+								designTags={workspaceDesign.designTags.map((designTag) => designTag.tag)}
+								onOpen={(open) =>
+									open
+										? (openAddDesignTag = workspaceDesign.design._id)
+										: (openAddDesignTag = undefined)}
 							>
-								Add Tag
-							</p>
-						</DesignAddTagPopover>
+								<p
+									class="cursor-pointer rounded-full border border-color-border px-2 py-px text-[10px] font-semibold"
+								>
+									Add Tag
+								</p>
+							</DesignAddTagPopover>
+						</div>
+
+						<div class="flex w-fit flex-wrap gap-2 lg:hidden">
+							{#each workspaceDesign.designTags as designTag (designTag._id)}
+								{@render WorkspaceDesignTag(designTag)}
+							{/each}
+
+							<DesignAddTagPopover
+								designId={workspaceDesign.design._id}
+								designTags={workspaceDesign.designTags.map((designTag) => designTag.tag)}
+								onOpen={(open) =>
+									open
+										? (openAddDesignTag = workspaceDesign.design._id)
+										: (openAddDesignTag = undefined)}
+							>
+								<p
+									class="cursor-pointer rounded-full border border-color-border px-2 py-px text-[10px] font-semibold"
+								>
+									Add Tag
+								</p>
+							</DesignAddTagPopover>
+						</div>
 					</div>
 				</div>
 			</div>
