@@ -105,7 +105,7 @@
 
 	<div
 		class={cn(
-			'flex min-h-[calc(100%-5.6rem)]  w-full gap-x-2 px-2',
+			'flex min-h-[calc(100%-5.6rem)] w-full gap-x-2 px-2',
 			activeDesignView === 'canvas' && 'h-full'
 		)}
 	>
@@ -121,12 +121,14 @@
 				{/if}
 
 				{#if designProductView === 'list'}
-					<DesignProductListView
-						designId={design._id}
-						{designProducts}
-						generatingDesignFurnitureRecommendation={design.generatingFurnitureRecommendation ||
-							false}
-					/>
+					<div class="grid w-full grid-cols-1">
+						<DesignProductListView
+							designId={design._id}
+							{designProducts}
+							generatingDesignFurnitureRecommendation={design.generatingFurnitureRecommendation ||
+								false}
+						/>
+					</div>
 				{/if}
 			</div>
 		{/if}

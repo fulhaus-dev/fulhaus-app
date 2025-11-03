@@ -41,18 +41,20 @@ async function getCartPaymentCheckoutUrl(
 	const { data: session, error } = await asyncTryCatch(() =>
 		stripe.checkout.sessions.create({
 			customer: stripeCustomerId,
-			line_items: cart.items.map((cartItem) => ({
-				price_data: {
-					currency: cartItem.product.currencyCode.toLowerCase(),
-					product_data: {
-						name: cartItem.product.name,
-						description: cartItem.product.description,
-						images: cartItem.product.imageUrls
+			line_items: cart.items
+				.filter((cartItem) => cartItem.savedForLater === 'no')
+				.map((cartItem) => ({
+					price_data: {
+						currency: cartItem.product.currencyCode.toLowerCase(),
+						product_data: {
+							name: cartItem.product.name,
+							description: cartItem.product.description,
+							images: cartItem.product.imageUrls
+						},
+						unit_amount: Math.round(cartItem.product.retailPrice * 100)
 					},
-					unit_amount: Math.round(cartItem.product.retailPrice * 100)
-				},
-				quantity: cartItem.quantity
-			})),
+					quantity: cartItem.quantity
+				})),
 			mode: 'payment',
 			success_url: args.successUrl,
 			billing_address_collection: 'required',

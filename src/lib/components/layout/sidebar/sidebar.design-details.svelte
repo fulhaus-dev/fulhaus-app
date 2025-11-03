@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Design, DesignTag, UpdateDesign } from '$lib/types';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
-	import { DownloadIcon, MoveRightIcon, PencilLineIcon, RssIcon } from '@lucide/svelte';
+	import { DownloadIcon, MoveRightIcon, PencilLineIcon, RssIcon, Share2Icon } from '@lucide/svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import SidebarDesignEditMode from '$lib/components/layout/sidebar/sidebar.design-edit-mode.svelte';
 	import { cn } from '$lib/utils/cn';
@@ -13,6 +13,8 @@
 	import { goto } from '$app/navigation';
 	import { useFileMutation } from '$lib/client/mutations/use-file.mutation.svelte';
 	import DesignLogs from '$lib/components/design/design-view-sidebar/design-logs.svelte';
+	import Tooltip from '$lib/components/tooltip.svelte';
+	import DesignSharePopover from '$lib/components/design/design-share-popover.svelte';
 
 	type SidebarDesignDetailsProps = {
 		design?: Design;
@@ -85,6 +87,16 @@
 						<IconTooltipButton content="Duplicate design" onclick={() => {}}>
 							<CopyIcon class="size-4" />
 						</IconTooltipButton> -->
+
+						{#if design}
+							<Tooltip content="Share design">
+								<DesignSharePopover designId={design._id}>
+									<div class="size-6 rounded-full bg-color-background p-1 text-xs">
+										<Share2Icon class="size-full" />
+									</div>
+								</DesignSharePopover>
+							</Tooltip>
+						{/if}
 
 						<IconTooltipButton content="Edit design" onclick={() => (inEditMode = true)}>
 							<PencilLineIcon class="size-4" />

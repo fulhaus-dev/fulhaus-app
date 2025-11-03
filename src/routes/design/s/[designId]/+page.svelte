@@ -8,6 +8,7 @@
 	import Tooltip from '$lib/components/tooltip.svelte';
 	import number from '$lib/utils/number';
 	import { Share2Icon } from '@lucide/svelte';
+	import ProductDetailDialog from '$lib/components/product/product.detail-dialog.svelte';
 
 	const sharedDesignQuery = useSharedDesignQuery();
 	const totalDesignPrice = $derived(
@@ -86,6 +87,18 @@
 									src={designProduct.mainImageUrl}
 									alt={designProduct.name}
 								/>
+
+								<div
+									class="absolute top-1 right-1 z-1 flex-col items-center justify-center gap-y-12 lg:top-1/2 lg:right-auto lg:left-1/2 lg:hidden lg:-translate-x-1/2 lg:-translate-y-1/2 lg:group-hover:flex"
+								>
+									<ProductDetailDialog product={designProduct}>
+										<p
+											class=" cursor-pointer rounded-full bg-color-action-background px-2 py-1 text-xs font-medium text-nowrap text-color-action-text"
+										>
+											View Details
+										</p>
+									</ProductDetailDialog>
+								</div>
 							</div>
 
 							<div class="flex-1 space-y-2 text-xs font-medium">

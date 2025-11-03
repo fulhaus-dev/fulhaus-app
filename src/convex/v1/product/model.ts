@@ -46,7 +46,7 @@ async function createProduct(
 		...productData,
 		embeddingId: productEmbeddingId,
 		status: 'Active',
-		fullTextSearch: `${productData.name} | ${productData.description} | ${productData.category} | ${productData.styles.join(', ')}`,
+		fullTextSearch: `${productData.name} | ${productData.description} | ${productData.category} | ${productData.styles.join(', ')} | ${productData.materials.join(', ')} | ${productData.colorNames.join(', ')}`,
 		stockDate: date.now(),
 		updatedAt: date.now()
 	});

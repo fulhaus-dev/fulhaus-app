@@ -25,14 +25,14 @@
 			class="fixed inset-0 z-50 bg-color-overlay-background/20 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
 		/>
 		<Dialog.Content
-			class="fixed top-0 right-0 z-50 h-screen w-[40rem] bg-color-background outline-hidden data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+			class="fixed top-0 right-0 z-50 h-screen w-screen bg-color-background outline-hidden data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 lg:w-[40rem]"
 		>
 			<Dialog.Close class="absolute top-4 right-4 z-12 cursor-pointer">
 				<XIcon />
 			</Dialog.Close>
 
 			<div class="relative scrollbar-thin h-full w-full overflow-y-auto pb-8">
-				<div class="sticky top-0 z-10 bg-color-background p-8">
+				<div class="sticky top-0 z-10 bg-color-background px-4 pt-12 pb-8 lg:p-8">
 					<h5 class="text-lg font-medium">{product.name}</h5>
 					<p class="mb-4 text-[10px] font-medium text-color-text-placeholder">
 						{product.brand?.toUpperCase()}
@@ -62,8 +62,8 @@
 					</div>
 				</div>
 
-				<div class="group p-8 text-sm">
-					<p class="line-clamp-3 group-hover:line-clamp-none">{product.description}</p>
+				<div class="group px-4 py-8 text-sm lg:p-8">
+					<p class="group-hover:line-clamp-none lg:line-clamp-3">{product.description}</p>
 				</div>
 
 				<div class="border-b border-color-border">
@@ -90,7 +90,7 @@
 
 {#snippet ProductInformation({ label, value }: { label: string; value: string })}
 	<div
-		class="flex items-center gap-x-4 border-t border-color-border px-8 py-4 text-sm text-color-text-muted"
+		class="flex items-center gap-x-4 border-t border-color-border px-4 py-4 text-sm text-color-text-muted lg:px-8"
 	>
 		<h4 class="text-color-text-surface">{label}</h4>
 		<p class="font-medium">{value}</p>

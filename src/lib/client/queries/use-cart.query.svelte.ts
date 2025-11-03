@@ -32,6 +32,9 @@ export function useWorkspaceCartQuery(savedForLater?: () => CartSavedForLater) {
 		},
 		get cartItems() {
 			return query.response?.items ?? [];
+		},
+		get designs() {
+			return query.response?.designs ?? [];
 		}
 	});
 

@@ -4,6 +4,7 @@ import { MutationCtx, QueryCtx } from '../../_generated/server';
 import { vSaveCartItem, vSavedForLater, vUpdateCartItem } from './validator';
 import productModel from '../product/model';
 import { CurrencyCode } from '../../type';
+import designModel from '../design/model';
 
 async function saveCartItem(
 	ctx: MutationCtx,
@@ -34,20 +35,31 @@ async function getCartByWorkspaceId(
 		)
 		.collect();
 
-	const cartProductIds = cartItems.map((cartItem) => cartItem.productId);
-	const products = await productModel.getProductsForClientByIds(ctx, {
-		productIds: cartProductIds,
-		currencyCode
-	});
+	const uniqueCartProductIds = Array.from(new Set(cartItems.map((cartItem) => cartItem.productId)));
+	const uniqueCartDesignIds = Array.from(new Set(cartItems.map((cartItem) => cartItem.designId)));
 
-	const cartCurrencyCode = products[0]?.currencyCode ?? 'USD';
+	const [products, designs] = await Promise.all([
+		productModel.getProductsForClientByIds(ctx, {
+			productIds: uniqueCartProductIds,
+			currencyCode
+		}),
+		Promise.all(uniqueCartDesignIds.map((designId) => designModel.getDesignById(ctx, designId)))
+	]);
 
 	return {
-		currencyCode: cartCurrencyCode,
+		currencyCode,
 		items: cartItems.map((cartItem) => ({
 			...cartItem,
 			product: products.find((product) => product._id === cartItem.productId)!
-		}))
+		})),
+		designs: designs
+			.filter((design) => !!design)
+			.map((design) => ({
+				_id: design._id,
+				workspaceId: design.workspaceId,
+				chatId: design.chatId,
+				name: design.name
+			}))
 	};
 }
 
