@@ -1,14 +1,9 @@
 <script lang="ts">
-	import {
-		useCurrentWorkspaceQuery,
-		useWorkspacePlanQuery
-	} from '$lib/client/queries/use-workspace.query.svelte';
+	import { useWorkspacePlanQuery } from '$lib/client/queries/use-workspace.query.svelte';
 	import Tooltip from '$lib/components/tooltip.svelte';
+	import WorkspacePlanViewer from '$lib/components/workspace/workspace-plan-viewer.svelte';
 	import { cn } from '$lib/utils/cn';
 	import { DropdownMenu } from 'bits-ui';
-
-	const currentWorkspaceQuery = useCurrentWorkspaceQuery();
-	const currentWorkspace = $derived(currentWorkspaceQuery.currentWorkspace);
 
 	const workspacePlanQuery = useWorkspacePlanQuery();
 	const workspacePlan = $derived(workspacePlanQuery.workspacePlan);
@@ -72,47 +67,7 @@
 				align="end"
 				sideOffset={8}
 			>
-				<div class="space-y-2">
-					<div>
-						<h4 class="text-sm font-medium">Workspace credits</h4>
-						<p class="text-[10px] font-medium text-color-text-muted">
-							{`${workspacePlan?.used} / ${workspacePlan?.credit} credits used`}
-						</p>
-					</div>
-
-					<div
-						class={cn(
-							'flex w-full items-center gap-x-2',
-							workspacePlanCreditPercentage <= 25 && 'text-red-500',
-							workspacePlanCreditPercentage > 25 && 'text-yellow-500',
-							workspacePlanCreditPercentage >= 50 && 'text-green-500'
-						)}
-					>
-						<div
-							class="flex h-1.5 w-full overflow-hidden rounded-full bg-gray-200"
-							role="progressbar"
-							aria-valuenow="25"
-							aria-valuemin="0"
-							aria-valuemax="100"
-						>
-							<div
-								class={cn(
-									'h-full overflow-hidden rounded-full',
-									workspacePlanCreditPercentage <= 25 && 'bg-red-500',
-									workspacePlanCreditPercentage > 25 && 'bg-yellow-500',
-									workspacePlanCreditPercentage >= 50 && 'bg-green-500'
-								)}
-								style="width: {workspacePlanCreditPercentage}%"
-							></div>
-						</div>
-
-						{#if workspacePlanCreditPercentage < 100}
-							<p class="text-[10px] leading-none font-medium text-nowrap">
-								{`${100 - workspacePlanCreditPercentage}% used`}
-							</p>
-						{/if}
-					</div>
-				</div>
+				<WorkspacePlanViewer label="Workspace credits" />
 			</DropdownMenu.Content>
 		</DropdownMenu.Portal>
 	</DropdownMenu.Root>

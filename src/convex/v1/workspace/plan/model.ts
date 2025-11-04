@@ -7,7 +7,7 @@ async function createWorkspacePlan(ctx: MutationCtx, workspaceId: Id<'workspaces
 	return await ctx.db.insert('workspacePlans', {
 		workspaceId,
 		plan: 'Free',
-		credit: 200,
+		credit: 400,
 		used: 0
 	});
 }

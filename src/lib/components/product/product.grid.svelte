@@ -2,6 +2,7 @@
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import type {
 		Product,
+		ProductCategory,
 		ProductFilterQueryString,
 		ProductSortOptionsQueryString
 	} from '$lib/types';
@@ -17,14 +18,36 @@
 	import { SofaIcon } from '@lucide/svelte';
 	import ProductDetailDialog from '$lib/components/product/product.detail-dialog.svelte';
 	import ProductAvailabilityInfo from '$lib/components/product/product.availability-info.svelte';
-	import { useProductsQuery } from '$lib/client/queries/use-product.query.svelte';
 	import infiniteScroll from '$lib/dom-actions/infinite-scroll';
+	import {
+		usePaginatedProductsByCategoryQuery,
+		useProductsByFullTextSearchQuery
+	} from '$lib/client/queries/use-product.query.svelte';
+	import { Debounced } from 'runed';
 
 	type DesignProductsProps = {
+		selectedProductCategory: ProductCategory;
 		onSelectProduct: (product: Product) => void;
 	};
 
-	const { onSelectProduct }: DesignProductsProps = $props();
+	const { onSelectProduct, selectedProductCategory }: DesignProductsProps = $props();
+
+	const currencyCode = page.data.currencyCode;
+
+	const productFullTextSearchValue = $derived(
+		page.url.searchParams.get(QueryParams.PRODUCT_FULL_TEXT_SEARCH_VALUE) ?? undefined
+	);
+	const debouncedProductFullTextSearchValue = new Debounced(() => productFullTextSearchValue, 1000);
+
+	const productsByFullTextSearchQuery = useProductsByFullTextSearchQuery(
+		() => debouncedProductFullTextSearchValue.current
+	);
+	const fullTextSearchClientProducts = $derived(productsByFullTextSearchQuery.clientProducts);
+	const loadingProductsByFullTextSearch = $derived(
+		debouncedProductFullTextSearchValue.pending || productsByFullTextSearchQuery.loading
+	);
+
+	const isFullTextSearchView = $derived(!!productFullTextSearchValue);
 
 	const productFilters = $derived(
 		page.url.searchParams.get(QueryParams.PRODUCT_FILTERS) ?? ''
@@ -38,11 +61,15 @@
 
 	let getProductsPaginationCursor = $state<string>();
 
-	const productsQuery = useProductsQuery({
-		cursor: () => getProductsPaginationCursor,
-		productFilter: () => parsedProductFilters,
-		sortOptions: () => parsedProductSortOptions
-	});
+	const productsQuery = usePaginatedProductsByCategoryQuery(
+		() => currencyCode,
+		() => selectedProductCategory,
+		{
+			cursor: () => getProductsPaginationCursor,
+			productFilter: () => parsedProductFilters,
+			sortOptions: () => parsedProductSortOptions
+		}
+	);
 
 	const products = $derived(productsQuery.clientProducts);
 	const hasMoreProducts = $derived(!productsQuery.isDone);
@@ -50,7 +77,9 @@
 	const loadingPaginatedProducts = $derived(
 		getProductsPaginationCursor === getProductsContinueCursor
 	);
-	const loadingFreshProducts = $derived(productsQuery.loading && !loadingPaginatedProducts);
+	const loadingFreshProducts = $derived(
+		(productsQuery.loading || loadingProductsByFullTextSearch) && !loadingPaginatedProducts
+	);
 
 	function loadMoreProducts() {
 		if (!hasMoreProducts || loadingFreshProducts || loadingPaginatedProducts) return;
@@ -61,7 +90,11 @@
 
 <div class="relative flex-1 overflow-y-auto pb-96">
 	<div class="sticky top-0 z-4 bg-color-background-surface p-2 shadow shadow-color-shadow">
-		<ProductFilters />
+		<ProductFilters
+			productCategory={selectedProductCategory}
+			isSwapFilters={false}
+			{isFullTextSearchView}
+		/>
 	</div>
 
 	{#if loadingFreshProducts}
@@ -81,7 +114,7 @@
 			loadingFreshProducts && 'hidden'
 		)}
 	>
-		{#each products as product (product._id)}
+		{#each isFullTextSearchView ? fullTextSearchClientProducts : products as product (product._id)}
 			<div class="w-full space-y-2">
 				<button
 					class="group relative h-40 w-full cursor-pointer"

@@ -20,5 +20,6 @@ export const productTable = defineTable({
 	.index('by_category_brand', ['category', 'brand'])
 	.index('by_embedding_id', ['embeddingId'])
 	.searchIndex('by_full_text_search', {
-		searchField: 'fullTextSearch'
+		searchField: 'fullTextSearch',
+		filterFields: ['hasCAD', 'hasUSD']
 	});

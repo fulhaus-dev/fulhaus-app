@@ -3,7 +3,9 @@ import { v } from 'convex/values';
 export const vWorkspacePlan = v.union(
 	v.literal('Free'),
 	v.literal('Creator'),
-	v.literal('Professional')
+	v.literal('Professional'),
+	v.literal('Teams'),
+	v.literal('Enterprise')
 );
 
 export const vUpdateWorkspacePlan = v.object({

@@ -87,8 +87,8 @@ export function useProductBrandsQuery(
 }
 
 export function usePaginatedProductsByCategoryQuery(
-	currencyCode: CurrencyCode,
-	category: ProductCategory,
+	currencyCode: () => CurrencyCode,
+	category: () => ProductCategory,
 	args: {
 		cursor?: () => string | undefined;
 		productFilter?: () => ProductFilter | undefined;
@@ -123,9 +123,9 @@ export function usePaginatedProductsByCategoryQuery(
 				? { index: currentSortOptions.index, order: currentSortOptions.order }
 				: undefined;
 
-			return {
-				currencyCode,
-				category,
+			const queryArgs = {
+				currencyCode: currencyCode(),
+				category: category(),
 				productFilter: args.productFilter?.(),
 				paginationOptions: {
 					cursor: effectiveCursor,
@@ -133,6 +133,8 @@ export function usePaginatedProductsByCategoryQuery(
 				},
 				sortOptions: effectiveSortOptions
 			};
+
+			return queryArgs;
 		},
 		{
 			requiredArgsKeys: ['category', 'currencyCode'],
@@ -163,75 +165,28 @@ export function usePaginatedProductsByCategoryQuery(
 	return paginatedProductsByCategoryQuery;
 }
 
-export function useProductsQuery(args: {
-	cursor: () => string | undefined;
-	productFilter: () => ProductFilter | undefined;
-	sortOptions?: () => ProductSortOptions | undefined;
-}) {
+export function useProductsByFullTextSearchQuery(searchText: () => string | undefined) {
 	const currencyCode = page.data.currencyCode;
 
-	const productsQuery = $state({
-		clientProducts: [] as Product[],
-		isDone: false,
-		continueCursor: undefined as string | undefined,
-		loading: false,
-		error: undefined as Error | undefined
-	});
-
-	let freshLoad = false;
-	let lastCursor = undefined as string | undefined;
-
-	useConvexQuerySubscription(
-		api.v1.product.query.getClientProductsWithFilters,
-		() => {
-			const currentCursor = args.cursor();
-
-			// If cursor matches the last continueCursor, it's not a "load more"
-			// so send undefined (fresh query). Otherwise send the cursor.
-			const effectiveCursor = currentCursor === lastCursor ? undefined : currentCursor;
-			if (effectiveCursor === undefined) freshLoad = true;
-
-			lastCursor = effectiveCursor;
-
-			const currentSortOptions = args.sortOptions?.();
-
-			const effectiveSortOptions = currentSortOptions?.index?.includes('by_price')
-				? { index: currentSortOptions.index, order: currentSortOptions.order }
-				: undefined;
-
-			return {
-				currencyCode,
-				productFilter: args.productFilter(),
-				paginationOptions: {
-					cursor: effectiveCursor,
-					numItems: 25
-				},
-				sortOptions: effectiveSortOptions
-			};
-		},
-		{
-			debounceDelay: 300,
-			onLoading: (loading) => {
-				productsQuery.loading = loading;
-			},
-			onData: (response) => {
-				if (freshLoad) productsQuery.clientProducts = response.clientProducts ?? [];
-				else
-					productsQuery.clientProducts = [
-						...productsQuery.clientProducts,
-						...(response.clientProducts ?? [])
-					];
-
-				productsQuery.isDone = response.isDone;
-				productsQuery.continueCursor = response.continueCursor;
-
-				freshLoad = false;
-			},
-			onError: (error) => {
-				productsQuery.error = error;
-			}
-		}
+	const { query } = useConvexQuerySubscription(
+		api.v1.product.query.getClientProductsByFullTextSearch,
+		() => ({
+			currencyCode,
+			searchText: searchText()
+		})
 	);
 
-	return productsQuery;
+	const productsByFullTextSearchQuery = $state({
+		get loading() {
+			return query.loading;
+		},
+		get error() {
+			return query.error;
+		},
+		get clientProducts() {
+			return query.response?.clientProducts ?? [];
+		}
+	});
+
+	return productsByFullTextSearchQuery;
 }

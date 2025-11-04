@@ -8,5 +8,6 @@ export const enum QueryParams {
 	FILE_UPLOAD_TYPE = 'fut',
 	PRODUCT_FILTERS = 'pf',
 	PRODUCT_SORT_OPTIONS = 'pso',
-	DESIGN_CURRENCY_CODE = 'dcc'
+	DESIGN_CURRENCY_CODE = 'dcc',
+	PRODUCT_FULL_TEXT_SEARCH_VALUE = 'pfts'
 }

@@ -164,3 +164,5 @@ export type DesignLogUser = {
 	userId: Id<'users'>;
 	fullName: string;
 };
+
+export type AppSubscriptionPlan = Doc<'workspacePlans'>['plan'];

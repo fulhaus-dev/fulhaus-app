@@ -20,6 +20,7 @@
 	import ProductAvailabilityInfo from '$lib/components/product/product.availability-info.svelte';
 	import infiniteScroll from '$lib/dom-actions/infinite-scroll';
 	import { usePaginatedProductsByCategoryQuery } from '$lib/client/queries/use-product.query.svelte';
+	import { Debounced } from 'runed';
 
 	type DesignProductsProps = {
 		productToSwapCategory: ProductCategory;
@@ -33,7 +34,12 @@
 	const productFilters = $derived(
 		page.url.searchParams.get(QueryParams.PRODUCT_FILTERS) ?? ''
 	) as ProductFilterQueryString;
-	const parsedProductFilters = $derived.by(() => parseProductFilters(productFilters));
+
+	const debouncedProductFilters = new Debounced(() => productFilters, 1000);
+
+	const parsedProductFilters = $derived.by(() =>
+		parseProductFilters(debouncedProductFilters.current)
+	);
 
 	const productSortOptions = $derived(
 		page.url.searchParams.get(QueryParams.PRODUCT_SORT_OPTIONS) ?? ''
@@ -43,8 +49,8 @@
 	let getProductsByCategoryPaginationCursor = $state<string>();
 
 	const paginatedProductsByCategoryQuery = usePaginatedProductsByCategoryQuery(
-		currencyCode,
-		productToSwapCategory,
+		() => currencyCode,
+		() => productToSwapCategory,
 		{
 			cursor: () => getProductsByCategoryPaginationCursor,
 			productFilter: () => parsedProductFilters,
@@ -61,7 +67,8 @@
 		getProductsByCategoryPaginationCursor === getClientProductsByCategoryContinueCursor
 	);
 	const loadingFreshProductsByCategory = $derived(
-		paginatedProductsByCategoryQuery.loading && !loadingPaginatedProductsByCategory
+		(debouncedProductFilters.pending || paginatedProductsByCategoryQuery.loading) &&
+			!loadingPaginatedProductsByCategory
 	);
 
 	function loadMoreProductsByCategory() {

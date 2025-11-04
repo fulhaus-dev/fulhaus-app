@@ -8,7 +8,8 @@ import { httpStatusCode } from '../../constant';
 import { CurrencyCode } from '../../type';
 import { asyncTryCatch } from '../../util/async';
 import stripeModel from './stripe';
-import { PaymentMetadata } from './type';
+import { PaymentMetadata, WorkspacePlan } from './type';
+import { stripeSubscriptionPlanPriceId } from './constant';
 
 async function getCartPaymentCheckoutUrl(
 	ctx: ActionCtx,
@@ -95,7 +96,63 @@ async function getCartPaymentCheckoutUrl(
 	return { data: session.url };
 }
 
+async function getCreditSubscriptionPaymentCheckoutUrl(
+	ctx: ActionCtx,
+	args: {
+		workspaceId: Id<'workspaces'>;
+		userId: Id<'users'>;
+		plan: WorkspacePlan;
+		successUrl: string;
+	}
+) {
+	const stripeCustomerIdResponse = await stripeModel.createStripeCustomer(ctx, args.userId, 'USD');
+	const { data: stripeCustomerId, error: stripeCustomerIdResponseError } = stripeCustomerIdResponse;
+	if (stripeCustomerIdResponseError) return { error: stripeCustomerIdResponseError };
+
+	const stripe = getStripeClient('USD');
+
+	const paymentMetadata: PaymentMetadata = {
+		workspaceId: args.workspaceId,
+		userId: args.userId,
+		plan: args.plan,
+		type: 'credits',
+		currencyCode: 'USD'
+	};
+
+	const { data: session, error } = await asyncTryCatch(() =>
+		stripe.checkout.sessions.create({
+			customer: stripeCustomerId,
+			mode: 'subscription',
+			line_items: [
+				{
+					price: stripeSubscriptionPlanPriceId[args.plan],
+					quantity: 1
+				}
+			],
+			success_url: args.successUrl,
+			billing_address_collection: 'required',
+			customer_update: {
+				shipping: 'auto'
+			},
+			submit_type: 'subscribe',
+			metadata: paymentMetadata
+		})
+	);
+
+	if (error) return { error };
+	if (!session.url)
+		return {
+			error: {
+				message: 'Checkout failed',
+				statusCode: httpStatusCode.INTERNAL_SERVER_ERROR
+			}
+		};
+
+	return { data: session.url };
+}
+
 const paymentModel = {
-	getCartPaymentCheckoutUrl
+	getCartPaymentCheckoutUrl,
+	getCreditSubscriptionPaymentCheckoutUrl
 };
 export default paymentModel;

@@ -5,6 +5,8 @@
 	import type { Snippet } from 'svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignProductSwapProductsByCategory from '$lib/components/design/design-product-swap/design-product-swap.products-by-category.svelte';
+	import { QueryParams } from '$lib/enums';
+	import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte';
 
 	type DesignProductSwapDialogProps = {
 		children: Snippet;
@@ -23,10 +25,20 @@
 	let isOpen = $state(false);
 	let replacementProduct = $state<Product | null>(null);
 
+	const { updateRouteQuery } = useRouteMutation();
+
 	function onOpenChange(open: boolean) {
 		if (open) return;
 
 		replacementProduct = null;
+		updateRouteQuery({
+			queryKeysToRemove: [
+				QueryParams.PRODUCT_FULL_TEXT_SEARCH_VALUE,
+				QueryParams.PRODUCT_FILTERS,
+				QueryParams.PRODUCT_SORT_OPTIONS
+			],
+			options: { keepFocus: true }
+		});
 	}
 </script>
 

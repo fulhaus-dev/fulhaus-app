@@ -57,23 +57,23 @@ export const getProductCategoriesForSpace = query({
 	}
 });
 
-export const getClientProductsWithFilters = query({
+export const getClientProductsByFullTextSearch = query({
 	args: {
 		currencyCode: vCurrencyCode,
-		productFilter: v.optional(vProductFilter),
-		paginationOptions: v.optional(vProductPaginationOptions),
-		sortOptions: v.optional(vProductSortOptions)
+		searchText: v.optional(v.string())
 	},
-	handler: async (ctx, { currencyCode, ...otherArgs }) => {
+	handler: async (ctx, { currencyCode, searchText }) => {
 		await authorization.userIsAuthenticated(ctx);
 
-		const clientProductPaginationResult = await productModel.getClientProductsWithFilters(
+		if (!searchText) return SuccessData({ clientProducts: [] });
+
+		const clientProducts = await productModel.getClientProductsByFullTextSearch(
 			ctx,
 			currencyCode,
-			otherArgs
+			searchText
 		);
 
-		return SuccessData(clientProductPaginationResult);
+		return SuccessData({ clientProducts });
 	}
 });
 

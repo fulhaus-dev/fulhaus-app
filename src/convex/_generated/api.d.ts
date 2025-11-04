@@ -94,6 +94,7 @@ import type * as v1_ludwig_table from "../v1/ludwig/table.js";
 import type * as v1_ludwig_type from "../v1/ludwig/type.js";
 import type * as v1_order_internal_action from "../v1/order/internal/action.js";
 import type * as v1_payment_action from "../v1/payment/action.js";
+import type * as v1_payment_constant from "../v1/payment/constant.js";
 import type * as v1_payment_model from "../v1/payment/model.js";
 import type * as v1_payment_stripe from "../v1/payment/stripe.js";
 import type * as v1_payment_type from "../v1/payment/type.js";
@@ -257,6 +258,7 @@ declare const fullApi: ApiFromModules<{
   "v1/ludwig/type": typeof v1_ludwig_type;
   "v1/order/internal/action": typeof v1_order_internal_action;
   "v1/payment/action": typeof v1_payment_action;
+  "v1/payment/constant": typeof v1_payment_constant;
   "v1/payment/model": typeof v1_payment_model;
   "v1/payment/stripe": typeof v1_payment_stripe;
   "v1/payment/type": typeof v1_payment_type;
