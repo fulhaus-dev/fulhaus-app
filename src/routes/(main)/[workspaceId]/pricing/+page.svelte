@@ -67,7 +67,7 @@
 {/if}
 
 <section class="scrollbar-thin h-full w-full overflow-y-auto p-4">
-	<div class="mx-auto w-full max-w-fit space-y-12 py-12">
+	<div class="w-full space-y-12 py-12 lg:mx-auto lg:max-w-fit">
 		<div>
 			<h1>Pricing</h1>
 			<p class="text-color-text-muted">
@@ -75,11 +75,11 @@
 			</p>
 		</div>
 
-		<div class="grid grid-cols-3 gap-16">
+		<div class="grod-cols-1 grid gap-16 lg:grid-cols-3">
 			{#each pricingPlans as pricingPlan (pricingPlan.name)}
 				<button
 					class={cn(
-						'hover:ring-border-color-action-border w-72 cursor-pointer space-y-8 rounded-lg border border-color-border-muted p-8 text-start hover:border-color-action-border hover:bg-color-background-surface hover:ring-2',
+						'hover:ring-border-color-action-border w-full cursor-pointer space-y-8 rounded-lg border border-color-border-muted p-8 text-start hover:border-color-action-border hover:bg-color-background-surface hover:ring-2 lg:w-72',
 						pricingPlan.recommended && 'ring-border-color-action-border ring-2'
 					)}
 					type="button"
@@ -108,6 +108,12 @@
 						{@render PricingPlanFeature('Unlimited designs')}
 						{@render PricingPlanFeature('Unlimited visualizations')}
 						{@render PricingPlanFeature('Unlimited users')}
+					</div>
+
+					<div
+						class="flex h-10 w-full items-center justify-center rounded-md bg-color-action-background font-medium text-color-action-text lg:hidden"
+					>
+						Subscribe
 					</div>
 				</button>
 			{/each}
