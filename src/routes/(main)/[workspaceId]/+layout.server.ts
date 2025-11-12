@@ -13,6 +13,6 @@ export const load = ({ locals, url, params }) => {
 	if (activeWorkspaceId === 'undefined')
 		throw error(404, 'The workspace you are trying to access does not exist.');
 
-	if (currentWorkspaceId === 'undefined')
+	if (currentWorkspaceId !== activeWorkspaceId)
 		throw redirect(303, `/${activeWorkspaceId}${pathnameWithoutWorkspaceId}`);
 };

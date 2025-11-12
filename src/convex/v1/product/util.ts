@@ -85,42 +85,42 @@ export function filterClientProducts(
 
 	if (number.isNumber(productFilter.maxWidth))
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.width <= productFilter.maxWidth!
+			(product) => product.width ?? 0 <= productFilter.maxWidth!
 		);
 
 	if (number.isNumber(productFilter.minWidth))
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.width >= productFilter.minWidth!
+			(product) => product.width && product.width >= productFilter.minWidth!
 		);
 
 	if (number.isNumber(productFilter.minHeight))
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.height >= productFilter.minHeight!
+			(product) => product.height && product.height >= productFilter.minHeight!
 		);
 
 	if (number.isNumber(productFilter.maxHeight))
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.height <= productFilter.maxHeight!
+			(product) => product.height && product.height <= productFilter.maxHeight!
 		);
 
 	if (number.isNumber(productFilter.minDepth))
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.depth >= productFilter.minDepth!
+			(product) => product.depth && product.depth >= productFilter.minDepth!
 		);
 
 	if (number.isNumber(productFilter.maxDepth))
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.depth <= productFilter.maxDepth!
+			(product) => product.depth && product.depth <= productFilter.maxDepth!
 		);
 
 	if (number.isNumber(productFilter.minWeight))
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.weight >= productFilter.minWeight!
+			(product) => product.weight && product.weight >= productFilter.minWeight!
 		);
 
 	if (number.isNumber(productFilter.maxWeight))
 		filteredClientProducts = filteredClientProducts.filter(
-			(product) => product.weight <= productFilter.maxWeight!
+			(product) => product.weight && product.weight <= productFilter.maxWeight!
 		);
 
 	if (productFilter.brand)

@@ -18,13 +18,13 @@ export const vProductPrice = v.object({
 	tradePrice: v.float64(),
 	map: v.optional(v.float64()),
 	msrp: v.optional(v.float64()),
-	retailPrice: v.float64(),
-	shippingPrice: v.optional(v.float64())
+	retailPrice: v.float64()
 });
 
 export const vCreateProductFields = {
 	vendorId: v.id('productVendors'),
-	ownerId: v.optional(v.id('workspaces')),
+	ownerId: v.string(),
+	location: v.optional(v.string()),
 	sku: v.string(),
 	fhSku: v.string(),
 	itemId: v.optional(v.string()),
@@ -44,16 +44,12 @@ export const vCreateProductFields = {
 	mainImageUrl: v.string(),
 	mainImageNoBgUrl: v.optional(v.string()),
 	dimension: v.optional(v.string()),
-	width: v.number(),
-	height: v.number(),
-	depth: v.number(),
-	shippingDimension: v.string(),
-	shippingWidth: v.number(),
-	shippingHeight: v.number(),
-	shippingDepth: v.number(),
+	width: v.optional(v.number()),
+	height: v.optional(v.number()),
+	depth: v.optional(v.number()),
 	dimensionUnit: v.literal('in'),
-	weight: v.number(),
-	shippingWeight: v.number(),
+	vDimension: v.optional(v.string()),
+	weight: v.optional(v.number()),
 	weightUnit: v.literal('lb'),
 	colorNames: v.array(v.string()),
 	hexColors: v.array(v.string()),
@@ -82,11 +78,11 @@ export const vClientProduct = v.object({
 	mainImageUrl: v.string(),
 	currencyCode: vCurrencyCode,
 	dimension: v.optional(v.string()),
-	width: v.number(),
-	height: v.number(),
-	depth: v.number(),
+	width: v.optional(v.number()),
+	height: v.optional(v.number()),
+	depth: v.optional(v.number()),
 	dimensionUnit: v.literal('in'),
-	weight: v.number(),
+	weight: v.optional(v.number()),
 	weightUnit: v.literal('lb'),
 	colorNames: v.array(v.string()),
 	hexColors: v.array(v.string()),
@@ -102,10 +98,13 @@ export const vUpdateProduct = v.object({
 	hasUSD: v.optional(v.boolean()),
 	retailPriceCAD: v.optional(v.float64()),
 	retailPriceUSD: v.optional(v.float64()),
-	stockQty: v.optional(v.number()),
 	stockDate: v.optional(v.number()),
 	restockDate: v.optional(v.number()),
-	status: v.optional(vProductStatus)
+	status: v.optional(vProductStatus),
+	stockQtyUSD: v.optional(v.number()),
+	stockQtyCAD: v.optional(v.number()),
+	restockDateUSD: v.optional(v.number()),
+	restockDateCAD: v.optional(v.number())
 });
 
 const vProductAvailabilityFilter = v.union(

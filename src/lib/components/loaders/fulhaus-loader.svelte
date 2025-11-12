@@ -6,7 +6,7 @@
 
 <div
 	class={cn(
-		'fill-color-text flex h-fit w-12 flex-col items-center justify-center space-y-1',
+		'flex h-fit w-12 flex-col items-center justify-center space-y-1 fill-color-text',
 		className
 	)}
 >

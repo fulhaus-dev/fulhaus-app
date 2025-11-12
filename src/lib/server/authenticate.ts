@@ -2,6 +2,7 @@ import {
 	APP_ACTIVE_WORKSPACE_ID_COOKIE_NAME,
 	APP_CURRENT_USER_ID_COOKIE_NAME,
 	APP_ENVIRONMENT,
+	AUTH_ACTIVE_SESSION_STATUS_COOKIE_NAME,
 	AUTH_SESSION_ID_COOKIE_NAME,
 	AUTH_TOKEN_COOKIE_NAME
 } from '$env/static/private';
@@ -62,6 +63,10 @@ export function setAuthCookies(cookies: Cookies, setAuthCookieData: SetAuthCooki
 		...cookieOptions,
 		maxAge: sessionCookieMaxAge
 	});
+
+	cookies.set(AUTH_ACTIVE_SESSION_STATUS_COOKIE_NAME, 'true', {
+		...cookieOptions
+	});
 }
 
 export function clearAuthCookies(cookies: Cookies) {
@@ -69,6 +74,7 @@ export function clearAuthCookies(cookies: Cookies) {
 	cookies.delete(AUTH_SESSION_ID_COOKIE_NAME, cookieOptions);
 	cookies.delete(APP_ACTIVE_WORKSPACE_ID_COOKIE_NAME, cookieOptions);
 	cookies.delete(APP_CURRENT_USER_ID_COOKIE_NAME, cookieOptions);
+	cookies.delete(AUTH_ACTIVE_SESSION_STATUS_COOKIE_NAME, cookieOptions);
 }
 
 export function getAuthParams(cookies: Cookies) {
@@ -78,8 +84,11 @@ export function getAuthParams(cookies: Cookies) {
 		| Id<'workspaces'>
 		| undefined;
 	const currentUserId = cookies.get(APP_CURRENT_USER_ID_COOKIE_NAME) as Id<'users'> | undefined;
+	const authSessionActive = cookies.get(AUTH_ACTIVE_SESSION_STATUS_COOKIE_NAME) as
+		| string
+		| undefined;
 
-	return { authToken, activeWorkspaceId, currentUserId, authSessionId };
+	return { authToken, activeWorkspaceId, currentUserId, authSessionId, authSessionActive };
 }
 
 export async function refreshAuthToken(cookies: Cookies, sessionId: Id<'sessions'>) {
@@ -98,13 +107,19 @@ export default async function authenticate(cookies: Cookies) {
 		authToken: currentAuthToken,
 		activeWorkspaceId,
 		currentUserId,
-		authSessionId
+		authSessionId,
+		authSessionActive
 	} = getAuthParams(cookies);
 	let authToken = currentAuthToken;
 
 	if (!activeWorkspaceId || !currentUserId || !authSessionId) return;
 
 	if (!currentAuthToken && authSessionId) {
+		const newAuthToken = await refreshAuthToken(cookies, authSessionId);
+		if (!newAuthToken) return;
+
+		authToken = newAuthToken;
+	} else if (!authSessionActive) {
 		const newAuthToken = await refreshAuthToken(cookies, authSessionId);
 		if (!newAuthToken) return;
 

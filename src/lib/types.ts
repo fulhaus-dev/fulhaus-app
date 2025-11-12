@@ -100,11 +100,11 @@ export type Product = {
 	mainImageUrl?: string;
 	currencyCode: CurrencyCode;
 	dimension?: string;
-	width: number;
-	height: number;
-	depth: number;
+	width?: number;
+	height?: number;
+	depth?: number;
 	dimensionUnit: 'in';
-	weight: number;
+	weight?: number;
 	weightUnit: 'lb';
 	colorNames?: string[];
 	hexColors?: string[];

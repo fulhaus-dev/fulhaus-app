@@ -6,10 +6,10 @@ export const vCreateProductEmbeddingFields = {
 	categoryCAD: v.optional(vProductCategory),
 	retailPriceCAD: v.optional(v.float64()),
 	retailPriceUSD: v.optional(v.float64()),
-	width: v.number(),
-	height: v.number(),
-	depth: v.number(),
-	weight: v.number(),
+	width: v.optional(v.number()),
+	height: v.optional(v.number()),
+	depth: v.optional(v.number()),
+	weight: v.optional(v.number()),
 	imageEmbedding: v.array(v.float64())
 };
 

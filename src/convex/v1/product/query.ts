@@ -15,6 +15,21 @@ import { vReturnedSuccessData } from '../../response/validator';
 import { doc } from 'convex-helpers/validators';
 import schema from '../../schema';
 
+export const getPoProductBySku = query({
+	args: {
+		poApiKey: v.string(),
+		sku: v.string()
+	},
+	returns: vReturnedSuccessData(v.object({ data: v.union(doc(schema, 'products'), v.null()) })),
+	handler: async (ctx, args) => {
+		authorization.authorizeProductOnboarding(args.poApiKey);
+
+		const product = await productModel.getProductBySku(ctx, args.sku);
+
+		return SuccessData({ data: product });
+	}
+});
+
 export const getPoProductsBySkus = query({
 	args: {
 		poApiKey: v.string(),
