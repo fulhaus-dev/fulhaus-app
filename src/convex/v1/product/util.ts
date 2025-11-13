@@ -57,9 +57,9 @@ export function filterClientProducts(
 			(product) => product.category === productFilter.category
 		);
 
-	if (productFilter.name)
+	if (productFilter.desc)
 		filteredClientProducts = filteredClientProducts.filter((product) =>
-			product.name.toLowerCase().includes((productFilter.name ?? '').toLowerCase())
+			product.description.toLowerCase().includes((productFilter.desc ?? '').toLowerCase())
 		);
 
 	if (productFilter.availability === 'In Stock')

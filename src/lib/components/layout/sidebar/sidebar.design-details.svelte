@@ -1,7 +1,14 @@
 <script lang="ts">
 	import type { Design, DesignTag, UpdateDesign } from '$lib/types';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
-	import { DownloadIcon, MoveRightIcon, PencilLineIcon, RssIcon, Share2Icon } from '@lucide/svelte';
+	import {
+		ChevronDownIcon,
+		DownloadIcon,
+		MoveRightIcon,
+		PencilLineIcon,
+		RssIcon,
+		Share2Icon
+	} from '@lucide/svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import SidebarDesignEditMode from '$lib/components/layout/sidebar/sidebar.design-edit-mode.svelte';
 	import { cn } from '$lib/utils/cn';
@@ -26,6 +33,7 @@
 	const hasDesign = $derived(!!design?._id);
 
 	let inEditMode = $state(false);
+	let showLogs = $state(false);
 
 	let updates = $state<UpdateDesign>({});
 	let designTagsToDelete = $state<DesignTag[]>([]);
@@ -198,11 +206,16 @@
 					<!-- Design logs -->
 					{#if design?._id}
 						<div class="space-y-1">
-							<h5 class="font-medium">Changes</h5>
+							<Button variant="text" onclick={() => (showLogs = !showLogs)}>
+								<h5 class="font-medium">Changes</h5>
+								<ChevronDownIcon class={cn('size-4', showLogs && 'rotate-180')} />
+							</Button>
 
-							<div class="rounded-md bg-color-background-surface p-2">
-								<DesignLogs designId={design._id} />
-							</div>
+							{#if showLogs}
+								<div class="rounded-md bg-color-background-surface p-2">
+									<DesignLogs designId={design._id} />
+								</div>
+							{/if}
 						</div>
 					{/if}
 				{/if}

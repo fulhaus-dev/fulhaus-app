@@ -115,7 +115,7 @@ const vProductAvailabilityFilter = v.union(
 
 export const vProductFilter = v.object({
 	category: v.optional(vProductCategory),
-	name: v.optional(v.string()),
+	desc: v.optional(v.string()),
 	availability: v.optional(vProductAvailabilityFilter),
 	minPrice: v.optional(v.number()),
 	maxPrice: v.optional(v.number()),

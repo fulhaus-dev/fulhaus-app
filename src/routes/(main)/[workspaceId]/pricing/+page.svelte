@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { usePaymentAction } from '$lib/client/actions/use-payment.action.svelte';
+	import Link from '$lib/components/link.svelte';
 	import FulhausLoader from '$lib/components/loaders/fulhaus-loader.svelte';
 	import type { AppSubscriptionPlan } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
@@ -38,23 +39,23 @@
 			approximateRoomValue: 25,
 			additionalTokensPrice: 0.015,
 			recommended: false
-		},
-		{
-			name: 'Teams',
-			priceUSD: 100,
-			tokensIncluded: 10000,
-			approximateRoomValue: 50,
-			additionalTokensPrice: 0.012,
-			recommended: false
-		},
-		{
-			name: 'Enterprise',
-			priceUSD: 150,
-			tokensIncluded: 20000,
-			approximateRoomValue: 100,
-			additionalTokensPrice: 0.01,
-			recommended: false
 		}
+		// {
+		// 	name: 'Teams',
+		// 	priceUSD: 100,
+		// 	tokensIncluded: 10000,
+		// 	approximateRoomValue: 50,
+		// 	additionalTokensPrice: 0.012,
+		// 	recommended: false
+		// },
+		// {
+		// 	name: 'Enterprise',
+		// 	priceUSD: 150,
+		// 	tokensIncluded: 20000,
+		// 	approximateRoomValue: 100,
+		// 	additionalTokensPrice: 0.01,
+		// 	recommended: false
+		// }
 	];
 
 	const { paymentActionState, handleCreditSubscriptionCheckout } = usePaymentAction();
@@ -117,6 +118,15 @@
 					</div>
 				</button>
 			{/each}
+		</div>
+
+		<div class="border-t border-color-border-muted py-12 text-center">
+			<h3>Custom Plan?</h3>
+			<Link
+				class="underline underline-offset-2"
+				href="https://www.fulhaus.com/contact-us"
+				target="_blank">Contact us</Link
+			>
 		</div>
 	</div>
 </section>

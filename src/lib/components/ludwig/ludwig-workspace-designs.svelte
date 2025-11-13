@@ -282,12 +282,21 @@
 						</Button>
 					</div>
 
-					<img
-						class="h-88 w-full rounded-md object-cover transition-all duration-700 ease-in-out"
-						src={workspaceDesign.design.renderedImageUrl ??
-							workspaceDesign.design.inspirationImageUrl}
-						alt={workspaceDesign.design.name}
-					/>
+					<button
+						class="h-88 w-full cursor-pointer rounded-md"
+						type="button"
+						onclick={() =>
+							goto(
+								`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
+							)}
+					>
+						<img
+							class="h-full w-full rounded-md object-cover transition-all duration-700 ease-in-out"
+							src={workspaceDesign.design.renderedImageUrl ??
+								workspaceDesign.design.inspirationImageUrl}
+							alt={workspaceDesign.design.name}
+						/>
+					</button>
 
 					<div class="absolute right-2 bottom-2 z-1">
 						<DesignSharePopover designId={workspaceDesign.design._id}>

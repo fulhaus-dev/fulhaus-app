@@ -211,19 +211,19 @@
 		<TextInput
 			class="h-10 bg-color-background pl-8"
 			type="search"
-			placeholder={isSwapFilters ? `Search for ${productCategory}s by name` : 'Search...'}
-			defaultValue={isFullTextSearchView ? productFullTextSearchValue : parsedProductFilters.name}
+			placeholder={'Search...'}
+			defaultValue={isFullTextSearchView ? productFullTextSearchValue : parsedProductFilters.desc}
 			oninput={(e) => {
 				const searchValue = e.currentTarget.value;
 
 				if (isSwapFilters) {
 					if (searchValue)
 						updateRouteProductFilterQuery({
-							productFilterQueryString: `name-${searchValue}`
+							productFilterQueryString: `desc-${searchValue}`
 						});
 					else
 						updateRouteProductFilterQuery({
-							productFilterKeysToRemove: ['name']
+							productFilterKeysToRemove: ['desc']
 						});
 				}
 
@@ -672,9 +672,9 @@
 
 					if (checked)
 						updateRouteProductSortFilterQuery({
-							productSortOptionsQueryString: productCategory
-								? `index-by_category_price_cad,order-asc`
-								: `index-by_price_cad,order-asc`
+							productSortOptionsQueryString: (productCategory
+								? `index-by_category_price_${currencyCode.toLowerCase()},order-asc`
+								: `index-by_price_${currencyCode.toLowerCase()},order-asc`) as any
 						});
 					else
 						updateRouteProductSortFilterQuery({
@@ -696,8 +696,8 @@
 					if (checked)
 						updateRouteProductSortFilterQuery({
 							productSortOptionsQueryString: productCategory
-								? `index-by_category_price_cad,order-desc`
-								: `index-by_price_cad,order-desc`
+								? `index-by_category_price_usd,order-desc`
+								: `index-by_price_usd,order-desc`
 						});
 					else
 						updateRouteProductSortFilterQuery({

@@ -52,7 +52,9 @@
 			manuallyCollapsed && 'w-full px-0'
 		)}
 	>
-		<div class={cn('flex-1 text-start', manuallyCollapsed && 'hidden')}></div>
+		<div class={cn('flex-1 text-start', manuallyCollapsed && 'hidden')}>
+			<p class="text-lg font-medium whitespace-nowrap text-color-text-muted">Design Summary</p>
+		</div>
 		<!-- {#if currentWorkspaceQuery.currentWorkspace}
 			<SidebarWorkspaceDropdownMenu
 				class={cn('flex-1 text-start', manuallyCollapsed && 'hidden')}
@@ -94,7 +96,7 @@
 				<p
 					class="-rotate-90 text-center text-lg font-medium whitespace-nowrap text-color-text-muted"
 				>
-					Project Summary
+					Design Summary
 				</p>
 			</div>
 		</button>
