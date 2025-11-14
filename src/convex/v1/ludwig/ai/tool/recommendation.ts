@@ -20,7 +20,7 @@ export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolC
 		execute: async (input) => {
 			const { ctx, userId, currencyCode } = toolCtxParams;
 
-			const { error } = await ctx.runAction(
+			const { data, error } = await ctx.runAction(
 				internal.v1.design.internal.action.generateDesignFurnitureRecommendation,
 				{
 					currencyCode,
@@ -35,9 +35,17 @@ export function generateDesignFurnitureRecommendationTool(toolCtxParams: AiToolC
 					error: error.message
 				};
 
+			const currentDesignBudget = input.designBudget ?? 0;
+
+			if (currentDesignBudget > 0 && data.totalPrice > currentDesignBudget)
+				return {
+					success: false,
+					error: `The least possible recommendation budget for the total items in the design is ${data.totalPrice}. You might want to review your budget.`
+				};
+
 			return {
 				success: true,
-				message: 'Design furniture recommendations generated successfully',
+				message: data.message,
 				designId: input.designId,
 				chatId: toolCtxParams.chatId,
 				toolName: 'generateDesignFurnitureRecommendation'

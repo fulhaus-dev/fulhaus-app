@@ -6,6 +6,7 @@
 	import Link from '$lib/components/link.svelte';
 	import { cn } from '$lib/utils/cn';
 	import NavbarWorkspacePlan from '$lib/components/layout/navbar/navbar.workspace-plan-dropdown.svelte';
+	import NavbarCurrencyDropdownMenu from '$lib/components/layout/navbar/navbar.currency-dropdown-menu.svelte';
 
 	const { class: className = '' }: { class?: string } = $props();
 
@@ -27,9 +28,13 @@
 	</menu> -->
 
 		<menu class="flex flex-1 items-center justify-end gap-x-6">
-			<Link href={`/${workspaceId}/cart`}>
-				<CartPreviewIcon />
-			</Link>
+			<div class="flex items-center gap-x-2">
+				<NavbarCurrencyDropdownMenu />
+
+				<Link href={`/${workspaceId}/cart`}>
+					<CartPreviewIcon />
+				</Link>
+			</div>
 			<!-- <Link href="/#">
 			{@render NavbarIcon(CircleQuestionMarkIcon)}
 		</Link> -->

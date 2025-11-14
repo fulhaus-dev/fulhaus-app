@@ -49,13 +49,16 @@ export function useDesignQuery() {
 }
 
 export function useWorkspaceDesignsQuery() {
+	const currencyCode = page.data.currencyCode;
+
 	const { query } = useConvexQuerySubscription(
 		api.v1.design.query.getDesignsByWorkspaceId,
 		() => ({
-			workspaceId: page.params.workspaceId as Id<'workspaces'>
+			workspaceId: page.params.workspaceId as Id<'workspaces'>,
+			currencyCode
 		}),
 		{
-			requiredArgsKeys: ['workspaceId']
+			requiredArgsKeys: ['workspaceId', 'currencyCode']
 		}
 	);
 
@@ -75,13 +78,16 @@ export function useWorkspaceDesignsQuery() {
 }
 
 export function useUniqueDesignSpacesForWorkspaceQuery() {
+	const currencyCode = page.data.currencyCode;
+
 	const { query } = useConvexQuerySubscription(
 		api.v1.design.query.getUniqueDesignSpacesForWorkspace,
 		() => ({
-			workspaceId: page.params.workspaceId as Id<'workspaces'>
+			workspaceId: page.params.workspaceId as Id<'workspaces'>,
+			currencyCode
 		}),
 		{
-			requiredArgsKeys: ['workspaceId']
+			requiredArgsKeys: ['workspaceId', 'currencyCode']
 		}
 	);
 

@@ -31,20 +31,26 @@ async function getDesignById(ctx: QueryCtx, designId: Id<'designs'>) {
 	return design;
 }
 
-async function getDesignByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
+async function getDesignByChatId(ctx: QueryCtx, chatId: Id<'chats'>, currencyCode: CurrencyCode) {
 	const design = await ctx.db
 		.query('designs')
-		.withIndex('by_chat_id', (q) => q.eq('chatId', chatId))
+		.withIndex('by_chat_id', (q) => q.eq('chatId', chatId).eq('currencyCode', currencyCode))
 		.first();
 	if (design?.deletedAt) return null;
 
 	return design;
 }
 
-async function getDesignsByWorkspaceId(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
+async function getDesignsByWorkspaceId(
+	ctx: QueryCtx,
+	workspaceId: Id<'workspaces'>,
+	currencyCode: CurrencyCode
+) {
 	return await ctx.db
 		.query('designs')
-		.withIndex('by_workspace_id', (q) => q.eq('workspaceId', workspaceId))
+		.withIndex('by_workspace_id', (q) =>
+			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode)
+		)
 		.filter((q) => q.eq(q.field('deletedAt'), undefined))
 		.take(100);
 }
@@ -94,7 +100,7 @@ async function getDesignProductsByChatId(
 	chatId: Id<'chats'>,
 	currencyCode: CurrencyCode
 ) {
-	const design = await getDesignByChatId(ctx, chatId);
+	const design = await getDesignByChatId(ctx, chatId, currencyCode);
 	if (!design || !design.productIds) return [];
 
 	return await productModel.getProductsForClientByIds(ctx, {
@@ -111,12 +117,18 @@ async function getExistingDesignsWithFloorPlanUrl(ctx: QueryCtx, floorPlanUrl: s
 		.take(100);
 }
 
-async function getUniqueDesignSpacesForWorkspace(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
+async function getUniqueDesignSpacesForWorkspace(
+	ctx: QueryCtx,
+	workspaceId: Id<'workspaces'>,
+	currencyCode: CurrencyCode
+) {
 	const uniqueSpaces: UniqueSpace[] = [];
 
 	let doc = await ctx.db
 		.query('designs')
-		.withIndex('by_workspace_space', (q) => q.eq('workspaceId', workspaceId))
+		.withIndex('by_workspace_space', (q) =>
+			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode)
+		)
 		.filter((q) => q.eq(q.field('deletedAt'), undefined))
 		.order('desc')
 		.first();
@@ -130,7 +142,7 @@ async function getUniqueDesignSpacesForWorkspace(ctx: QueryCtx, workspaceId: Id<
 		doc = await ctx.db
 			.query('designs')
 			.withIndex('by_workspace_space', (q) =>
-				q.eq('workspaceId', workspaceId).lt('spaceType', lastSpace)
+				q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode).lt('spaceType', lastSpace)
 			)
 			.filter((q) => q.eq(q.field('deletedAt'), undefined))
 			.order('desc')

@@ -12,7 +12,7 @@ import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 import { asyncTryCatch } from '$lib/utils/try-catch';
 
-const cookieOptions: {
+export const cookieOptions: {
 	path: string;
 	secure: boolean;
 	httpOnly: boolean;

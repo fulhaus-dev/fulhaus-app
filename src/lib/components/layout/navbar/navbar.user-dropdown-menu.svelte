@@ -83,8 +83,8 @@
 				</DropdownMenu.Group>
 
 				<DropdownMenu.Group>
-					{@render MenuItem({ label: 'Workspace Settings', MenuIcon: BriefcaseBusinessIcon })}
-					{@render MenuItem({ label: 'Account Settings', MenuIcon: UserRoundCogIcon })}
+					<!-- {@render MenuItem({ label: 'Workspace Settings', MenuIcon: BriefcaseBusinessIcon })}
+					{@render MenuItem({ label: 'Account Settings', MenuIcon: UserRoundCogIcon })} -->
 					{@render MenuItem({ label: 'Log Out', MenuIcon: LogOutIcon, onSelect: onLogout })}
 				</DropdownMenu.Group>
 			{/if}

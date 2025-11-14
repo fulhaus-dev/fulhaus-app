@@ -27,9 +27,9 @@ export const designTable = defineTable({
 	updatedAt: v.number(),
 	deletedAt: v.optional(v.number())
 })
-	.index('by_workspace_id', ['workspaceId'])
-	.index('by_workspace_space', ['workspaceId', 'spaceType'])
-	.index('by_chat_id', ['chatId'])
+	.index('by_workspace_id', ['workspaceId', 'currencyCode'])
+	.index('by_workspace_space', ['workspaceId', 'currencyCode', 'spaceType'])
+	.index('by_chat_id', ['chatId', 'currencyCode'])
 	.index('by_floor_plan_url', ['floorPlanUrl'])
 	.searchIndex('by_full_text_search', {
 		searchField: 'fullTextSearch'

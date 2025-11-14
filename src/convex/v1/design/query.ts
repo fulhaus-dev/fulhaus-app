@@ -15,7 +15,7 @@ export const getDesignDataByChatId = query({
 		await authorization.userIsAuthenticated(ctx);
 
 		const [design, designProducts] = await Promise.all([
-			designModel.getDesignByChatId(ctx, args.chatId),
+			designModel.getDesignByChatId(ctx, args.chatId, args.currencyCode),
 			designModel.getDesignProductsByChatId(ctx, args.chatId, args.currencyCode)
 		]);
 
@@ -29,12 +29,17 @@ export const getDesignDataByChatId = query({
 
 export const getDesignsByWorkspaceId = query({
 	args: {
-		workspaceId: v.id('workspaces')
+		workspaceId: v.id('workspaces'),
+		currencyCode: vCurrencyCode
 	},
 	handler: async (ctx, args) => {
 		await authorization.userIsAuthenticated(ctx);
 
-		const designs = await designModel.getDesignsByWorkspaceId(ctx, args.workspaceId);
+		const designs = await designModel.getDesignsByWorkspaceId(
+			ctx,
+			args.workspaceId,
+			args.currencyCode
+		);
 
 		const designsWithTags = await Promise.all(
 			designs.map(async (design) => ({
@@ -49,12 +54,17 @@ export const getDesignsByWorkspaceId = query({
 
 export const getUniqueDesignSpacesForWorkspace = query({
 	args: {
-		workspaceId: v.id('workspaces')
+		workspaceId: v.id('workspaces'),
+		currencyCode: vCurrencyCode
 	},
 	handler: async (ctx, args) => {
 		await authorization.userIsAuthenticated(ctx);
 
-		const spaces = await designModel.getUniqueDesignSpacesForWorkspace(ctx, args.workspaceId);
+		const spaces = await designModel.getUniqueDesignSpacesForWorkspace(
+			ctx,
+			args.workspaceId,
+			args.currencyCode
+		);
 
 		return SuccessData({ spaces });
 	}

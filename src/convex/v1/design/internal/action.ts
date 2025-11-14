@@ -40,7 +40,26 @@ export const generateDesignFurnitureRecommendation = internalAction({
 		userId: v.id('users'),
 		designBudget: v.optional(v.number())
 	},
-	handler: async (ctx, { currencyCode, designId, userId, designBudget = 0 }) => {
+	handler: async (
+		ctx,
+		{ currencyCode, designId, userId, designBudget = 0 }
+	): Promise<
+		| {
+				error: {
+					statusCode: number;
+					message: string;
+				};
+				data?: undefined;
+		  }
+		| {
+				data: {
+					designId: Id<'designs'>;
+					message: string;
+					totalPrice: number;
+				};
+				error?: undefined;
+		  }
+	> => {
 		await updateDesignStatus({
 			ctx,
 			designId,
@@ -71,13 +90,15 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			};
 		}
 
-		let ludwigRecommendedProducts = await getLudwigRecommendedProducts(ctx, {
+		const ludwigRecommendedResponse = await getLudwigRecommendedProducts(ctx, {
 			inspirationImageUrl: design.inspirationImageUrl,
 			spaceType: design.spaceType,
 			productCategories: design.productCategories,
 			currencyCode,
 			designBudget
 		});
+
+		let ludwigRecommendedProducts = ludwigRecommendedResponse?.products;
 
 		if (!ludwigRecommendedProducts) {
 			const fallbackProductsResponse = await getLudwigRecommendedProductsFallback(ctx, {
@@ -94,7 +115,12 @@ export const generateDesignFurnitureRecommendation = internalAction({
 						generatingFurnitureRecommendation: false
 					}
 				});
-				return { error: fallbackProductsResponse.error };
+				return {
+					error: {
+						statusCode: fallbackProductsResponse.error.statusCode,
+						message: fallbackProductsResponse.error.message
+					}
+				};
 			}
 
 			ludwigRecommendedProducts = fallbackProductsResponse.data;
@@ -142,7 +168,21 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			}
 		});
 
-		return { data: designId };
+		const totalPrice = ludwigRecommendedProducts.reduce((acc, product) => {
+			return (
+				acc +
+				(currencyCode === 'USD' ? (product.retailPriceUSD ?? 0) : (product.retailPriceCAD ?? 0))
+			);
+		}, 0);
+
+		return {
+			data: {
+				designId,
+				totalPrice,
+				message:
+					ludwigRecommendedResponse?.message || 'Furniture recommendation generated successfully'
+			}
+		};
 	}
 });
 
@@ -323,14 +363,18 @@ async function getLudwigRecommendedProducts(
 		designBudget: number;
 	}
 ) {
+	const recArgs = {
+		image_url: args.inspirationImageUrl,
+		room_name: args.spaceType,
+		categories: args.productCategories.map((productCategory) => productCategory.category),
+		currency: args.currencyCode
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} as any;
+
+	if (args.designBudget > 0) recArgs.priceRange = args.designBudget;
+
 	const { response } = await asyncFetch.post(process.env.LUDWIG_RECOMMENDATION_ENDPOINT!, {
-		body: JSON.stringify({
-			image_url: args.inspirationImageUrl,
-			room_name: args.spaceType,
-			categories: args.productCategories.map((productCategory) => productCategory.category),
-			currency: args.currencyCode,
-			priceRange: args.designBudget
-		})
+		body: JSON.stringify(recArgs)
 	});
 	if (!response) return;
 
@@ -347,7 +391,13 @@ async function getLudwigRecommendedProducts(
 		)
 	);
 
-	return products.filter((product) => !!product);
+	return {
+		products: products.filter((product) => !!product),
+		message:
+			args.designBudget > 0
+				? responseJson.recommendations.status
+				: "Furniture recommendation generated successfully'"
+	};
 }
 
 async function getLudwigRecommendedProductsFallback(
