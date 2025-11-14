@@ -32,17 +32,13 @@ export const handle = async ({ event, resolve }) => {
 
 	let currencyCode = getCurrencyCodeCookie(event.cookies);
 
-	console.log('currencyCode', currencyCode);
-
 	if (!currencyCode) {
 		const clientIp =
 			event.request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
 			event.request.headers.get('x-real-ip') ||
 			event.getClientAddress();
-		console.log('clientIp', clientIp);
 
 		const { data: geo } = await asyncTryCatch(() => geoip.lookup(clientIp));
-		console.log('geo', geo);
 
 		let countryCode = geo?.country ?? 'US';
 		if (countryCode !== 'CA') countryCode = 'US';
