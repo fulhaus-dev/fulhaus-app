@@ -35,8 +35,12 @@ export const handle = async ({ event, resolve }) => {
 	console.log('currencyCode', currencyCode);
 
 	if (!currencyCode) {
-		const clientIp = event.getClientAddress();
+		const clientIp =
+			event.request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+			event.request.headers.get('x-real-ip') ||
+			event.getClientAddress();
 		console.log('clientIp', clientIp);
+
 		const { data: geo } = await asyncTryCatch(() => geoip.lookup(clientIp));
 		console.log('geo', geo);
 
