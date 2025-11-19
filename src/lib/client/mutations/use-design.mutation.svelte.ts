@@ -73,27 +73,54 @@ export function useDesignMutation() {
 		if (error) state.error = error.message;
 	}
 
-	async function addTagsToDesign(designId: Id<'designs'>, tagNames: string[]) {
+	async function addTagsToDesign(data: { designId: Id<'designs'>; tagNames: string[] }[]) {
 		if (!activeWorkspaceId) return;
 
 		const { error } = await asyncTryCatch(() =>
 			convexClient.mutation(api.v1.design.tag.mutation.saveDesignTags, {
 				workspaceId: activeWorkspaceId as Id<'workspaces'>,
-				designId,
-				tagNames
+				data
 			})
 		);
 
 		if (error) state.error = error.message;
 	}
 
-	async function deleteDesignTag(designTagId: Id<'designTags'>) {
+	async function deleteDesignTags(designTagIds: Id<'designTags'>[]) {
+		if (!activeWorkspaceId) return;
+		if (designTagIds.length < 1) return;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.design.tag.mutation.deleteDesignTags, {
+				workspaceId: activeWorkspaceId as Id<'workspaces'>,
+				designTagIds
+			})
+		);
+
+		if (error) state.error = error.message;
+	}
+
+	async function archiveDesigns(designIds: Id<'designs'>[]) {
+		if (!activeWorkspaceId) return;
+		if (designIds.length < 1) return;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.design.mutation.archiveDesigns, {
+				workspaceId: activeWorkspaceId as Id<'workspaces'>,
+				designIds
+			})
+		);
+
+		if (error) state.error = error.message;
+	}
+
+	async function regenerateRender(designId: Id<'designs'>) {
 		if (!activeWorkspaceId) return;
 
 		const { error } = await asyncTryCatch(() =>
-			convexClient.mutation(api.v1.design.tag.mutation.deleteDesignTag, {
+			convexClient.mutation(api.v1.design.mutation.regenerateRender, {
 				workspaceId: activeWorkspaceId as Id<'workspaces'>,
-				designTagId
+				designId
 			})
 		);
 
@@ -106,6 +133,8 @@ export function useDesignMutation() {
 		addNewProductToDesign,
 		removeProductFromDesign,
 		addTagsToDesign,
-		deleteDesignTag
+		deleteDesignTags,
+		archiveDesigns,
+		regenerateRender
 	};
 }

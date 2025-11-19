@@ -64,7 +64,10 @@
 </script>
 
 <div
-	class={cn('w-full max-w-[40rem] space-y-8 rounded-md bg-color-background-surface p-8', className)}
+	class={cn(
+		'w-full max-w-[40rem] space-y-4 rounded-md bg-color-background-surface p-4 lg:space-y-8 lg:p-8',
+		className
+	)}
 >
 	<div class="space-y-4">
 		{#if !!title}
@@ -96,7 +99,7 @@
 
 	<div class="relative flex items-center gap-x-2">
 		<TextInput
-			class="bg-color-background pr-44 text-sm"
+			class="bg-color-background pr-32 text-sm lg:pr-44"
 			type="url"
 			bind:value={urlValue}
 			placeholder="Or enter a File URL"
@@ -104,9 +107,10 @@
 
 		<Button
 			class={cn(
-				'absolute right-1 h-10 w-40 opacity-0 ring-0 transition-opacity duration-300',
-				isValidUrl && 'opacity-100'
+				'absolute right-1 -mr-[1000rem] h-10 w-28 text-xs opacity-0 ring-0 transition-opacity duration-300 lg:w-40 lg:px-0 lg:text-base',
+				isValidUrl && '-mr-0 opacity-100'
 			)}
+			disabled={!isValidUrl}
 			onclick={handleUrlUpload}>Upload from URL</Button
 		>
 	</div>

@@ -11,5 +11,7 @@ export type LudwigRecommendationResponse = {
 	recommendations: {
 		data: LudwigRecommendationResponseData[];
 		state: number;
+		price: number;
+		status: string;
 	};
 };

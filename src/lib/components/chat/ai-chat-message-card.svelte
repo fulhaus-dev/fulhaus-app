@@ -15,7 +15,7 @@
 	<div class="space-y-4 p-2">
 		{#each aiUiMessage.parts as part, partIndex (`${partIndex}-${aiUiMessage.role}-${aiUiMessage.id}`)}
 			{#if part.type === 'text'}
-				<p class="prose leading-tight prose-neutral dark:prose-invert">
+				<p class="prose leading-tight prose-neutral">
 					{@html stringUtil.parseMarkdown(part.text)}
 				</p>
 			{/if}

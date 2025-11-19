@@ -74,7 +74,6 @@ export type UpdateDesign = {
 	floorPlanFile?: FloorPlanFile;
 	productCategories?: DesignProductCategory[];
 	productIds?: Id<'products'>[];
-	tags?: string[];
 };
 
 export type UpdateDesignProduct = {
@@ -101,11 +100,11 @@ export type Product = {
 	mainImageUrl?: string;
 	currencyCode: CurrencyCode;
 	dimension?: string;
-	width: number;
-	height: number;
-	depth: number;
+	width?: number;
+	height?: number;
+	depth?: number;
 	dimensionUnit: 'in';
-	weight: number;
+	weight?: number;
 	weightUnit: 'lb';
 	colorNames?: string[];
 	hexColors?: string[];
@@ -125,6 +124,8 @@ export type Cart = {
 	currencyCode: CurrencyCode;
 	items: CartItem[];
 };
+
+export type CartSavedForLater = 'yes' | 'no';
 
 export type CartItemQuantityChangeType = 'increment' | 'decrement';
 
@@ -156,3 +157,12 @@ export type DesignTag = {
 	designId: Id<'designs'>;
 	tag: string;
 };
+
+export type DesignLog = Doc<'designLogs'>['previous'];
+
+export type DesignLogUser = {
+	userId: Id<'users'>;
+	fullName: string;
+};
+
+export type AppSubscriptionPlan = Doc<'workspacePlans'>['plan'];

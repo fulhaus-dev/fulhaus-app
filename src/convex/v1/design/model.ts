@@ -6,6 +6,8 @@ import { vCreateDesign, vUpdateDesign } from './validator';
 import productModel from '../product/model';
 import { UniqueSpace } from './type';
 import { CurrencyCode } from '../../type';
+import designUtil from './util';
+import designLogModel from './log/model';
 
 async function createDesign(
 	ctx: MutationCtx,
@@ -23,20 +25,33 @@ async function createDesign(
 }
 
 async function getDesignById(ctx: QueryCtx, designId: Id<'designs'>) {
-	return await ctx.db.get(designId);
+	const design = await ctx.db.get(designId);
+	if (design?.deletedAt) return null;
+
+	return design;
 }
 
-async function getDesignByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
-	return await ctx.db
+async function getDesignByChatId(ctx: QueryCtx, chatId: Id<'chats'>, currencyCode: CurrencyCode) {
+	const design = await ctx.db
 		.query('designs')
-		.withIndex('by_chat_id', (q) => q.eq('chatId', chatId))
+		.withIndex('by_chat_id', (q) => q.eq('chatId', chatId).eq('currencyCode', currencyCode))
 		.first();
+	if (design?.deletedAt) return null;
+
+	return design;
 }
 
-async function getDesignsByWorkspaceId(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
+async function getDesignsByWorkspaceId(
+	ctx: QueryCtx,
+	workspaceId: Id<'workspaces'>,
+	currencyCode: CurrencyCode
+) {
 	return await ctx.db
 		.query('designs')
-		.withIndex('by_workspace_id', (q) => q.eq('workspaceId', workspaceId))
+		.withIndex('by_workspace_id', (q) =>
+			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode)
+		)
+		.filter((q) => q.eq(q.field('deletedAt'), undefined))
 		.take(100);
 }
 
@@ -48,10 +63,35 @@ async function updateDesignById(
 ) {
 	if (args.floorPlanFile) args.floorPlanUrl = args.floorPlanFile?.url;
 
-	return await ctx.db.patch(designId, {
-		...args,
-		updatedById: userId,
-		updatedAt: date.now()
+	const design = await getDesignById(ctx, designId);
+	if (!design) return;
+
+	const designLog = designUtil.getDesignLog(design, args);
+
+	await Promise.all([
+		ctx.db.patch(designId, {
+			...args,
+			updatedById: userId,
+			updatedAt: date.now()
+		}),
+		designLogModel.saveDesignLogs(ctx, design.workspaceId, designId, {
+			...designLog,
+			createdById: userId
+		})
+	]);
+}
+
+async function getDesignProducts(
+	ctx: QueryCtx,
+	designId: Id<'designs'>,
+	currencyCode: CurrencyCode
+) {
+	const design = await getDesignById(ctx, designId);
+	if (!design || !design.productIds) return [];
+
+	return await productModel.getProductsForClientByIds(ctx, {
+		productIds: design.productIds,
+		currencyCode
 	});
 }
 
@@ -60,7 +100,7 @@ async function getDesignProductsByChatId(
 	chatId: Id<'chats'>,
 	currencyCode: CurrencyCode
 ) {
-	const design = await getDesignByChatId(ctx, chatId);
+	const design = await getDesignByChatId(ctx, chatId, currencyCode);
 	if (!design || !design.productIds) return [];
 
 	return await productModel.getProductsForClientByIds(ctx, {
@@ -73,15 +113,23 @@ async function getExistingDesignsWithFloorPlanUrl(ctx: QueryCtx, floorPlanUrl: s
 	return await ctx.db
 		.query('designs')
 		.withIndex('by_floor_plan_url', (q) => q.eq('floorPlanUrl', floorPlanUrl))
+		.filter((q) => q.eq(q.field('deletedAt'), undefined))
 		.take(100);
 }
 
-async function getUniqueDesignSpacesForWorkspace(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
+async function getUniqueDesignSpacesForWorkspace(
+	ctx: QueryCtx,
+	workspaceId: Id<'workspaces'>,
+	currencyCode: CurrencyCode
+) {
 	const uniqueSpaces: UniqueSpace[] = [];
 
 	let doc = await ctx.db
 		.query('designs')
-		.withIndex('by_workspace_space', (q) => q.eq('workspaceId', workspaceId))
+		.withIndex('by_workspace_space', (q) =>
+			q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode)
+		)
+		.filter((q) => q.eq(q.field('deletedAt'), undefined))
 		.order('desc')
 		.first();
 
@@ -94,13 +142,20 @@ async function getUniqueDesignSpacesForWorkspace(ctx: QueryCtx, workspaceId: Id<
 		doc = await ctx.db
 			.query('designs')
 			.withIndex('by_workspace_space', (q) =>
-				q.eq('workspaceId', workspaceId).lt('spaceType', lastSpace)
+				q.eq('workspaceId', workspaceId).eq('currencyCode', currencyCode).lt('spaceType', lastSpace)
 			)
+			.filter((q) => q.eq(q.field('deletedAt'), undefined))
 			.order('desc')
 			.first();
 	}
 
 	return uniqueSpaces;
+}
+
+async function archiveDesign(ctx: MutationCtx, designId: Id<'designs'>) {
+	return await ctx.db.patch(designId, {
+		deletedAt: date.now()
+	});
 }
 
 const designModel = {
@@ -109,9 +164,15 @@ const designModel = {
 	getDesignByChatId,
 	getDesignsByWorkspaceId,
 	updateDesignById,
+	getDesignProducts,
 	getDesignProductsByChatId,
 	getExistingDesignsWithFloorPlanUrl,
-	getUniqueDesignSpacesForWorkspace
+	getUniqueDesignSpacesForWorkspace,
+	archiveDesign
 };
 
 export default designModel;
+
+// Dave Lazar
+// Baby Bedroom
+// Wallpaper

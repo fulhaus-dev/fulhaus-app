@@ -11,8 +11,9 @@
 	import { useDesignMutation } from '$lib/client/mutations/use-design.mutation.svelte';
 	import ProductDetailDialog from '$lib/components/product/product.detail-dialog.svelte';
 	import ProductGridDialog from '$lib/components/product/product.grid-dialog.svelte';
+	import CartSaveForLaterButton from '$lib/components/cart/cart-save-for-later-button.svelte';
 
-	type DesignProductViewProps = {
+	type DesignProductGridViewProps = {
 		designId: Id<'designs'>;
 		designProducts: Product[];
 		generatingDesignFurnitureRecommendation: boolean;
@@ -22,7 +23,7 @@
 		designId,
 		designProducts,
 		generatingDesignFurnitureRecommendation
-	}: DesignProductViewProps = $props();
+	}: DesignProductGridViewProps = $props();
 
 	const { updateDesign, addNewProductToDesign, removeProductFromDesign } = useDesignMutation();
 
@@ -45,9 +46,9 @@
 	}
 </script>
 
-<div class="@container min-h-full w-full">
+<div class="@container min-h-full w-full pb-40 lg:pb-0">
 	<div
-		class="grid w-full gap-2 @3xs:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-4 @min-[120rem]:grid-cols-5"
+		class="grid w-full grid-cols-1 gap-2 lg:@3xs:grid-cols-2 lg:@5xl:grid-cols-3 lg:@7xl:grid-cols-4 lg:@min-[120rem]:grid-cols-5"
 	>
 		{#each designProducts as designProduct (designProduct._id)}
 			<div
@@ -67,15 +68,19 @@
 						/>
 
 						<div
-							class="absolute top-1/2 left-1/2 z-1 hidden -translate-x-1/2 -translate-y-1/2 flex-col gap-y-12 group-hover:flex"
+							class="absolute inset-0 flex flex-row items-end justify-center gap-x-4 pb-4 lg:hidden lg:flex-col lg:items-center lg:gap-x-0 lg:gap-y-12 lg:pb-0 lg:group-hover:flex"
 						>
-							<ProductDetailDialog product={designProduct}>
-								<p
-									class=" cursor-pointer rounded-full bg-color-action-background px-2 py-1 text-xs font-medium text-color-action-text"
-								>
-									View Details
-								</p>
-							</ProductDetailDialog>
+							<div class="flex w-fit items-center justify-center gap-x-4 lg:gap-x-2">
+								<CartSaveForLaterButton {designId} productId={designProduct._id} />
+
+								<ProductDetailDialog product={designProduct}>
+									<p
+										class=" cursor-pointer rounded-full bg-color-action-background px-2 py-1 text-xs font-medium text-nowrap text-color-action-text"
+									>
+										View Details
+									</p>
+								</ProductDetailDialog>
+							</div>
 
 							<Button
 								class="gap-x-1 rounded-full border border-color-error-border bg-color-error-background px-2 py-1 text-xs text-color-error-text"

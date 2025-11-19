@@ -2,8 +2,9 @@ import { api } from '../../../convex/_generated/api.js';
 import type { Id } from '../../../convex/_generated/dataModel.js';
 import { page } from '$app/state';
 import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte.js';
+import type { CartSavedForLater } from '$lib/types.js';
 
-export function useWorkspaceCartQuery() {
+export function useWorkspaceCartQuery(savedForLater?: () => CartSavedForLater) {
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'> | undefined;
 	const currencyCode = page.data.currencyCode;
 
@@ -11,7 +12,8 @@ export function useWorkspaceCartQuery() {
 		api.v1.cart.query.getCartByWorkspaceId,
 		() => ({
 			workspaceId: currentWorkspaceId!,
-			currencyCode
+			currencyCode,
+			savedForLater: savedForLater?.()
 		}),
 		{
 			requiredArgsKeys: ['workspaceId', 'currencyCode']
@@ -30,13 +32,19 @@ export function useWorkspaceCartQuery() {
 		},
 		get cartItems() {
 			return query.response?.items ?? [];
+		},
+		get designs() {
+			return query.response?.designs ?? [];
 		}
 	});
 
 	return workspaceCartQuery;
 }
 
-export function useDesignCartQuery(designId: () => Id<'designs'>) {
+export function useDesignCartQuery(
+	designId: () => Id<'designs'>,
+	savedForLater?: () => CartSavedForLater
+) {
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'> | undefined;
 	const currencyCode = page.data.currencyCode;
 
@@ -45,7 +53,8 @@ export function useDesignCartQuery(designId: () => Id<'designs'>) {
 		() => ({
 			workspaceId: currentWorkspaceId!,
 			designId: designId(),
-			currencyCode
+			currencyCode,
+			savedForLater: savedForLater?.()
 		}),
 		{
 			requiredArgsKeys: ['workspaceId', 'designId', 'currencyCode']

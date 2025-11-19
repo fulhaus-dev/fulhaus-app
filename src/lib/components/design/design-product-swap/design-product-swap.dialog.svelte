@@ -5,6 +5,8 @@
 	import type { Snippet } from 'svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignProductSwapProductsByCategory from '$lib/components/design/design-product-swap/design-product-swap.products-by-category.svelte';
+	import { QueryParams } from '$lib/enums';
+	import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte';
 
 	type DesignProductSwapDialogProps = {
 		children: Snippet;
@@ -23,10 +25,20 @@
 	let isOpen = $state(false);
 	let replacementProduct = $state<Product | null>(null);
 
+	const { updateRouteQuery } = useRouteMutation();
+
 	function onOpenChange(open: boolean) {
 		if (open) return;
 
 		replacementProduct = null;
+		updateRouteQuery({
+			queryKeysToRemove: [
+				QueryParams.PRODUCT_FULL_TEXT_SEARCH_VALUE,
+				QueryParams.PRODUCT_FILTERS,
+				QueryParams.PRODUCT_SORT_OPTIONS
+			],
+			options: { keepFocus: true }
+		});
 	}
 </script>
 
@@ -39,7 +51,7 @@
 			class="fixed inset-0 z-50 bg-color-overlay-background/20 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
 		/>
 		<Dialog.Content
-			class="fixed top-0 right-0 z-50 flex h-screen w-[40rem] flex-col bg-color-background outline-hidden data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+			class="fixed top-0 right-0 z-50 flex h-screen w-screen flex-col bg-color-background outline-hidden data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 lg:w-[40rem]"
 		>
 			<Dialog.Close class="absolute top-4 right-4 cursor-pointer">
 				<XIcon />

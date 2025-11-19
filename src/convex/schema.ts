@@ -15,6 +15,8 @@ import { stripeUserTable } from './v1/user/stripe/table';
 import { productEmbeddingTable } from './v1/product/embedding/table';
 import { productErrorLogTable } from './v1/product/error/table';
 import { productCategoryStatisticTable } from './v1/product/statistics/table';
+import { workspacePlanTable } from './v1/workspace/plan/table';
+import { designLogTable } from './v1/design/log/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -27,8 +29,10 @@ export default defineSchema({
 	chatUiMessages: chatUiMessageTable,
 	chatUsageTokens: chatUsageTokenTable,
 	workspaceAssets: workspaceAssetTable,
+	workspacePlans: workspacePlanTable,
 	designs: designTable,
 	designTags: designTagTable,
+	designLogs: designLogTable,
 	ludwigChatTempAssets: ludwigChatTempAssetTable,
 	productVendors: productVendorTable,
 	products: productTable,

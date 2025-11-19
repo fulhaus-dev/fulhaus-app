@@ -9,6 +9,7 @@ import { Id } from '../../_generated/dataModel';
 import authorization from '../../middleware/authorization';
 import { internal } from '../../_generated/api';
 import { SuccessData, SuccessMessage } from '../../response/success';
+import { vCurrencyCode } from '../../validator';
 
 export const sendAuthOtp = mutation({
 	args: {
@@ -42,13 +43,11 @@ export const sendAuthOtp = mutation({
 export const signInWithOtp = mutation({
 	args: {
 		email: v.string(),
-		otp: v.string()
+		otp: v.string(),
+		currencyCode: vCurrencyCode
 	},
-	handler: async (ctx, { email, otp }) => {
-		const actualOtp = await ctx.db
-			.query('otps')
-			.withIndex('email', (q) => q.eq('email', email.toLowerCase()))
-			.first();
+	handler: async (ctx, { email, otp, currencyCode }) => {
+		const actualOtp = await authModel.getOtpByEmail(ctx, email);
 		if (!actualOtp) throw ServerError.NotFound('OTP has expired.');
 		if (actualOtp.otp !== otp) throw ServerError.BadRequest('Invalid OTP.');
 
@@ -57,7 +56,7 @@ export const signInWithOtp = mutation({
 		let currentWorkspaceId = user?.currentWorkspaceId as Id<'workspaces'>;
 
 		if (!userId) {
-			const newUserData = await userModel.createUser(ctx, email);
+			const newUserData = await userModel.createUser(ctx, { email, currencyCode });
 
 			userId = newUserData.userId;
 			currentWorkspaceId = newUserData.workspaceId;

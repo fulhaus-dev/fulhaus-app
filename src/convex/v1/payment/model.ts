@@ -9,6 +9,8 @@ import { CurrencyCode } from '../../type';
 import { asyncTryCatch } from '../../util/async';
 import stripeModel from './stripe';
 import { PaymentMetadata } from './type';
+import { stripeSubscriptionPlanPriceId } from './constant';
+import { WorkspacePlan } from '../workspace/plan/type';
 
 async function getCartPaymentCheckoutUrl(
 	ctx: ActionCtx,
@@ -35,31 +37,33 @@ async function getCartPaymentCheckoutUrl(
 		workspaceId: args.workspaceId,
 		userId: args.userId,
 		currencyCode: args.currencyCode,
+		plan: 'Free',
 		type: 'cart'
 	};
 
 	const { data: session, error } = await asyncTryCatch(() =>
 		stripe.checkout.sessions.create({
 			customer: stripeCustomerId,
-			line_items: cart.items.map((cartItem) => ({
-				price_data: {
-					currency: cartItem.product.currencyCode.toLowerCase(),
-					product_data: {
-						name: cartItem.product.name,
-						description: cartItem.product.description,
-						images: cartItem.product.imageUrls
+			line_items: cart.items
+				.filter((cartItem) => cartItem.savedForLater === 'no')
+				.map((cartItem) => ({
+					price_data: {
+						currency: cartItem.product.currencyCode.toLowerCase(),
+						product_data: {
+							name: cartItem.product.name,
+							description: cartItem.product.description,
+							images: cartItem.product.imageUrls
+						},
+						unit_amount: Math.round(cartItem.product.retailPrice * 100)
 					},
-					unit_amount: Math.round(cartItem.product.retailPrice * 100)
-				},
-				quantity: cartItem.quantity
-			})),
+					quantity: cartItem.quantity
+				})),
 			mode: 'payment',
 			success_url: args.successUrl,
 			billing_address_collection: 'required',
 			shipping_address_collection: {
 				allowed_countries: [args.currencyCode === 'USD' ? 'US' : 'CA']
 			},
-
 			invoice_creation: {
 				enabled: true,
 				invoice_data: {
@@ -77,7 +81,10 @@ async function getCartPaymentCheckoutUrl(
 				shipping: 'auto'
 			},
 			submit_type: 'pay',
-			metadata: paymentMetadata
+			metadata: paymentMetadata,
+			adaptive_pricing: {
+				enabled: true
+			}
 		})
 	);
 
@@ -93,7 +100,167 @@ async function getCartPaymentCheckoutUrl(
 	return { data: session.url };
 }
 
+async function getCreditSubscriptionPaymentCheckoutUrl(
+	ctx: ActionCtx,
+	args: {
+		workspaceId: Id<'workspaces'>;
+		userId: Id<'users'>;
+		plan: WorkspacePlan;
+		successUrl: string;
+	}
+) {
+	const stripeCustomerIdResponse = await stripeModel.createStripeCustomer(ctx, args.userId, 'USD');
+	const { data: stripeCustomerId, error: stripeCustomerIdResponseError } = stripeCustomerIdResponse;
+	if (stripeCustomerIdResponseError) return { error: stripeCustomerIdResponseError };
+
+	const stripe = getStripeClient('USD');
+
+	const paymentMetadata: PaymentMetadata = {
+		workspaceId: args.workspaceId,
+		userId: args.userId,
+		plan: args.plan,
+		type: 'credits',
+		currencyCode: 'USD'
+	};
+
+	const { data: session, error } = await asyncTryCatch(() =>
+		stripe.checkout.sessions.create({
+			customer: stripeCustomerId,
+			mode: 'subscription',
+			line_items: [
+				{
+					price: stripeSubscriptionPlanPriceId[args.plan],
+					quantity: 1
+				}
+			],
+			success_url: args.successUrl,
+			customer_update: {
+				shipping: 'auto'
+			},
+			submit_type: 'subscribe',
+			subscription_data: {
+				metadata: paymentMetadata
+			},
+			metadata: paymentMetadata,
+			adaptive_pricing: {
+				enabled: true
+			}
+		})
+	);
+
+	if (error) return { error };
+	if (!session.url)
+		return {
+			error: {
+				message: 'Checkout failed',
+				statusCode: httpStatusCode.INTERNAL_SERVER_ERROR
+			}
+		};
+
+	return { data: session.url };
+}
+
+async function getCreditOneOffPaymentCheckoutUrl(
+	ctx: ActionCtx,
+	args: {
+		workspaceId: Id<'workspaces'>;
+		userId: Id<'users'>;
+		price: number;
+		successUrl: string;
+	}
+) {
+	const isValidPrice = args.price > 1 && args.price % 5 === 0;
+	if (!isValidPrice)
+		return {
+			error: {
+				message: 'Invalid price',
+				statusCode: httpStatusCode.BAD_REQUEST
+			}
+		};
+
+	const stripeCustomerIdResponse = await stripeModel.createStripeCustomer(ctx, args.userId, 'USD');
+	const { data: stripeCustomerId, error: stripeCustomerIdResponseError } = stripeCustomerIdResponse;
+	if (stripeCustomerIdResponseError) return { error: stripeCustomerIdResponseError };
+
+	const stripe = getStripeClient('USD');
+
+	const paymentMetadata: PaymentMetadata = {
+		workspaceId: args.workspaceId,
+		userId: args.userId,
+		plan: 'Free',
+		credit: `${args.price / 0.025}`,
+		type: 'credits',
+		currencyCode: 'USD'
+	};
+
+	const { data: session, error } = await asyncTryCatch(() =>
+		stripe.checkout.sessions.create({
+			customer: stripeCustomerId,
+			mode: 'payment',
+			line_items: [
+				{
+					price: process.env.APP_BUY_CREDITS_PRICE_ID,
+					quantity: args.price / 5
+				}
+			],
+			success_url: args.successUrl,
+			customer_update: {
+				shipping: 'auto'
+			},
+			submit_type: 'pay',
+			payment_intent_data: {
+				setup_future_usage: 'off_session',
+				metadata: paymentMetadata
+			},
+			metadata: paymentMetadata,
+			adaptive_pricing: {
+				enabled: true
+			},
+			invoice_creation: {
+				enabled: true,
+				invoice_data: {
+					metadata: paymentMetadata,
+					issuer: {
+						type: 'self'
+					}
+				}
+			},
+			custom_text: {
+				submit: {
+					message: `Total credits: ${args.price / 0.025}`
+				}
+			}
+		})
+	);
+
+	if (error) return { error };
+	if (!session.url)
+		return {
+			error: {
+				message: 'Checkout failed',
+				statusCode: httpStatusCode.INTERNAL_SERVER_ERROR
+			}
+		};
+
+	return { data: session.url };
+}
+
+async function cancelSubscription(subscriptionId: string) {
+	const stripe = getStripeClient('USD');
+
+	const { data: subscription, error } = await asyncTryCatch(() =>
+		stripe.subscriptions.cancel(subscriptionId)
+	);
+
+	if (error) return { error };
+
+	return { data: subscription };
+}
+
 const paymentModel = {
-	getCartPaymentCheckoutUrl
+	getCartPaymentCheckoutUrl,
+	getCreditSubscriptionPaymentCheckoutUrl,
+	getCreditOneOffPaymentCheckoutUrl,
+	cancelSubscription
 };
 export default paymentModel;

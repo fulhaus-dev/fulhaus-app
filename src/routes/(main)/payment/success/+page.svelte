@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { CircleCheckBigIcon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
+	const activeWorkspaceId = page.data.activeWorkspaceId;
+
 	onMount(() => {
 		setTimeout(() => {
-			goto('/ludwig');
+			goto(`/${activeWorkspaceId}/ludwig`);
 		}, 3000);
 	});
 </script>

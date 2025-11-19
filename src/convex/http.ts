@@ -6,6 +6,7 @@ import { httpAction } from './_generated/server';
 import { getLudwigProductRecommendationsByCategory } from './v1/product/http/action';
 import { checkCors } from './middleware/cors';
 import { internal } from './_generated/api';
+import { PaymentMetadata } from './v1/payment/type';
 
 const http = httpRouter();
 
@@ -57,9 +58,24 @@ http.route({
 		const { data } = await request.json();
 		const paymentData = data?.object;
 
-		if (paymentData)
+		let paymentMetadata = paymentData?.metadata as PaymentMetadata;
+
+		if (Object.keys(paymentMetadata).length < 1)
+			paymentMetadata = paymentData?.parent?.subscription_details?.metadata as PaymentMetadata;
+
+		const stripeSubscriptionId = paymentData?.parent?.subscription_details?.subscription;
+
+		if (paymentMetadata.type === 'cart')
 			await ctx.scheduler.runAfter(0, internal.v1.order.internal.action.createOrder, {
-				paymentData
+				paymentData,
+				paymentMetadata
+			});
+
+		if (paymentMetadata.type === 'credits')
+			await ctx.scheduler.runAfter(0, internal.v1.workspace.plan.internal.action.updatePlan, {
+				paymentData,
+				paymentMetadata,
+				stripeSubscriptionId
 			});
 
 		return new Response(JSON.stringify({ message: 'Success' }), { status: 200 });

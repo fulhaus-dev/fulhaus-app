@@ -15,14 +15,11 @@
 		ProductFilterQueryString,
 		ProductSortOptionsQueryString
 	} from '$lib/types';
-	import { ArrowDownWideNarrowIcon, SearchIcon } from '@lucide/svelte';
+	import { SearchIcon } from '@lucide/svelte';
 	import Checkbox from '$lib/components/checkbox.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { cn } from '$lib/utils/cn';
-	import {
-		useProductBrandsQuery,
-		useProductCategoriesQuery
-	} from '$lib/client/queries/use-product.query.svelte';
+	import { useProductBrandsQuery } from '$lib/client/queries/use-product.query.svelte';
 	import ProductFilterPopover from '$lib/components/product/product.filter-popover.svelte';
 	import ProductSortFilterPopover from '$lib/components/product/product.sort-filter-popover.svelte';
 
@@ -55,19 +52,27 @@
 		maxWeight?: number;
 	};
 
-	const { productCategory }: { productCategory?: ProductCategory } = $props();
+	const {
+		productCategory,
+		isSwapFilters = true,
+		isFullTextSearchView = false
+	}: {
+		productCategory?: ProductCategory;
+		isSwapFilters?: boolean;
+		isFullTextSearchView?: boolean;
+	} = $props();
 
 	const currencyCode = page.data.currencyCode;
+	const productFullTextSearchValue = $derived(
+		page.url.searchParams.get(QueryParams.PRODUCT_FULL_TEXT_SEARCH_VALUE) ?? undefined
+	);
 
 	const { updateRouteQuery } = useRouteMutation();
 
 	let cursor = $state<string | undefined>(undefined);
-	const productCategoriesQuery = useProductCategoriesQuery();
+
 	const productBrandsQuery = useProductBrandsQuery(productCategory, () => cursor);
 
-	const productCategories = $derived(
-		productCategoriesQuery.categories.toSorted((a, b) => a.localeCompare(b))
-	);
 	const productBrands = $derived(productBrandsQuery.productBrands.brands ?? []);
 	const currentCursor = $derived(productBrandsQuery.productBrands.cursor);
 	const hasMoreBrands = $derived(productBrandsQuery.productBrands.isDone);
@@ -76,7 +81,6 @@
 	let dimensionFilters = $state<DimensionFilters>({});
 	let weightFilters = $state<WeightFilters>({});
 
-	let openCategoryFilter = $state(false);
 	let openAvailabilityFilter = $state(false);
 	let openPriceFilter = $state(false);
 	let openDimensionsFilter = $state(false);
@@ -207,79 +211,68 @@
 		<TextInput
 			class="h-10 bg-color-background pl-8"
 			type="search"
-			placeholder={`Search for ${productCategory}s by name`}
-			defaultValue={parsedProductFilters.name}
+			placeholder={'Search...'}
+			defaultValue={isFullTextSearchView ? productFullTextSearchValue : parsedProductFilters.desc}
 			oninput={(e) => {
 				const searchValue = e.currentTarget.value;
 
-				if (searchValue)
-					updateRouteProductFilterQuery({
-						productFilterQueryString: `name-${searchValue}`
-					});
-				else
-					updateRouteProductFilterQuery({
-						productFilterKeysToRemove: ['name']
-					});
+				if (isSwapFilters) {
+					if (searchValue)
+						updateRouteProductFilterQuery({
+							productFilterQueryString: `desc-${searchValue}`
+						});
+					else
+						updateRouteProductFilterQuery({
+							productFilterKeysToRemove: ['desc']
+						});
+				}
+
+				if (!isSwapFilters) {
+					if (searchValue)
+						updateRouteQuery({
+							queryString: `${QueryParams.PRODUCT_FULL_TEXT_SEARCH_VALUE}=${searchValue}`,
+							options: { keepFocus: true }
+						});
+					else
+						updateRouteQuery({
+							queryKeysToRemove: [QueryParams.PRODUCT_FULL_TEXT_SEARCH_VALUE],
+							options: { keepFocus: true }
+						});
+				}
 			}}
 		/>
 	</div>
 
-	<div class="flex w-full items-center justify-between">
-		<div class="flex w-full items-center gap-x-1">
-			{#if !productCategory}
-				{@render CategoryFilter()}
-			{/if}
+	{#if isFullTextSearchView}
+		<p class="pt-4 pl-2 text-sm text-color-text-placeholder">Search results (100)</p>
+	{/if}
 
-			{@render AvailabilityFilter()}
-			{@render PriceFilter()}
-			{@render DimensionFilter()}
-			{@render WeightFilter()}
+	{#if !isFullTextSearchView}
+		<div class="flex w-full items-center justify-between">
+			<div class="flex w-full flex-wrap items-center gap-x-1">
+				{@render AvailabilityFilter()}
+				{@render PriceFilter()}
+				{@render DimensionFilter()}
+				{@render WeightFilter()}
 
-			{#if productBrands.length > 0}
-				{@render BrandFilter()}
-			{/if}
+				{#if productBrands.length > 0}
+					{@render BrandFilter()}
+				{/if}
 
-			<Button
-				class={cn('ml-4 text-xs font-medium text-color-text-muted', aFilterIsOpen && 'opacity-20')}
-				variant="text"
-				onclick={clearFilters}>Clear filters</Button
-			>
+				<Button
+					class={cn(
+						'ml-4 text-xs font-medium text-color-text-muted',
+						aFilterIsOpen && 'opacity-20'
+					)}
+					variant="text"
+					onclick={clearFilters}>Clear filters</Button
+				>
+			</div>
+
+			{@render SortFilter()}
 		</div>
-
-		{@render SortFilter()}
-	</div>
+	{/if}
 </div>
-
-{#snippet CategoryFilter()}
-	<ProductFilterPopover
-		triggerLabel="Category"
-		hasFilter={!!parsedProductFilters.category}
-		bind:open={openCategoryFilter}
-		{aFilterIsOpen}
-	>
-		<div class="scrollbar-thin max-h-96 space-y-4 overflow-y-auto p-4">
-			{#each productCategories as productCategory, index (`${index}-${productCategory}`)}
-				{@render CheckBoxFilter({
-					id: `${index}-${productCategory}`,
-					label: productCategory,
-					checked: parsedProductFilters.category === productCategory,
-					onchange: (checked) => {
-						openCategoryFilter = false;
-
-						if (checked)
-							updateRouteProductFilterQuery({
-								productFilterQueryString: `category-${productCategory}`
-							});
-						else
-							updateRouteProductFilterQuery({
-								productFilterKeysToRemove: ['category']
-							});
-					}
-				})}
-			{/each}
-		</div>
-	</ProductFilterPopover>
-{/snippet}
 
 {#snippet AvailabilityFilter()}
 	<ProductFilterPopover
@@ -679,9 +672,9 @@
 
 					if (checked)
 						updateRouteProductSortFilterQuery({
-							productSortOptionsQueryString: productCategory
-								? `index-by_category_price_cad,order-asc`
-								: `index-by_price_cad,order-asc`
+							productSortOptionsQueryString: (productCategory
+								? `index-by_category_price_${currencyCode.toLowerCase()},order-asc`
+								: `index-by_price_${currencyCode.toLowerCase()},order-asc`) as any
 						});
 					else
 						updateRouteProductSortFilterQuery({
@@ -703,8 +696,8 @@
 					if (checked)
 						updateRouteProductSortFilterQuery({
 							productSortOptionsQueryString: productCategory
-								? `index-by_category_price_cad,order-desc`
-								: `index-by_price_cad,order-desc`
+								? `index-by_category_price_usd,order-desc`
+								: `index-by_price_usd,order-desc`
 						});
 					else
 						updateRouteProductSortFilterQuery({

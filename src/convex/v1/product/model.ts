@@ -46,7 +46,7 @@ async function createProduct(
 		...productData,
 		embeddingId: productEmbeddingId,
 		status: 'Active',
-		fullTextSearch: `${productData.name} | ${productData.description} | ${productData.category} | ${productData.styles.join(', ')}`,
+		fullTextSearch: `${productData.name} | ${productData.description} | ${productData.styles.join(', ')} | ${productData.materials.join(', ')} | ${productData.colorNames.join(', ')} | ${productData.category}`,
 		stockDate: date.now(),
 		updatedAt: date.now()
 	});
@@ -142,53 +142,6 @@ async function getClientProducts(
 	const { page: products, isDone, continueCursor } = page ?? ({} as PaginationResult<Product>);
 
 	const clientProducts = productsToClientProducts(products, currencyCode);
-
-	return {
-		clientProducts,
-		isDone,
-		continueCursor
-	};
-}
-
-async function getClientProductsWithFilters(
-	ctx: QueryCtx,
-	currencyCode: CurrencyCode,
-	args: {
-		productFilter?: ProductFilter;
-		paginationOptions?: ProductPaginationOptions;
-		sortOptions?: ProductSortOptions;
-	}
-) {
-	const { productFilter } = args;
-	const { cursor, numItems = 25 } = args.paginationOptions ?? {};
-
-	const clientProducts: ClientProduct[] = [];
-	let isDone = false;
-	let continueCursor = cursor;
-	let newNumItems = numItems;
-
-	while (clientProducts.length < numItems && !isDone) {
-		const clientProductPaginationResult = await getClientProducts(
-			ctx,
-			currencyCode,
-			{
-				cursor: continueCursor,
-				numItems: newNumItems
-			},
-			args.sortOptions
-		);
-
-		const filteredClientProducts = filterClientProducts(
-			clientProductPaginationResult.clientProducts,
-			productFilter
-		);
-
-		clientProducts.push(...filteredClientProducts);
-
-		newNumItems = numItems - clientProducts.length;
-		isDone = clientProductPaginationResult.isDone;
-		continueCursor = clientProductPaginationResult.continueCursor;
-	}
 
 	return {
 		clientProducts,
@@ -354,6 +307,25 @@ async function getProductByEmbeddingId(ctx: QueryCtx, embeddingId: Id<'productEm
 		.first();
 }
 
+async function getClientProductsByFullTextSearch(
+	ctx: QueryCtx,
+	currencyCode: CurrencyCode,
+	searchText: string
+) {
+	const filter = currencyCode === 'CAD' ? 'hasCAD' : 'hasUSD';
+
+	const products = await ctx.db
+		.query('products')
+		.withSearchIndex('by_full_text_search', (q) =>
+			q.search('fullTextSearch', searchText).eq(filter, true)
+		)
+		.take(100);
+
+	const clientProducts = productsToClientProducts(products, currencyCode);
+
+	return clientProducts;
+}
+
 const productModel = {
 	createProduct,
 	getProductById,
@@ -364,11 +336,11 @@ const productModel = {
 	getProductCategoriesForSpace,
 	getProductsForClientByIds,
 	getClientProducts,
-	getClientProductsWithFilters,
 	getClientProductsByCategory,
 	getClientProductsByCategoryWithFilters,
 	getProductBrands,
-	getProductByEmbeddingId
+	getProductByEmbeddingId,
+	getClientProductsByFullTextSearch
 };
 
 export default productModel;

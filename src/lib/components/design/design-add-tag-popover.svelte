@@ -14,9 +14,16 @@
 		designId: Id<'designs'>;
 		designTags: string[];
 		onOpen?: (open: boolean) => void;
+		onAddTags?: (tags: string[]) => void;
 	};
 
-	let { children, designId, designTags, onOpen = () => {} }: DesignTagPopoverProps = $props();
+	let {
+		children,
+		designId,
+		designTags,
+		onOpen = () => {},
+		onAddTags
+	}: DesignTagPopoverProps = $props();
 
 	let isOpen = $state(false);
 	let tagsToAdd = $state<string[]>([]);
@@ -105,7 +112,11 @@
 					<Button
 						class="h-10"
 						onclick={() => {
-							addTagsToDesign(designId, [...tagsToAdd, ...nonEmptyNewTags]);
+							if (!onAddTags)
+								addTagsToDesign([{ designId, tagNames: [...tagsToAdd, ...nonEmptyNewTags] }]);
+
+							if (onAddTags) onAddTags([...tagsToAdd, ...nonEmptyNewTags]);
+
 							isOpen = false;
 							newTags = [];
 							tagsToAdd = [];

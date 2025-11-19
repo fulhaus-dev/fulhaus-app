@@ -7,7 +7,7 @@ const zAvailability = z.enum(['In Stock', 'Low Stock', 'Out of Stock']);
 export const zProductFilter = z
 	.object({
 		category: z.optional(zCategory),
-		name: z.optional(z.string()),
+		desc: z.optional(z.string()),
 		availability: z.optional(zAvailability),
 		minPrice: z.optional(z.coerce.number()),
 		maxPrice: z.optional(z.coerce.number()),

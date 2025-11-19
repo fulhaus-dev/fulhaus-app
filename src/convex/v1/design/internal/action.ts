@@ -40,7 +40,26 @@ export const generateDesignFurnitureRecommendation = internalAction({
 		userId: v.id('users'),
 		designBudget: v.optional(v.number())
 	},
-	handler: async (ctx, { currencyCode, designId, userId, designBudget = 0 }) => {
+	handler: async (
+		ctx,
+		{ currencyCode, designId, userId, designBudget = 0 }
+	): Promise<
+		| {
+				error: {
+					statusCode: number;
+					message: string;
+				};
+				data?: undefined;
+		  }
+		| {
+				data: {
+					designId: Id<'designs'>;
+					message: string;
+					totalPrice: number;
+				};
+				error?: undefined;
+		  }
+	> => {
 		await updateDesignStatus({
 			ctx,
 			designId,
@@ -71,13 +90,15 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			};
 		}
 
-		let ludwigRecommendedProducts = await getLudwigRecommendedProducts(ctx, {
+		const ludwigRecommendedResponse = await getLudwigRecommendedProducts(ctx, {
 			inspirationImageUrl: design.inspirationImageUrl,
 			spaceType: design.spaceType,
 			productCategories: design.productCategories,
 			currencyCode,
 			designBudget
 		});
+
+		let ludwigRecommendedProducts = ludwigRecommendedResponse?.products;
 
 		if (!ludwigRecommendedProducts) {
 			const fallbackProductsResponse = await getLudwigRecommendedProductsFallback(ctx, {
@@ -94,7 +115,12 @@ export const generateDesignFurnitureRecommendation = internalAction({
 						generatingFurnitureRecommendation: false
 					}
 				});
-				return { error: fallbackProductsResponse.error };
+				return {
+					error: {
+						statusCode: fallbackProductsResponse.error.statusCode,
+						message: fallbackProductsResponse.error.message
+					}
+				};
 			}
 
 			ludwigRecommendedProducts = fallbackProductsResponse.data;
@@ -127,10 +153,11 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			}
 		});
 
-		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
-			designId: design._id,
-			userId
-		});
+		if (!design.generateRender)
+			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
+				designId: design._id,
+				userId
+			});
 
 		await updateDesignStatus({
 			ctx,
@@ -141,7 +168,26 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			}
 		});
 
-		return { data: designId };
+		await ctx.runMutation(internal.v1.workspace.plan.internal.mutation.updateWorkspaceCreditsUsed, {
+			workspaceId: design.workspaceId,
+			creditsUsed: 200
+		});
+
+		const totalPrice = ludwigRecommendedProducts.reduce((acc, product) => {
+			return (
+				acc +
+				(currencyCode === 'USD' ? (product.retailPriceUSD ?? 0) : (product.retailPriceCAD ?? 0))
+			);
+		}, 0);
+
+		return {
+			data: {
+				designId,
+				totalPrice,
+				message:
+					ludwigRecommendedResponse?.message || 'Furniture recommendation generated successfully'
+			}
+		};
 	}
 });
 
@@ -217,16 +263,29 @@ export const generateDesignRender = internalAction({
 		// 	);
 		// }
 
+		const products = availableDesignProducts.map((designProduct) => ({
+			category: designProduct.category,
+			url: designProduct.mainImageNoBgUrl ?? designProduct.mainImageUrl,
+			name: designProduct.name
+		}));
+
+		const productsToSwap = availableDesignProducts
+			.filter((designProduct) => design.renderSwappedProductIds?.includes(designProduct._id))
+			.map((designProduct) => ({
+				category: designProduct.category,
+				url: designProduct.mainImageNoBgUrl ?? designProduct.mainImageUrl,
+				name: designProduct.name
+			}));
+
+		const isSwapRender = productsToSwap.length > 0;
+
 		const { data: renderedImageFiles } = await getDesignRenderedImage({
 			spaceType: design.spaceType,
 			designName: design.name,
 			designDescription: design.description,
-			productImages: availableDesignProducts.map((designProduct) => ({
-				category: designProduct.category,
-				url: designProduct.mainImageNoBgUrl ?? designProduct.mainImageUrl,
-				name: designProduct.name
-			})),
-			originalInspirationImageUrl: design.inspirationImageUrl
+			productImages: isSwapRender ? productsToSwap : products,
+			originalInspirationImageUrl: design.inspirationImageUrl,
+			currentRenderedImageUrl: isSwapRender ? design.renderedImageUrl : undefined
 		});
 		const renderedImageBase64 = renderedImageFiles?.[0]?.base64;
 		if (!renderedImageBase64)
@@ -259,12 +318,13 @@ export const generateDesignRender = internalAction({
 				renderedImageUrl
 			});
 
-		return await updateDesignStatus({
+		await updateDesignStatus({
 			ctx,
 			designId,
 			userId,
 			update: {
 				renderingImage: false,
+				renderSwappedProductIds: isSwapRender ? [] : design.renderSwappedProductIds,
 				renderedImageUrl
 			}
 		});
@@ -284,11 +344,12 @@ async function updateDesignStatus({
 		generatingFurnitureRecommendation?: boolean;
 		renderingImage?: boolean;
 		renderedImageUrl?: string;
+		renderSwappedProductIds?: Id<'products'>[];
 		styles?: ProductStyle[];
 	};
 }) {
 	const currentUpdate: UpdateDesign = update;
-	if (update.renderedImageUrl) currentUpdate.generateRender = false;
+	if (update.renderedImageUrl) currentUpdate.generateRender = true;
 
 	await ctx.runMutation(internal.v1.design.internal.mutation.updateDesignById, {
 		designId: designId,
@@ -307,14 +368,18 @@ async function getLudwigRecommendedProducts(
 		designBudget: number;
 	}
 ) {
+	const recArgs = {
+		image_url: args.inspirationImageUrl,
+		room_name: args.spaceType,
+		categories: args.productCategories.map((productCategory) => productCategory.category),
+		currency: args.currencyCode
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} as any;
+
+	if (args.designBudget > 0) recArgs.priceRange = args.designBudget;
+
 	const { response } = await asyncFetch.post(process.env.LUDWIG_RECOMMENDATION_ENDPOINT!, {
-		body: JSON.stringify({
-			image_url: args.inspirationImageUrl,
-			room_name: args.spaceType,
-			categories: args.productCategories.map((productCategory) => productCategory.category),
-			currency: args.currencyCode,
-			priceRange: args.designBudget
-		})
+		body: JSON.stringify(recArgs)
 	});
 	if (!response) return;
 
@@ -331,7 +396,13 @@ async function getLudwigRecommendedProducts(
 		)
 	);
 
-	return products.filter((product) => !!product);
+	return {
+		products: products.filter((product) => !!product),
+		message:
+			args.designBudget > 0
+				? responseJson.recommendations.status
+				: "Furniture recommendation generated successfully'"
+	};
 }
 
 async function getLudwigRecommendedProductsFallback(

@@ -6,8 +6,8 @@
 	const sampleInspoImages = page.data.sampleInspoImages;
 </script>
 
-<section class="h-full p-20 pt-0 pb-12">
-	<div class="mx-auto flex h-full max-w-[1400px] gap-x-20">
+<main class="h-full p-20 pt-0 pb-12">
+	<section class="mx-auto flex h-full max-w-[1400px] gap-x-20">
 		<div class="mt-40 max-w-fit space-y-4">
 			<NoDesignIcon class="size-44" />
 
@@ -27,5 +27,5 @@
 		<div class="h-full flex-1 overflow-y-hidden rounded-lg">
 			<ImageMasonry images={sampleInspoImages} />
 		</div>
-	</div>
-</section>
+	</section>
+</main>

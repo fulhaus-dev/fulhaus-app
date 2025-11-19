@@ -1,7 +1,14 @@
 <script lang="ts">
-	import type { Design, UpdateDesign } from '$lib/types';
+	import type { Design, DesignTag, UpdateDesign } from '$lib/types';
 	import NoDesignIcon from '$lib/components/svgs/no-design-icon.svelte';
-	import { CopyIcon, DownloadIcon, MoveRightIcon, PencilLineIcon, RssIcon } from '@lucide/svelte';
+	import {
+		ChevronDownIcon,
+		DownloadIcon,
+		MoveRightIcon,
+		PencilLineIcon,
+		RssIcon,
+		Share2Icon
+	} from '@lucide/svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import SidebarDesignEditMode from '$lib/components/layout/sidebar/sidebar.design-edit-mode.svelte';
 	import { cn } from '$lib/utils/cn';
@@ -12,18 +19,28 @@
 	import { QueryParams } from '$lib/enums';
 	import { goto } from '$app/navigation';
 	import { useFileMutation } from '$lib/client/mutations/use-file.mutation.svelte';
+	import DesignLogs from '$lib/components/design/design-view-sidebar/design-logs.svelte';
+	import Tooltip from '$lib/components/tooltip.svelte';
+	import DesignSharePopover from '$lib/components/design/design-share-popover.svelte';
 
 	type SidebarDesignDetailsProps = {
 		design?: Design;
 		hasProducts: boolean;
+		designTags: DesignTag[];
 	};
 
-	const { design, hasProducts }: SidebarDesignDetailsProps = $props();
+	const { design, hasProducts, designTags }: SidebarDesignDetailsProps = $props();
 	const hasDesign = $derived(!!design?._id);
 
 	let inEditMode = $state(false);
+	let showLogs = $state(false);
 
 	let updates = $state<UpdateDesign>({});
+	let designTagsToDelete = $state<DesignTag[]>([]);
+	let designTagsToAdd = $state<string[]>([]);
+
+	const { addTagsToDesign } = useDesignMutation();
+	const { deleteDesignTags } = useDesignMutation();
 
 	const { updateDesign } = useDesignMutation();
 	const { downloadFileInBrowser } = useFileMutation();
@@ -67,7 +84,7 @@
 					</div>
 
 					<div class="flex items-center gap-x-4">
-						<IconTooltipButton
+						<!-- <IconTooltipButton
 							content={design?.publishedAt ? 'Unpublish design' : 'Publish design'}
 							onclick={() => {}}
 						>
@@ -77,7 +94,17 @@
 						</IconTooltipButton>
 						<IconTooltipButton content="Duplicate design" onclick={() => {}}>
 							<CopyIcon class="size-4" />
-						</IconTooltipButton>
+						</IconTooltipButton> -->
+
+						{#if design}
+							<Tooltip content="Share design">
+								<DesignSharePopover designId={design._id}>
+									<div class="size-6 rounded-full bg-color-background p-1 text-xs">
+										<Share2Icon class="size-full" />
+									</div>
+								</DesignSharePopover>
+							</Tooltip>
+						{/if}
 
 						<IconTooltipButton content="Edit design" onclick={() => (inEditMode = true)}>
 							<PencilLineIcon class="size-4" />
@@ -92,6 +119,20 @@
 				class={cn('min-h-full space-y-8 px-4 pt-4 pb-96', inEditMode && 'min-h-auto pt-0 pb-20')}
 			>
 				{#if !inEditMode}
+					<!-- Design Tags -->
+					<div class="space-y-1">
+						<h5 class="font-medium">Tags</h5>
+						<div class="flex flex-wrap items-center gap-2 p-2">
+							{#each designTags as designTag (designTag._id)}
+								<p
+									class="rounded-full bg-color-action-background px-2 text-[10px] font-semibold text-color-action-text"
+								>
+									{designTag.tag}
+								</p>
+							{/each}
+						</div>
+					</div>
+
 					<!-- Product Categories -->
 					<div class="space-y-1">
 						<h5 class="font-medium">Product Categories</h5>
@@ -161,10 +202,33 @@
 							{/if}
 						</div>
 					{/if}
+
+					<!-- Design logs -->
+					{#if design?._id}
+						<div class="space-y-1">
+							<Button variant="text" onclick={() => (showLogs = !showLogs)}>
+								<h5 class="font-medium">Changes</h5>
+								<ChevronDownIcon class={cn('size-4', showLogs && 'rotate-180')} />
+							</Button>
+
+							{#if showLogs}
+								<div class="rounded-md bg-color-background-surface p-2">
+									<DesignLogs designId={design._id} />
+								</div>
+							{/if}
+						</div>
+					{/if}
 				{/if}
 
 				{#if inEditMode && design}
-					<SidebarDesignEditMode spaceType={design.spaceType} bind:updates />
+					<SidebarDesignEditMode
+						designId={design._id}
+						spaceType={design.spaceType}
+						bind:updates
+						bind:designTagsToAdd
+						bind:designTagsToDelete
+						{designTags}
+					/>
 				{/if}
 			</div>
 
@@ -183,15 +247,19 @@
 					<Button
 						class="w-[55%]"
 						onclick={() => {
-							if (design?._id) updateDesign(design._id, updates);
+							if (design?._id) {
+								addTagsToDesign([{ designId: design._id, tagNames: designTagsToAdd }]);
+								deleteDesignTags(designTagsToDelete.map((tag) => tag._id));
+								updateDesign(design._id, updates);
+							}
 							inEditMode = false;
 						}}>Save</Button
 					>
 				</div>
 
-				{#if page.route.id !== '/[workspaceId]/ludwig' && design?.chatId}
+				{#if page.route.id !== '/(main)/[workspaceId]/ludwig' && design?.chatId}
 					<Button
-						class={cn(inEditMode && 'hidden')}
+						class={cn('hidden lg:flex', inEditMode && 'hidden')}
 						onclick={() =>
 							goto(
 								`/${page.params.workspaceId}/ludwig?${QueryParams.LUDWIG_CHAT_ID}=${design.chatId}`
@@ -202,7 +270,7 @@
 					</Button>
 				{/if}
 
-				{#if page.route.id === '/[workspaceId]/ludwig' && design?.chatId && hasProducts}
+				{#if page.route.id === '/(main)/[workspaceId]/ludwig' && design?.chatId && hasProducts}
 					<Button
 						class={cn(inEditMode && 'hidden')}
 						onclick={() =>

@@ -26,6 +26,24 @@ export const createPoProducts = productMutation({
 	}
 });
 
+export const updatePoProductById = productMutation({
+	args: {
+		poApiKey: v.string(),
+		data: v.object({
+			productId: v.id('products'),
+			updates: vUpdateProduct
+		})
+	},
+	returns: v.null(),
+	handler: async (ctx, args) => {
+		authorization.authorizeProductOnboarding(args.poApiKey);
+
+		const productUpdate = args.data;
+
+		await productModel.updateProductById(ctx, productUpdate.productId, productUpdate.updates);
+	}
+});
+
 export const updatePoProductsById = productMutation({
 	args: {
 		poApiKey: v.string(),

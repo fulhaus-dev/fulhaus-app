@@ -1,8 +1,6 @@
-export type PaymentType = 'cart' | 'credits';
+import { Infer } from 'convex/values';
+import { vPaymentMetadata, vPaymentType } from './validator';
 
-export type PaymentMetadata = {
-	workspaceId: string;
-	userId: string;
-	currencyCode: string;
-	type: PaymentType;
-};
+export type PaymentType = Infer<typeof vPaymentType>;
+
+export type PaymentMetadata = Infer<typeof vPaymentMetadata>;

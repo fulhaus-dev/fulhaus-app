@@ -62,15 +62,15 @@
 	imageAlt: string;
 })}
 	<div
-		class="items start relative inline-flex h-auto w-full cursor-pointer items-center justify-between gap-x-20 rounded-lg border border-color-action-border-muted bg-color-action-background p-1 pl-2 text-sm font-medium whitespace-nowrap text-color-action-text ring-2 ring-color-focus-ring-muted active:opacity-50 disabled:cursor-not-allowed disabled:border-1 disabled:opacity-50 disabled:ring-0"
+		class="items start relative inline-flex h-auto w-full cursor-pointer items-center justify-between gap-x-8 rounded-lg border border-color-action-border-muted bg-color-action-background p-1 pl-2 text-xs font-medium whitespace-nowrap text-color-action-text ring-2 ring-color-focus-ring-muted active:opacity-50 disabled:cursor-not-allowed disabled:border-1 disabled:opacity-50 disabled:ring-0 lg:gap-x-20 lg:text-sm"
 	>
-		<p class="text-start text-sm text-wrap">
+		<p class="text-start text-wrap">
 			<span class="block font-semibold">{label}</span>
 			{#if !!description}
-				<span class="block text-xs text-color-action-text-muted">{description}</span>
+				<span class="hidden text-xs text-color-action-text-muted lg:block">{description}</span>
 			{/if}
 		</p>
 
-		<img class="h-20 w-20 rounded-md object-cover" src={imageSrc} alt={imageAlt} />
+		<img class="h-12 w-12 rounded-md object-cover lg:h-20 lg:w-20" src={imageSrc} alt={imageAlt} />
 	</div>
 {/snippet}

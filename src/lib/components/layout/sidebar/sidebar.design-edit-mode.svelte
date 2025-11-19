@@ -2,24 +2,53 @@
 	import { useFileMutation } from '$lib/client/mutations/use-file.mutation.svelte';
 	import { useProductCategoriesBySpaceQuery } from '$lib/client/queries/use-product.query.svelte';
 	import Button from '$lib/components/button.svelte';
+	import DesignAddTagPopover from '$lib/components/design/design-add-tag-popover.svelte';
 	import DesignAssetUploadDialog from '$lib/components/design/design-asset/design-asset-upload-dialog.svelte';
 	import DesignAssetViewerDialog from '$lib/components/design/design-asset/design-asset-viewer-dialog.svelte';
 	import IconTooltipButton from '$lib/components/icon-tooltip-button.svelte';
 	import TextArea from '$lib/components/text-area.svelte';
 	import TextInput from '$lib/components/text-input.svelte';
 	import { productCategoryIcons } from '$lib/constants';
-	import type { SpaceType, UpdateDesign } from '$lib/types';
+	import type { DesignTag, SpaceType, UpdateDesign } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import { ChevronsUpDownIcon, DownloadIcon, XIcon } from '@lucide/svelte';
 	import { Popover } from 'bits-ui';
+	import type { Id } from '../../../../convex/_generated/dataModel';
+	import DesignTagButton from '$lib/components/design/design-tag-button.svelte';
 
-	const { spaceType, updates = $bindable() }: { spaceType: SpaceType; updates: UpdateDesign } =
-		$props();
+	type SidebarDesignEditModeProps = {
+		designId: Id<'designs'>;
+		spaceType: SpaceType;
+		updates: UpdateDesign;
+		designTagsToDelete: DesignTag[];
+		designTagsToAdd: string[];
+		designTags: DesignTag[];
+	};
+
+	const {
+		designId,
+		spaceType,
+		updates = $bindable(),
+		designTagsToDelete = $bindable(),
+		designTagsToAdd = $bindable(),
+		designTags
+	}: SidebarDesignEditModeProps = $props();
 
 	let productCategorySearchValue = $state('');
 
-	const productCategoriesBySpaceQuery = useProductCategoriesBySpaceQuery(spaceType);
+	const filteredDesignTags = $derived.by(() => {
+		return designTags.filter(
+			(designTag) => !designTagsToDelete.some((tag) => tag._id === designTag._id)
+		);
+	});
 
+	const availableWorkspaceDesignTagsToAdd = $derived.by(() => {
+		return Array.from(
+			new Set([...designTagsToAdd, ...filteredDesignTags.map((designTag) => designTag.tag)])
+		);
+	});
+
+	const productCategoriesBySpaceQuery = useProductCategoriesBySpaceQuery(spaceType);
 	const filteredProductCategories = $derived.by(() => {
 		const availableProductCategories = productCategoriesBySpaceQuery.categories.all.filter(
 			(productCategory) =>
@@ -43,6 +72,31 @@
 <div class="space-y-8">
 	<TextInput class="bg-transparent" label="Name" bind:value={updates.name} autofocus />
 	<TextArea class="bg-transparent" label="Description" bind:value={updates.description} />
+
+	<div class="space-y-1.5">
+		<h5 class="font-medium">Tags</h5>
+		<div role="group" class="flex flex-1 flex-wrap gap-1">
+			{#each filteredDesignTags as designTag (designTag._id)}
+				<DesignTagButton tag={designTag.tag} onDelete={() => designTagsToDelete.push(designTag)} />
+			{/each}
+
+			{#each designTagsToAdd as designTagToAdd, index (`${index}-${designTagToAdd}`)}
+				<DesignTagButton tag={designTagToAdd} onDelete={() => designTagsToAdd.splice(index, 1)} />
+			{/each}
+
+			<DesignAddTagPopover
+				{designId}
+				designTags={availableWorkspaceDesignTagsToAdd}
+				onAddTags={(tags) => designTagsToAdd.push(...tags)}
+			>
+				<p
+					class="cursor-pointer rounded-full border border-color-border px-2 py-px text-[10px] font-semibold"
+				>
+					Add Tag
+				</p>
+			</DesignAddTagPopover>
+		</div>
+	</div>
 
 	<div class="space-y-1.5">
 		<h5 class="font-medium">Product Categories</h5>

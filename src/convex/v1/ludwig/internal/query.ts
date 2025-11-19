@@ -2,6 +2,7 @@ import { v } from 'convex/values';
 import { internalQuery } from '../../../_generated/server';
 import ludwigModel from '../model';
 import designModel from '../../design/model';
+import { vCurrencyCode } from '../../../validator';
 
 export const getLudwigChatTempAssetsByChatId = internalQuery({
 	args: {
@@ -15,13 +16,14 @@ export const getLudwigChatTempAssetsByChatId = internalQuery({
 export const getLudwigDesignChatContext = internalQuery({
 	args: {
 		chatId: v.id('chats'),
-		floorPlanUrl: v.optional(v.string())
+		floorPlanUrl: v.optional(v.string()),
+		currencyCode: vCurrencyCode
 	},
-	handler: async (ctx, { chatId, floorPlanUrl }) => {
+	handler: async (ctx, { chatId, floorPlanUrl, currencyCode }) => {
 		const contextParts = [];
 
 		const [currentChatDesign, existingDesignsWithFloorPlanUrl] = await Promise.all([
-			designModel.getDesignByChatId(ctx, chatId),
+			designModel.getDesignByChatId(ctx, chatId, currencyCode),
 			floorPlanUrl
 				? designModel.getExistingDesignsWithFloorPlanUrl(ctx, floorPlanUrl)
 				: Promise.resolve([])

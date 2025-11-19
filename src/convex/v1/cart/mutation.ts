@@ -5,7 +5,7 @@ import { vSaveCartItem, vUpdateCartItem } from './validator';
 import cartModel from './model';
 import { SuccessData, SuccessMessage } from '../../response/success';
 
-export const saveCartItem = mutation({
+export const saveCartItems = mutation({
 	args: {
 		workspaceId: v.id('workspaces'),
 		data: v.array(vSaveCartItem)
@@ -13,37 +13,47 @@ export const saveCartItem = mutation({
 	handler: async (ctx, args) => {
 		await authorization.userIsWorkspaceMember(ctx, args.workspaceId);
 
-		const cartItemIds = await cartModel.saveCartItems(ctx, args.workspaceId, args.data);
+		const cartItemIds = await Promise.all(
+			args.data.map((data) => cartModel.saveCartItem(ctx, args.workspaceId, data))
+		);
 
 		return SuccessData({ cartItemIds });
 	}
 });
 
-export const updateCartItem = mutation({
+export const updateCartItems = mutation({
 	args: {
 		workspaceId: v.id('workspaces'),
-		cartItemId: v.id('cartItems'),
-		updates: vUpdateCartItem
+		data: v.array(
+			v.object({
+				cartItemId: v.id('cartItems'),
+				update: vUpdateCartItem
+			})
+		)
 	},
 	handler: async (ctx, args) => {
 		await authorization.userIsWorkspaceMember(ctx, args.workspaceId);
 
-		await cartModel.updateCartItem(ctx, args.cartItemId, args.updates);
+		await Promise.all(
+			args.data.map(({ cartItemId, update }) => cartModel.updateCartItem(ctx, cartItemId, update))
+		);
 
-		return SuccessMessage('Cart item updated');
+		return SuccessMessage('Cart items updated');
 	}
 });
 
-export const deleteCartItem = mutation({
+export const deleteCartItems = mutation({
 	args: {
 		workspaceId: v.id('workspaces'),
-		cartItemId: v.id('cartItems')
+		cartItemIds: v.array(v.id('cartItems'))
 	},
 	handler: async (ctx, args) => {
 		await authorization.userIsWorkspaceMember(ctx, args.workspaceId);
 
-		await cartModel.deleteCartItem(ctx, args.cartItemId);
+		await Promise.all(
+			args.cartItemIds.map((cartItemId) => cartModel.deleteCartItem(ctx, cartItemId))
+		);
 
-		return SuccessMessage('Cart item deleted');
+		return SuccessMessage('Cart items deleted');
 	}
 });

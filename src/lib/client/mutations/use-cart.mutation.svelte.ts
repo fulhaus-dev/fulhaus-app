@@ -3,22 +3,47 @@ import type { Id } from '../../../convex/_generated/dataModel.js';
 import { page } from '$app/state';
 import { asyncTryCatch } from '$lib/utils/try-catch.js';
 import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js';
+import type { CartSavedForLater } from '$lib/types.js';
 
 export function useCartMutation() {
 	const convexClient = useConvexClient();
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'> | undefined;
+	const currencyCode = page.data.currencyCode;
 
 	const state = $state({
 		error: undefined as string | undefined
 	});
 
 	async function saveCartItems(
-		data: { designId: Id<'designs'>; productId: Id<'products'>; quantity: number }[]
+		data: {
+			designId: Id<'designs'>;
+			productId: Id<'products'>;
+			quantity: number;
+			savedForLater: CartSavedForLater;
+		}[]
 	) {
 		if (!currentWorkspaceId) return;
 
 		const { error } = await asyncTryCatch(() =>
-			convexClient.mutation(api.v1.cart.mutation.saveCartItem, {
+			convexClient.mutation(api.v1.cart.mutation.saveCartItems, {
+				workspaceId: currentWorkspaceId,
+				data: data.map((item) => ({ ...item, currencyCode }))
+			})
+		);
+
+		if (error) state.error = error.message;
+	}
+
+	async function updateCartItems(
+		data: {
+			cartItemId: Id<'cartItems'>;
+			update: { productId?: Id<'products'>; quantity?: number; savedForLater?: CartSavedForLater };
+		}[]
+	) {
+		if (!currentWorkspaceId) return;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.cart.mutation.updateCartItems, {
 				workspaceId: currentWorkspaceId,
 				data
 			})
@@ -27,30 +52,13 @@ export function useCartMutation() {
 		if (error) state.error = error.message;
 	}
 
-	async function updateCartItem(
-		cartItemId: Id<'cartItems'>,
-		updates: { productId?: Id<'products'>; quantity?: number }
-	) {
+	async function deleteCartItems(cartItemIds: Id<'cartItems'>[]) {
 		if (!currentWorkspaceId) return;
 
 		const { error } = await asyncTryCatch(() =>
-			convexClient.mutation(api.v1.cart.mutation.updateCartItem, {
+			convexClient.mutation(api.v1.cart.mutation.deleteCartItems, {
 				workspaceId: currentWorkspaceId,
-				cartItemId,
-				updates
-			})
-		);
-
-		if (error) state.error = error.message;
-	}
-
-	async function deleteCartItem(cartItemId: Id<'cartItems'>) {
-		if (!currentWorkspaceId) return;
-
-		const { error } = await asyncTryCatch(() =>
-			convexClient.mutation(api.v1.cart.mutation.deleteCartItem, {
-				workspaceId: currentWorkspaceId,
-				cartItemId
+				cartItemIds
 			})
 		);
 
@@ -60,7 +68,7 @@ export function useCartMutation() {
 	return {
 		cartMutationState: state,
 		saveCartItems,
-		updateCartItem,
-		deleteCartItem
+		updateCartItems,
+		deleteCartItems
 	};
 }

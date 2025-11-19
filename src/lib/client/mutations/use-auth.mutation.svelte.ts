@@ -10,12 +10,15 @@ import { page } from '$app/state';
 import { QueryParams } from '$lib/enums.js';
 import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js';
 import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte.js';
+import { onMount } from 'svelte';
 
 type AuthStep = 'email' | 'otp' | 'name';
 
 const OTP_LENGTH = 6;
 
 export function useAuthMutation() {
+	const currencyCode = page.data.currencyCode;
+
 	const convexClient = useConvexClient();
 	const { updateRouteQuery } = useRouteMutation();
 
@@ -33,7 +36,28 @@ export function useAuthMutation() {
 		userId: undefined as Id<'users'> | undefined,
 		loading: false,
 		loggingOut: false,
+		resentVerificationCode: false,
+		verificationCodeExpiresAt: 45000,
+		verificationCodeElapsedTime: 45000,
 		serverError: undefined as string | undefined
+	});
+
+	onMount(() => {
+		let currentTime = performance.now();
+
+		let frame = requestAnimationFrame(function update(time) {
+			frame = requestAnimationFrame(update);
+
+			state.verificationCodeElapsedTime += Math.min(
+				time - currentTime,
+				state.verificationCodeExpiresAt - state.verificationCodeElapsedTime
+			);
+			currentTime = time;
+		});
+
+		return () => {
+			cancelAnimationFrame(frame);
+		};
 	});
 
 	function getInputErrors() {
@@ -62,6 +86,15 @@ export function useAuthMutation() {
 		}
 	) {
 		event.preventDefault();
+		sendVerificationCode();
+	}
+
+	async function resendVerificationCode() {
+		await sendVerificationCode();
+		state.resentVerificationCode = true;
+	}
+
+	async function sendVerificationCode() {
 		state.serverError = undefined;
 
 		if (!state.email) {
@@ -79,6 +112,7 @@ export function useAuthMutation() {
 		);
 
 		state.loading = false;
+		state.verificationCodeElapsedTime = 0;
 
 		if (error) {
 			state.serverError = error.message;
@@ -116,7 +150,8 @@ export function useAuthMutation() {
 		const { data: response, error } = await asyncTryCatch(() =>
 			convexClient.mutation(api.v1.auth.mutation.signInWithOtp, {
 				email: userEmail,
-				otp: otpValue
+				otp: otpValue,
+				currencyCode
 			})
 		);
 		if (error) {
@@ -207,6 +242,7 @@ export function useAuthMutation() {
 		auth: state,
 		getInputErrors,
 		onSubmitSendVerificationCode,
+		resendVerificationCode,
 		onSubmitSignInWithOtp,
 		onSubmitNewUserProfile,
 		onLogout

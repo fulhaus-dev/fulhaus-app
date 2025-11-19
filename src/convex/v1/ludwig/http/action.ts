@@ -37,6 +37,8 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 		'createDesign'
 	);
 
+	await httpAuthorization.hasRoomCredits(ctx, workspaceId);
+
 	const { message }: { message: UIMessage } = await request.json();
 
 	const { chatId, inspoImageUrl, floorPlanFile, currencyCode } = (message?.metadata ??
@@ -73,7 +75,8 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 		ctx.runQuery(internal.v1.chat.internal.query.getChatUiMessages, { workspaceId, chatId }),
 		ctx.runQuery(internal.v1.ludwig.internal.query.getLudwigDesignChatContext, {
 			chatId,
-			floorPlanUrl: floorPlanFile?.url
+			floorPlanUrl: floorPlanFile?.url,
+			currencyCode
 		})
 	]);
 

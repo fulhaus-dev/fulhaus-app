@@ -7,6 +7,7 @@
 	import FulhausLoader from '$lib/components/loaders/fulhaus-loader.svelte';
 	import { QueryParams } from '$lib/enums';
 	import {
+		BriefcaseBusinessIcon,
 		CircleUserRoundIcon,
 		Icon,
 		LockKeyholeOpenIcon,
@@ -14,10 +15,15 @@
 		UserRoundCogIcon
 	} from '@lucide/svelte';
 	import { DropdownMenu } from 'bits-ui';
+	import { useCurrentWorkspaceQuery } from '$lib/client/queries/use-workspace.query.svelte';
+	import WorkspacePlanViewer from '$lib/components/workspace/workspace-plan-viewer.svelte';
+	import Button from '$lib/components/button.svelte';
 
 	const userQuery = useUserQuery();
 	const userProfile = $derived(userQuery.userProfile);
 	const { auth, onLogout } = useAuthMutation();
+	const currentWorkspaceQuery = useCurrentWorkspaceQuery();
+	const currentWorkspace = $derived(currentWorkspaceQuery.currentWorkspace);
 
 	const isLoggedIn = $derived(!!userProfile._id);
 </script>
@@ -41,21 +47,46 @@
 
 	<DropdownMenu.Portal>
 		<DropdownMenu.Content
-			class="z-50 min-w-52 rounded-md border border-color-border-muted bg-color-background text-sm shadow-xs shadow-color-shadow-muted"
+			class="z-50 min-w-72 space-y-2 rounded-md border border-color-border-muted bg-color-background text-sm shadow-xs shadow-color-shadow-muted"
 			align="end"
 			sideOffset={8}
 		>
 			{#if isLoggedIn}
-				<DropdownMenu.Group class="flex gap-x-2 p-4">
-					{@render UserAvatar()}
-					<div class="flex-1">
-						<h5 class="font-semibold">{userProfile?.fullName}</h5>
-						<p class="text-xs text-color-text-muted">{userProfile?.email}</p>
+				<DropdownMenu.Group class="space-y-4 bg-color-background-surface p-4">
+					<div class="flex gap-x-2">
+						{@render UserAvatar()}
+						<div class="flex-1">
+							<h5 class="font-semibold">{userProfile?.fullName}</h5>
+							<p class="text-xs text-color-text-muted">{userProfile?.email}</p>
+						</div>
+					</div>
+
+					<div class="space-y-1">
+						<p class="text-[10px] font-medium text-color-text-placeholder">Workspace</p>
+
+						<div class="space-y-4 rounded-md border border-color-border p-2 text-xs">
+							<div class="flex items-center gap-x-2">
+								<Avatar class="size-4" src={currentWorkspace.logoUrl} alt={currentWorkspace.name} />
+								<h5>{currentWorkspace.name} Workspace</h5>
+							</div>
+
+							<WorkspacePlanViewer label="Credits" />
+
+							<DropdownMenu.Item
+								class="flex h-8 cursor-pointer items-center justify-center gap-x-2 rounded-md bg-color-action-background font-semibold text-color-action-text"
+								onSelect={() => goto(`/${currentWorkspace._id}/pricing`)}
+							>
+								Manage Subscription
+							</DropdownMenu.Item>
+						</div>
 					</div>
 				</DropdownMenu.Group>
 
-				{@render MenuItem({ label: 'Account Settings', MenuIcon: UserRoundCogIcon })}
-				{@render MenuItem({ label: 'Log Out', MenuIcon: LogOutIcon, onSelect: onLogout })}
+				<DropdownMenu.Group>
+					<!-- {@render MenuItem({ label: 'Workspace Settings', MenuIcon: BriefcaseBusinessIcon })}
+					{@render MenuItem({ label: 'Account Settings', MenuIcon: UserRoundCogIcon })} -->
+					{@render MenuItem({ label: 'Log Out', MenuIcon: LogOutIcon, onSelect: onLogout })}
+				</DropdownMenu.Group>
 			{/if}
 
 			{#if !isLoggedIn}
@@ -88,7 +119,7 @@
 	onSelect?: () => void;
 })}
 	<DropdownMenu.Item
-		class="flex h-10 w-full cursor-pointer items-center gap-x-2 rounded-md px-4 text-sm hover:bg-color-background-surface"
+		class="flex h-10 w-full cursor-pointer items-center gap-x-2 rounded-md px-4 text-xs hover:bg-color-background-surface"
 		{onSelect}
 	>
 		<MenuIcon class="size-4" />

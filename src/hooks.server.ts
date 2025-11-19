@@ -1,5 +1,6 @@
 import { APP_MAINTENANCE_MODE } from '$env/static/private';
 import { QueryParams } from '$lib/enums';
+import { getCurrencyCodeCookie, setCurrencyCodeCookie } from '$lib/server/app-currency';
 import authenticate from '$lib/server/authenticate';
 import { asyncTryCatch } from '$lib/utils/try-catch';
 import { redirect } from '@sveltejs/kit';
@@ -10,9 +11,10 @@ const PUBLIC_ROUTES = [
 	'/auth',
 	'/shop-designs',
 	'/inspiration',
-	'/api',
+	'/design',
+	'/maintenance',
 	'/favicon.ico',
-	'/maintenance'
+	'/api'
 ];
 
 export const handle = async ({ event, resolve }) => {
@@ -28,16 +30,27 @@ export const handle = async ({ event, resolve }) => {
 	if (!PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) && !authenticated)
 		throw redirect(303, `/auth?${QueryParams.AUTH_REDIRECT_URL}=${encodeURIComponent(pathname)}`);
 
-	const clientIp = event.getClientAddress();
-	const { data: geo } = await asyncTryCatch(() => geoip.lookup(clientIp));
+	let currencyCode = getCurrencyCodeCookie(event.cookies);
 
-	let countryCode = geo?.country ?? 'US';
-	if (countryCode !== 'CA') countryCode = 'US';
+	if (!currencyCode) {
+		const clientIp =
+			event.request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+			event.request.headers.get('x-real-ip') ||
+			event.getClientAddress();
+
+		const { data: geo } = await asyncTryCatch(() => geoip.lookup(clientIp));
+
+		let countryCode = geo?.country ?? 'US';
+		if (countryCode !== 'CA') countryCode = 'US';
+
+		currencyCode = countryCode === 'CA' ? 'CAD' : 'USD';
+		setCurrencyCodeCookie(event.cookies, currencyCode);
+	}
 
 	event.locals.currentUserId = authenticated?.currentUserId;
 	event.locals.activeWorkspaceId = authenticated?.activeWorkspaceId;
 	event.locals.authToken = authenticated?.authToken;
-	event.locals.currencyCode = countryCode === 'CA' ? 'CAD' : 'USD';
+	event.locals.currencyCode = currencyCode;
 
 	return resolve(event);
 };

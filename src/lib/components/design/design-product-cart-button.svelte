@@ -9,10 +9,14 @@
 	const { designId, productId }: { designId: Id<'designs'>; productId: Id<'products'> } = $props();
 
 	const designCartQuery = useDesignCartQuery(() => designId);
-	const { saveCartItems, updateCartItem, deleteCartItem } = useCartMutation();
+	const { saveCartItems, updateCartItems, deleteCartItems } = useCartMutation();
 
 	const currentProductCartItem = $derived.by(() =>
 		designCartQuery.cartItems.find((cartItem) => cartItem.productId === productId)
+	);
+
+	const currentProductCartItemDisplay = $derived.by(() =>
+		currentProductCartItem?.savedForLater === 'yes' ? undefined : currentProductCartItem
 	);
 
 	const cartProductQty = $derived(currentProductCartItem?.quantity ?? 0);
@@ -23,26 +27,44 @@
 
 		timeoutId = setTimeout(() => {
 			if (cartItemQuantityChangeType === 'decrement' && cartProductQty === 1) {
-				deleteCartItem(currentProductCartItem?._id!);
+				deleteCartItems([currentProductCartItem?._id!]);
 				return;
 			}
 
-			updateCartItem(currentProductCartItem?._id!, {
-				quantity:
-					cartItemQuantityChangeType === 'increment' ? cartProductQty + 1 : cartProductQty - 1
-			});
+			updateCartItems([
+				{
+					cartItemId: currentProductCartItem?._id!,
+					update: {
+						quantity:
+							cartItemQuantityChangeType === 'increment' ? cartProductQty + 1 : cartProductQty - 1
+					}
+				}
+			]);
 		}, 150);
 	}
 </script>
 
-{#if cartProductQty < 1}
-	<Button class="h-10" onclick={() => saveCartItems([{ designId, productId, quantity: 1 }])}
-		>Add to Cart</Button
+{#if !currentProductCartItemDisplay}
+	<Button
+		class="h-10"
+		onclick={() =>
+			currentProductCartItem
+				? updateCartItems([
+						{
+							cartItemId: currentProductCartItem?._id!,
+							update: {
+								savedForLater: 'no'
+							}
+						}
+					])
+				: saveCartItems([{ designId, productId, quantity: 1, savedForLater: 'no' }])}
 	>
+		Add to Cart
+	</Button>
 {/if}
 
-{#if cartProductQty > 0 && currentProductCartItem}
-	<div class="flex w-full items-center">
+{#if currentProductCartItemDisplay}
+	<div class="flex w-full items-center gap-x-2">
 		{@render CartQtyButton('decrement', CircleMinusIcon)}
 
 		<div class="flex h-10 flex-1 items-center justify-center">

@@ -15,6 +15,21 @@ import { vReturnedSuccessData } from '../../response/validator';
 import { doc } from 'convex-helpers/validators';
 import schema from '../../schema';
 
+export const getPoProductBySku = query({
+	args: {
+		poApiKey: v.string(),
+		sku: v.string()
+	},
+	returns: vReturnedSuccessData(v.object({ data: v.union(doc(schema, 'products'), v.null()) })),
+	handler: async (ctx, args) => {
+		authorization.authorizeProductOnboarding(args.poApiKey);
+
+		const product = await productModel.getProductBySku(ctx, args.sku);
+
+		return SuccessData({ data: product });
+	}
+});
+
 export const getPoProductsBySkus = query({
 	args: {
 		poApiKey: v.string(),
@@ -57,23 +72,23 @@ export const getProductCategoriesForSpace = query({
 	}
 });
 
-export const getClientProductsWithFilters = query({
+export const getClientProductsByFullTextSearch = query({
 	args: {
 		currencyCode: vCurrencyCode,
-		productFilter: v.optional(vProductFilter),
-		paginationOptions: v.optional(vProductPaginationOptions),
-		sortOptions: v.optional(vProductSortOptions)
+		searchText: v.optional(v.string())
 	},
-	handler: async (ctx, { currencyCode, ...otherArgs }) => {
+	handler: async (ctx, { currencyCode, searchText }) => {
 		await authorization.userIsAuthenticated(ctx);
 
-		const clientProductPaginationResult = await productModel.getClientProductsWithFilters(
+		if (!searchText) return SuccessData({ clientProducts: [] });
+
+		const clientProducts = await productModel.getClientProductsByFullTextSearch(
 			ctx,
 			currencyCode,
-			otherArgs
+			searchText
 		);
 
-		return SuccessData(clientProductPaginationResult);
+		return SuccessData({ clientProducts });
 	}
 });
 
