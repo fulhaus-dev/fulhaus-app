@@ -20,30 +20,28 @@
 		</Link>
 	</div>
 
-	{#if page.route.id !== '/maintenance'}
-		<!-- <menu class="flex flex-1 items-center justify-center gap-x-8">
+	<!-- <menu class="flex flex-1 items-center justify-center gap-x-8">
 		<Link href={`/${workspaceId}/ludwig`}>Ludwig</Link>
 		<Link href="/shop-designs">Shop Designs</Link>
 		<Link href="/inspiration">Inspiration</Link>
 	</menu> -->
 
-		<menu class="flex flex-1 items-center justify-end gap-x-6">
-			<div class="flex items-center gap-x-2">
-				<NavbarCurrencyDropdownMenu />
+	<menu class="flex flex-1 items-center justify-end gap-x-6">
+		<div class="flex items-center gap-x-2">
+			<NavbarCurrencyDropdownMenu />
 
-				<Link href={`/${workspaceId}/cart`}>
-					<CartPreviewIcon />
-				</Link>
-			</div>
-			<!-- <Link href="/#">
+			<Link href={`/${workspaceId}/cart`}>
+				<CartPreviewIcon />
+			</Link>
+		</div>
+		<!-- <Link href="/#">
 			{@render NavbarIcon(CircleQuestionMarkIcon)}
 		</Link> -->
-			<div class="flex items-center gap-x-2">
-				<NavbarWorkspacePlan />
-				<NavbarUserDropdownMenu />
-			</div>
-		</menu>
-	{/if}
+		<div class="flex items-center gap-x-2">
+			<NavbarWorkspacePlan />
+			<NavbarUserDropdownMenu />
+		</div>
+	</menu>
 </nav>
 <!-- 
 {#snippet NavbarIcon(NavbarIcon: typeof Icon)}

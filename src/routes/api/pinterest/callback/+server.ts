@@ -3,6 +3,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { APP_ENVIRONMENT, PINTEREST_USER_TOKEN_COOKIE_NAME } from '$env/static/private';
 import { tryCatch } from '$lib/utils/try-catch.js';
+import { QueryParams } from '$lib/enums.js';
 
 const encodeBase64 = (str: string) => {
 	return globalThis.Buffer?.from(str).toString('base64') ?? '';
@@ -46,5 +47,10 @@ export async function GET({ url, cookies }) {
 		maxAge: tokenData.expires_in
 	});
 
-	throw redirect(303, redirectTo);
+	redirect(
+		302,
+		`/pinterest/success?${QueryParams.PINTEREST_CALLBACK_REDIRECT_URL}=${encodeURIComponent(
+			redirectTo
+		)}`
+	);
 }
