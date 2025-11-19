@@ -29,7 +29,6 @@ async function executeFetch(
 			...options,
 			headers
 		});
-
 		if (!response.ok)
 			return {
 				error: {

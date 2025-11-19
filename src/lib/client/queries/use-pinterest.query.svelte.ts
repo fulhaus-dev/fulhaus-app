@@ -20,12 +20,10 @@ export function usePinterestQuery() {
 			`/api/pinterest/pins${bookmark ? `?bookmark=${bookmark}` : ''}`
 		);
 
-		console.log({ response, error: getPinsError });
-
 		loading = false;
 
 		if (getPinsError) {
-			error = getPinsError.message;
+			error = getPinsError.message ?? "Couldn't get user's pins";
 			return;
 		}
 
