@@ -61,9 +61,33 @@ export function usePaymentAction() {
 		window.location.href = response.checkoutUrl;
 	}
 
+	async function handleCreditOneOffPaymentCheckout(price: number) {
+		if (!currentWorkspaceId) return;
+
+		state.error = undefined;
+		state.loading = true;
+
+		const { data: response, error } = await asyncTryCatch(() =>
+			convexClient.action(api.v1.payment.action.getCreditOneOffPaymentCheckoutUrl, {
+				workspaceId: currentWorkspaceId,
+				price,
+				successUrl: `${window.location.origin}/payment/success`
+			})
+		);
+
+		if (error) {
+			state.error = error.message;
+			state.loading = false;
+			return;
+		}
+
+		window.location.href = response.checkoutUrl;
+	}
+
 	return {
 		paymentActionState: state,
 		handleCartCheckout,
-		handleCreditSubscriptionCheckout
+		handleCreditSubscriptionCheckout,
+		handleCreditOneOffPaymentCheckout
 	};
 }

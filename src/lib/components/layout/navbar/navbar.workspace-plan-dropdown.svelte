@@ -12,7 +12,7 @@
 	);
 </script>
 
-{#if workspacePlan}
+{#if workspacePlanQuery.workspacePlan}
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger class="cursor-pointer active:opacity-50">
 			{#if workspacePlan}

@@ -6,5 +6,6 @@ export const workspacePlanTable = defineTable({
 	workspaceId: v.id('workspaces'),
 	credit: v.number(),
 	used: v.number(),
-	plan: vWorkspacePlan
+	plan: vWorkspacePlan,
+	stripeSubscriptionId: v.optional(v.string())
 }).index('workspace_id', ['workspaceId']);

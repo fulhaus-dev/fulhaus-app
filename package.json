@@ -64,7 +64,7 @@
 		"ai": "^5.0.56",
 		"bits-ui": "^2.9.6",
 		"compressorjs": "^1.2.1",
-		"convex": "^1.28.1",
+		"convex": "^1.29.2",
 		"convex-helpers": "^0.1.104",
 		"dompurify": "^3.2.6",
 		"fast-geoip": "^1.1.88",

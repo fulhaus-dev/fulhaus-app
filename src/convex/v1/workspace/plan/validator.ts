@@ -11,5 +11,6 @@ export const vWorkspacePlan = v.union(
 export const vUpdateWorkspacePlan = v.object({
 	credit: v.optional(v.number()),
 	used: v.optional(v.number()),
-	plan: v.optional(vWorkspacePlan)
+	plan: v.optional(vWorkspacePlan),
+	stripeSubscriptionId: v.optional(v.string())
 });

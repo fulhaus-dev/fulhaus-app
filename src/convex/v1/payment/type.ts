@@ -1,14 +1,6 @@
 import { Infer } from 'convex/values';
-import { vWorkspacePlan } from '../workspace/plan/validator';
+import { vPaymentMetadata, vPaymentType } from './validator';
 
-export type PaymentType = 'cart' | 'credits';
+export type PaymentType = Infer<typeof vPaymentType>;
 
-export type WorkspacePlan = Infer<typeof vWorkspacePlan>;
-
-export type PaymentMetadata = {
-	workspaceId: string;
-	userId: string;
-	currencyCode: string;
-	plan?: WorkspacePlan;
-	type: PaymentType;
-};
+export type PaymentMetadata = Infer<typeof vPaymentMetadata>;

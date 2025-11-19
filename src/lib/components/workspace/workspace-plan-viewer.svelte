@@ -13,7 +13,9 @@
 
 <div class="w-full space-y-2">
 	<div class="space-y-1">
-		<h4 class="text-xs font-medium">{label}</h4>
+		<h4 class="text-xs font-medium">
+			{label} <span class="text-color-text-placeholder">({workspacePlan?.plan} Plan)</span>
+		</h4>
 		<p class="text-[10px] font-medium text-color-text-muted">
 			{`${workspacePlan?.used} / ${workspacePlan?.credit} credits used`}
 		</p>
@@ -47,7 +49,7 @@
 
 		{#if workspacePlanCreditPercentage < 100}
 			<p class="text-[10px] leading-none font-medium text-nowrap">
-				{`${100 - workspacePlanCreditPercentage}% used`}
+				{`${Math.round(100 - workspacePlanCreditPercentage)}% used`}
 			</p>
 		{/if}
 	</div>

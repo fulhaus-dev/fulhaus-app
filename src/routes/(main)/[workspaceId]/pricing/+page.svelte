@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { usePaymentAction } from '$lib/client/actions/use-payment.action.svelte';
+	import { useWorkspacePlanQuery } from '$lib/client/queries/use-workspace.query.svelte';
 	import Link from '$lib/components/link.svelte';
 	import FulhausLoader from '$lib/components/loaders/fulhaus-loader.svelte';
+	import PricingFreePlanBundlePaymentDialog from '$lib/components/pricing/pricing-free-plan-bundle-payment-dialog.svelte';
+	import PricingPlanFeature from '$lib/components/pricing/pricing-plan-feature.svelte';
 	import type { AppSubscriptionPlan } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import { BadgeCheckIcon } from '@lucide/svelte';
@@ -15,22 +18,23 @@
 		recommended: boolean;
 	};
 
+	const freePlan: PricingPlan = {
+		name: 'Free',
+		priceUSD: 0,
+		tokensIncluded: 400,
+		approximateRoomValue: 2,
+		additionalTokensPrice: 0.025,
+		recommended: false
+	};
+
 	const pricingPlans: PricingPlan[] = [
-		{
-			name: 'Free',
-			priceUSD: 0,
-			tokensIncluded: 400,
-			approximateRoomValue: 2,
-			additionalTokensPrice: 0.025,
-			recommended: false
-		},
 		{
 			name: 'Creator',
 			priceUSD: 25,
 			tokensIncluded: 2000,
 			approximateRoomValue: 10,
 			additionalTokensPrice: 0.02,
-			recommended: true
+			recommended: false
 		},
 		{
 			name: 'Professional',
@@ -58,6 +62,17 @@
 		// }
 	];
 
+	const pricingPlanClass: Record<AppSubscriptionPlan, number> = {
+		Free: 0,
+		Creator: 1,
+		Professional: 2,
+		Teams: 3,
+		Enterprise: 4
+	};
+
+	const workspacePlanQuery = useWorkspacePlanQuery();
+	const workspacePlan = $derived(workspacePlanQuery.workspacePlan);
+
 	const { paymentActionState, handleCreditSubscriptionCheckout } = usePaymentAction();
 </script>
 
@@ -72,51 +87,23 @@
 		<div>
 			<h1>Pricing</h1>
 			<p class="text-color-text-muted">
-				Choose a plan that works for you<br />~200 tokens/room
+				Choose a plan that works for you<br />~200 credits/room
 			</p>
 		</div>
 
 		<div class="grod-cols-1 grid gap-16 lg:grid-cols-3">
+			<PricingFreePlanBundlePaymentDialog>
+				{@render PricingPlanCard({
+					pricingPlan: freePlan,
+					onclick: () => {}
+				})}
+			</PricingFreePlanBundlePaymentDialog>
+
 			{#each pricingPlans as pricingPlan (pricingPlan.name)}
-				<button
-					class={cn(
-						'hover:ring-border-color-action-border w-full cursor-pointer space-y-8 rounded-lg border border-color-border-muted p-8 text-start hover:border-color-action-border hover:bg-color-background-surface hover:ring-2 lg:w-72',
-						pricingPlan.recommended && 'ring-border-color-action-border ring-2'
-					)}
-					type="button"
-					disabled={paymentActionState.loading}
-					onclick={() => handleCreditSubscriptionCheckout(pricingPlan.name)}
-				>
-					<div class="space-y-8 text-center">
-						<h3>{pricingPlan.name}</h3>
-						<p class="text-4xl leading-none">
-							${pricingPlan.priceUSD}<sup
-								class={cn('text-xs', pricingPlan.name === 'Free' && 'hidden')}>/month</sup
-							>
-							<span class="mt-1 block text-sm font-normal text-color-text-muted"
-								>Then <span class="font-medium text-color-text"
-									>${pricingPlan.additionalTokensPrice}</span
-								> per credit</span
-							>
-						</p>
-					</div>
-
-					<div class="space-y-4">
-						{@render PricingPlanFeature(
-							`${pricingPlan.tokensIncluded} credits included`,
-							pricingPlan.approximateRoomValue
-						)}
-						{@render PricingPlanFeature('Unlimited designs')}
-						{@render PricingPlanFeature('Unlimited visualizations')}
-						{@render PricingPlanFeature('Unlimited users')}
-					</div>
-
-					<div
-						class="flex h-10 w-full items-center justify-center rounded-md bg-color-action-background font-medium text-color-action-text lg:hidden"
-					>
-						Subscribe
-					</div>
-				</button>
+				{@render PricingPlanCard({
+					pricingPlan,
+					onclick: () => handleCreditSubscriptionCheckout(pricingPlan.name)
+				})}
 			{/each}
 		</div>
 
@@ -131,13 +118,75 @@
 	</div>
 </section>
 
-{#snippet PricingPlanFeature(label: string, approximateRoomValue?: number)}
-	<div class={cn('flex items-center gap-x-2', approximateRoomValue !== undefined && 'items-start')}>
-		<BadgeCheckIcon />
-		<p>
-			{label}<span class={cn('block text-xs', approximateRoomValue === undefined && 'hidden')}
-				>~{approximateRoomValue} rooms</span
+{#snippet PricingPlanCard({
+	pricingPlan,
+	onclick
+}: {
+	pricingPlan: PricingPlan;
+	onclick: () => void;
+})}
+	<button
+		class={cn(
+			'hover:ring-border-color-action-border relative w-full cursor-pointer space-y-8 rounded-lg border border-color-border-muted p-8 text-start  lg:w-80',
+			pricingPlan.name !== workspacePlan?.plan &&
+				'ring-border-color-action-border ring-2 hover:border-color-action-border hover:bg-color-background-surface hover:ring-2'
+		)}
+		type="button"
+		disabled={paymentActionState.loading ||
+			(pricingPlan.name === workspacePlan?.plan && pricingPlan.name !== 'Free')}
+		{onclick}
+	>
+		<div class="space-y-8 text-center">
+			<h3>{pricingPlan.name}</h3>
+			<p class="text-4xl leading-none">
+				${pricingPlan.priceUSD}<sup class={cn('text-xs', pricingPlan.name === 'Free' && 'hidden')}
+					>/month</sup
+				>
+				<span class="mt-1 block text-sm font-normal text-color-text-muted"
+					>Then <span class="font-medium text-color-text">${pricingPlan.additionalTokensPrice}</span
+					> per credit</span
+				>
+			</p>
+		</div>
+
+		<div class="space-y-4">
+			<PricingPlanFeature
+				label={`${pricingPlan.tokensIncluded} credits included`}
+				approximateRoomValue={pricingPlan.approximateRoomValue}
+			/>
+			<PricingPlanFeature label="Unlimited designs" />
+			<PricingPlanFeature label="Unlimited visualizations" />
+			<PricingPlanFeature label="Unlimited users" />
+		</div>
+
+		{#if pricingPlan.name === workspacePlan?.plan}
+			<div
+				class={cn(
+					'flex w-full flex-col items-center justify-center rounded-md border border-color-border p-2 text-center font-medium',
+					pricingPlan.name !== 'Free' && 'opacity-50'
+				)}
 			>
-		</p>
-	</div>
+				{#if pricingPlan.name === 'Free'}
+					<p>Your Current Plan</p>
+					<small class="opacity-80">
+						Buy additional credits ({`${pricingPlan.additionalTokensPrice} per credit`})
+					</small>
+				{:else}
+					<p>Your Current Plan</p>
+				{/if}
+			</div>
+		{/if}
+
+		{#if pricingPlan.name !== workspacePlan?.plan}
+			<div
+				class="flex w-full items-center justify-center rounded-md bg-color-action-background p-2 font-medium text-color-action-text"
+			>
+				{#if pricingPlanClass[pricingPlan.name] > pricingPlanClass[workspacePlan?.plan || 'Free']}
+					<p>Upgrade</p>
+				{:else}
+					<p>Downgrade</p>
+				{/if}
+			</div>
+		{/if}
+	</button>
 {/snippet}

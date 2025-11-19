@@ -4,6 +4,7 @@ import ServerError from '../response/error';
 import { FunctionName } from '../type';
 import chatModel from '../v1/chat/model';
 import userPermissionModel from '../v1/user/permission/model';
+import workspacePlanModel from '../v1/workspace/plan/model';
 
 type AuthorizationCtx = MutationCtx | QueryCtx;
 
@@ -66,11 +67,24 @@ function authorizeProductOnboarding(poApiKey: string) {
 	return poApiKey;
 }
 
+async function hasRoomCredits(ctx: AuthorizationCtx, workspaceId: Id<'workspaces'>) {
+	const workspacePlan = await workspacePlanModel.getWorkspacePlan(ctx, workspaceId);
+	if (!workspacePlan)
+		throw ServerError.Unauthorized('You have no more credits to perform this action.');
+
+	const availableCredits = workspacePlan.credit - workspacePlan.used;
+	if (availableCredits < 200)
+		throw ServerError.Unauthorized('You have no more credits to perform this action.');
+
+	return workspacePlan;
+}
+
 const authorization = {
 	userIsAuthenticated,
 	userIsWorkspaceMember,
 	workspaceMemberIsAuthorizedToPerformFunction,
 	isWorkspaceChat,
-	authorizeProductOnboarding
+	authorizeProductOnboarding,
+	hasRoomCredits
 };
 export default authorization;

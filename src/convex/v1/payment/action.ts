@@ -49,3 +49,22 @@ export const getCreditSubscriptionPaymentCheckoutUrl = action({
 		return SuccessData({ checkoutUrl });
 	}
 });
+
+export const getCreditOneOffPaymentCheckoutUrl = action({
+	args: {
+		workspaceId: v.id('workspaces'),
+		price: v.number(),
+		successUrl: v.string()
+	},
+	handler: async (ctx, args): Promise<{ checkoutUrl: string }> => {
+		const userId = await authorization.userIsAuthenticated(ctx);
+
+		const { data: checkoutUrl, error } = await paymentModel.getCreditOneOffPaymentCheckoutUrl(ctx, {
+			...args,
+			userId
+		});
+		if (error) throw ServerError.InternalServerError(error.message);
+
+		return SuccessData({ checkoutUrl });
+	}
+});

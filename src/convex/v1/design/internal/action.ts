@@ -168,6 +168,11 @@ export const generateDesignFurnitureRecommendation = internalAction({
 			}
 		});
 
+		await ctx.runMutation(internal.v1.workspace.plan.internal.mutation.updateWorkspaceCreditsUsed, {
+			workspaceId: design.workspaceId,
+			creditsUsed: 200
+		});
+
 		const totalPrice = ludwigRecommendedProducts.reduce((acc, product) => {
 			return (
 				acc +

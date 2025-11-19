@@ -1,4 +1,4 @@
-import { WorkspacePlan } from './type';
+import { WorkspacePlan } from '../workspace/plan/type';
 
 export const stripeSubscriptionPlanPriceId: Record<WorkspacePlan, string> = {
 	Creator: process.env.APP_SUB_CREATOR_PLAN_PRICE_ID!,
