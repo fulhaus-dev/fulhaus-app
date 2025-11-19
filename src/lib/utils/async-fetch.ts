@@ -29,14 +29,6 @@ async function executeFetch(
 			...options,
 			headers
 		});
-
-		console.log({
-			error: {
-				statusCode: response.status,
-				message: response.statusText
-			}
-		});
-
 		if (!response.ok)
 			return {
 				error: {
@@ -50,8 +42,6 @@ async function executeFetch(
 		};
 	} catch (unknownError) {
 		const errorResponse = error.exceptionError(unknownError);
-
-		console.log({ errorResponse });
 
 		return {
 			error: {
