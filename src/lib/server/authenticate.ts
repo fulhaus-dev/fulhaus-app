@@ -1,5 +1,7 @@
 import {
 	APP_ACTIVE_WORKSPACE_ID_COOKIE_NAME,
+	APP_ADMIN_ACCESS_TOKEN,
+	APP_ADMIN_ACCESS_TOKEN_COOKIE_NAME,
 	APP_CURRENT_USER_ID_COOKIE_NAME,
 	APP_ENVIRONMENT,
 	AUTH_ACTIVE_SESSION_STATUS_COOKIE_NAME,
@@ -32,6 +34,17 @@ export type SetAuthCookieData = {
 	sessionExpInDays: number;
 	tokenExpInMinutes: number;
 };
+
+export function setAppAdminCookie(cookies: Cookies) {
+	cookies.set(APP_ADMIN_ACCESS_TOKEN_COOKIE_NAME, APP_ADMIN_ACCESS_TOKEN, {
+		...cookieOptions,
+		maxAge: 60 * 60 * 24 * 365 // 1 year
+	});
+}
+
+export function getAppAdminCookie(cookies: Cookies) {
+	return cookies.get(APP_ADMIN_ACCESS_TOKEN_COOKIE_NAME);
+}
 
 function setAuthTokenCookie(cookies: Cookies, token: string, tokenCookieMaxAge: number) {
 	cookies.set(AUTH_TOKEN_COOKIE_NAME, token, {

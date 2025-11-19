@@ -31,7 +31,7 @@ importers:
         version: 3.913.0
       '@convex-dev/rate-limiter':
         specifier: ^0.2.12
-        version: 0.2.14(convex@1.29.2(react@19.2.0))(react@19.2.0)
+        version: 0.2.14(convex@1.29.3(react@19.2.0))(react@19.2.0)
       '@react-email/render':
         specifier: ^1.2.3
         version: 1.4.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -51,11 +51,11 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       convex:
-        specifier: ^1.29.2
-        version: 1.29.2(react@19.2.0)
+        specifier: ^1.29.3
+        version: 1.29.3(react@19.2.0)
       convex-helpers:
         specifier: ^0.1.104
-        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12)
+        version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12)
       dompurify:
         specifier: ^3.2.6
         version: 3.3.0
@@ -1927,8 +1927,8 @@ packages:
       zod:
         optional: true
 
-  convex@1.29.2:
-    resolution: {integrity: sha512-9QCj53/zFV+hHZRP8epU41a3NmOkYDdEtpvSPKjAZp6l60NMN+O3fyOX4r5Y6yzPIhsUpJvMH6xB5xwJTLz92A==}
+  convex@1.29.3:
+    resolution: {integrity: sha512-tg5TXzMjpNk9m50YRtdp6US+t7ckxE4E+7DNKUCjJ2MupQs2RBSPF/z5SNN4GUmQLSfg0eMILDySzdAvjTrhnw==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -3863,9 +3863,9 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.0.1': {}
 
-  '@convex-dev/rate-limiter@0.2.14(convex@1.29.2(react@19.2.0))(react@19.2.0)':
+  '@convex-dev/rate-limiter@0.2.14(convex@1.29.3(react@19.2.0))(react@19.2.0)':
     dependencies:
-      convex: 1.29.2(react@19.2.0)
+      convex: 1.29.3(react@19.2.0)
     optionalDependencies:
       react: 19.2.0
 
@@ -5371,16 +5371,16 @@ snapshots:
 
   consola@3.4.2: {}
 
-  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12):
+  convex-helpers@0.1.104(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12):
     dependencies:
-      convex: 1.29.2(react@19.2.0)
+      convex: 1.29.3(react@19.2.0)
     optionalDependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.2.0
       typescript: 5.9.3
       zod: 4.1.12
 
-  convex@1.29.2(react@19.2.0):
+  convex@1.29.3(react@19.2.0):
     dependencies:
       esbuild: 0.25.4
       prettier: 3.6.2
