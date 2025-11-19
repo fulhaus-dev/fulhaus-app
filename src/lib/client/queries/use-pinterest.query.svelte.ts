@@ -20,6 +20,8 @@ export function usePinterestQuery() {
 			`/api/pinterest/pins${bookmark ? `?bookmark=${bookmark}` : ''}`
 		);
 
+		console.log({ response, error: getPinsError });
+
 		loading = false;
 
 		if (getPinsError) {
