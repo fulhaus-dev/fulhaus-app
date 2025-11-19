@@ -23,7 +23,7 @@ export function usePinterestQuery() {
 		loading = false;
 
 		if (getPinsError) {
-			error = getPinsError.message ?? "Couldn't get user's pins";
+			error = getPinsError.message;
 			return;
 		}
 
