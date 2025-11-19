@@ -1,11 +1,12 @@
 import { PINTEREST_USER_TOKEN_COOKIE_NAME } from '$env/static/private';
 import type { ImageData, PinterestPinItem } from '$lib/types';
+import { error } from '@sveltejs/kit';
 
 const PAGINATION_SIZE = 50;
 
 export async function GET({ url, cookies }) {
 	const userToken = cookies.get(PINTEREST_USER_TOKEN_COOKIE_NAME);
-	if (!userToken) return new Response('Unauthorized', { status: 401 });
+	if (!userToken) throw error(401, 'Unauthorized');
 
 	const bookmark = url.searchParams.get('bookmark');
 	const endpoint = bookmark
