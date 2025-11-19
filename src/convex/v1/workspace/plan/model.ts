@@ -32,10 +32,14 @@ async function updateWorkspacePlanByWorkspaceId(
 	const workspacePlan = await getWorkspacePlan(ctx, workspaceId);
 	if (!workspacePlan) return;
 
+	const isNewCredit = args.credit !== undefined;
+
 	const update = {
 		...args,
-		credit: workspacePlan.credit + (args.credit ?? 0),
-		used: args.credit ? 0 : workspacePlan.used
+		credit: isNewCredit
+			? workspacePlan.credit - workspacePlan.used + (args.credit ?? 0)
+			: workspacePlan.credit,
+		used: isNewCredit ? 0 : workspacePlan.used
 	};
 
 	if (args.plan === 'Free') update.stripeSubscriptionId = undefined;

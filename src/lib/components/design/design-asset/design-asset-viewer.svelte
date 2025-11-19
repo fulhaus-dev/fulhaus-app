@@ -59,7 +59,10 @@
 
 	$effect(() => {
 		if (!exitAutoTab && hasDesignAssets) {
-			setTabValue('personal');
+			const tabValue = getTabValue();
+
+			if (tabValue === 'sample') setTabValue('personal');
+
 			exitAutoTab = true;
 		}
 	});

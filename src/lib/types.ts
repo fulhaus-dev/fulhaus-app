@@ -166,3 +166,51 @@ export type DesignLogUser = {
 };
 
 export type AppSubscriptionPlan = Doc<'workspacePlans'>['plan'];
+
+export type PinterestPinItem = {
+	id: string;
+	link: string;
+	board_owner: {
+		username: string;
+	};
+	description: string;
+	pin_metrics?: string;
+	title: string;
+	media: {
+		media_type: string;
+		images: {
+			'150x150': {
+				width: number;
+				height: number;
+				url: string;
+			};
+			'400x300': {
+				width: number;
+				height: number;
+				url: string;
+			};
+			'600x': {
+				width: number;
+				height: number;
+				url: string;
+			};
+			'1200x': {
+				width: number;
+				height: number;
+				url: string;
+			};
+		};
+	};
+	created_at: string;
+	product_tags: string[];
+	alt_text?: string;
+	board_section_id?: string;
+	is_removable: boolean;
+	dominant_color: string;
+	has_been_promoted: boolean;
+	board_id: string;
+	is_standard: boolean;
+	creative_type: string;
+	is_owner: boolean;
+	parent_pin_id: string;
+};

@@ -6,18 +6,10 @@
 	import Avatar from '$lib/components/avatar.svelte';
 	import FulhausLoader from '$lib/components/loaders/fulhaus-loader.svelte';
 	import { QueryParams } from '$lib/enums';
-	import {
-		BriefcaseBusinessIcon,
-		CircleUserRoundIcon,
-		Icon,
-		LockKeyholeOpenIcon,
-		LogOutIcon,
-		UserRoundCogIcon
-	} from '@lucide/svelte';
+	import { CircleUserRoundIcon, Icon, LockKeyholeOpenIcon, LogOutIcon } from '@lucide/svelte';
 	import { DropdownMenu } from 'bits-ui';
 	import { useCurrentWorkspaceQuery } from '$lib/client/queries/use-workspace.query.svelte';
 	import WorkspacePlanViewer from '$lib/components/workspace/workspace-plan-viewer.svelte';
-	import Button from '$lib/components/button.svelte';
 
 	const userQuery = useUserQuery();
 	const userProfile = $derived(userQuery.userProfile);
@@ -26,6 +18,8 @@
 	const currentWorkspace = $derived(currentWorkspaceQuery.currentWorkspace);
 
 	const isLoggedIn = $derived(!!userProfile._id);
+
+	let open = $state(false);
 </script>
 
 {#if auth.loggingOut}
@@ -34,7 +28,7 @@
 	</div>
 {/if}
 
-<DropdownMenu.Root>
+<DropdownMenu.Root bind:open>
 	<DropdownMenu.Trigger class="cursor-pointer active:opacity-50">
 		{#if isLoggedIn}
 			{@render UserAvatar()}
@@ -70,14 +64,7 @@
 								<h5>{currentWorkspace.name} Workspace</h5>
 							</div>
 
-							<WorkspacePlanViewer label="Credits" />
-
-							<DropdownMenu.Item
-								class="flex h-8 cursor-pointer items-center justify-center gap-x-2 rounded-md bg-color-action-background font-semibold text-color-action-text"
-								onSelect={() => goto(`/${currentWorkspace._id}/pricing`)}
-							>
-								Manage Subscription
-							</DropdownMenu.Item>
+							<WorkspacePlanViewer label="Credits" onManagePlan={() => (open = false)} />
 						</div>
 					</div>
 				</DropdownMenu.Group>

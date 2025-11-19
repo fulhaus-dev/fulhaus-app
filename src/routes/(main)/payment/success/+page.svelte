@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { QueryParams } from '$lib/enums';
 	import { CircleCheckBigIcon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	const activeWorkspaceId = page.data.activeWorkspaceId;
+	const redirectUrl = page.url.searchParams.get(QueryParams.PAYMENT_SUCCESS_REDIRECT_URL);
 
 	onMount(() => {
 		setTimeout(() => {
-			goto(`/${activeWorkspaceId}/ludwig`);
+			goto(redirectUrl ?? `/${activeWorkspaceId}/ludwig`);
 		}, 3000);
 	});
 </script>

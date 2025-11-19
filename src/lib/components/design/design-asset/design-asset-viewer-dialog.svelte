@@ -1,10 +1,11 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte';
 	import DesignAssetViewer from '$lib/components/design/design-asset/design-asset-viewer.svelte';
 	import { QueryParams } from '$lib/enums';
 	import { XIcon } from '@lucide/svelte';
 	import { Dialog } from 'bits-ui';
-	import type { Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 
 	type DesignAssetViewerDialogProps = {
 		class?: string;
@@ -16,7 +17,13 @@
 
 	let open = $state(false);
 
+	const activeDesignAssetTab = page.url.searchParams.get(QueryParams.ACTIVE_DESIGN_ASSET_TAB);
+
 	const { updateRouteQuery } = useRouteMutation();
+
+	onMount(() => {
+		if (activeDesignAssetTab) open = true;
+	});
 </script>
 
 <Dialog.Root
