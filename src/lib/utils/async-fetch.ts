@@ -33,7 +33,7 @@ async function executeFetch(
 			return {
 				error: {
 					statusCode: response.status,
-					message: response.statusText
+					message: response.statusText === '' ? 'An unknown error occurred' : response.statusText
 				}
 			};
 
@@ -46,7 +46,7 @@ async function executeFetch(
 		return {
 			error: {
 				statusCode: errorResponse.statusCode,
-				message: errorResponse.message
+				message: errorResponse.message === '' ? 'An unknown error occurred' : errorResponse.message
 			}
 		};
 	}
