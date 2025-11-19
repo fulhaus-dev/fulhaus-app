@@ -6,7 +6,7 @@ function exceptionError(error: unknown) {
 	const errorResponse: ErrorRecord = { statusCode: 500, message: 'An unknown error occurred' };
 
 	// Check if the error is an instance of Error
-	if (error instanceof Error) errorResponse.message = error.message;
+	if (error instanceof Error) errorResponse.message = error.message ?? 'An unknown error occurred';
 
 	if (error instanceof ConvexError) {
 		errorResponse.message = error.data.message;
