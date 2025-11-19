@@ -3,6 +3,7 @@ import type { Id } from '../../../convex/_generated/dataModel.js';
 import { page } from '$app/state';
 import type { Doc } from '../../../convex/_generated/dataModel.js';
 import { useConvexQuerySubscription } from '$lib/client/convex/use-convex-query-subscription.svelte.js';
+import { QueryParams } from '$lib/enums.js';
 
 export function useCurrentWorkspaceQuery() {
 	const currentWorkspaceId = page.params.workspaceId as Id<'workspaces'>;
@@ -72,6 +73,15 @@ export function useWorkspacePlanQuery() {
 		},
 		get workspacePlan() {
 			return query.response;
+		},
+		get hasSufficientRoomTokens() {
+			const tokensLeft = (query.response?.credit ?? 0) - (query.response?.used ?? 0);
+			const hasSufficientTokens = tokensLeft >= 200;
+
+			return query.loading ? true : hasSufficientTokens;
+		},
+		get planRedirectQuery() {
+			return `${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`;
 		}
 	});
 

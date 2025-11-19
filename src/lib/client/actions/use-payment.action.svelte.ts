@@ -4,6 +4,7 @@ import { page } from '$app/state';
 import { asyncTryCatch } from '$lib/utils/try-catch.js';
 import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js';
 import type { AppSubscriptionPlan } from '$lib/types.js';
+import { QueryParams } from '$lib/enums.js';
 
 export function usePaymentAction() {
 	const convexClient = useConvexClient();
@@ -14,6 +15,10 @@ export function usePaymentAction() {
 		loading: false,
 		error: undefined as string | undefined
 	});
+
+	const paymentSuccessRedirectUrl = page.url.searchParams.get(
+		QueryParams.PAYMENT_SUCCESS_REDIRECT_URL
+	);
 
 	async function handleCartCheckout() {
 		if (!currentWorkspaceId) return;
@@ -48,7 +53,7 @@ export function usePaymentAction() {
 			convexClient.action(api.v1.payment.action.getCreditSubscriptionPaymentCheckoutUrl, {
 				workspaceId: currentWorkspaceId,
 				plan: subscriptionPlan,
-				successUrl: `${window.location.origin}/payment/success`
+				successUrl: `${window.location.origin}/payment/success${paymentSuccessRedirectUrl ? `?${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(paymentSuccessRedirectUrl)}` : ''}`
 			})
 		);
 
@@ -71,7 +76,7 @@ export function usePaymentAction() {
 			convexClient.action(api.v1.payment.action.getCreditOneOffPaymentCheckoutUrl, {
 				workspaceId: currentWorkspaceId,
 				price,
-				successUrl: `${window.location.origin}/payment/success`
+				successUrl: `${window.location.origin}/payment/success${paymentSuccessRedirectUrl ? `?${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(paymentSuccessRedirectUrl)}` : ''}`
 			})
 		);
 

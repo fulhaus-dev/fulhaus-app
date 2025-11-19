@@ -1,8 +1,16 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { useWorkspacePlanQuery } from '$lib/client/queries/use-workspace.query.svelte';
+	import Button from '$lib/components/button.svelte';
+	import ManageWorkspacePlanNavButton from '$lib/components/workspace/manage-workspace-plan-nav-button.svelte';
 	import { cn } from '$lib/utils/cn';
 
-	const { label }: { label: string } = $props();
+	type WorkspacePlanViewerProps = {
+		label: string;
+		onManagePlan: () => void;
+	};
+
+	const { label, onManagePlan }: WorkspacePlanViewerProps = $props();
 
 	const workspacePlanQuery = useWorkspacePlanQuery();
 	const workspacePlan = $derived(workspacePlanQuery.workspacePlan);
@@ -53,4 +61,6 @@
 			</p>
 		{/if}
 	</div>
+
+	<ManageWorkspacePlanNavButton {onManagePlan} />
 </div>
