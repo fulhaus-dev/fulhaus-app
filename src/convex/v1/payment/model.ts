@@ -84,6 +84,9 @@ async function getCartPaymentCheckoutUrl(
 			metadata: paymentMetadata,
 			adaptive_pricing: {
 				enabled: true
+			},
+			automatic_tax: {
+				enabled: true
 			}
 		})
 	);
