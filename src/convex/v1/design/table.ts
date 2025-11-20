@@ -22,6 +22,7 @@ export const designTable = defineTable({
 	publishedAt: v.optional(v.number()),
 	fullTextSearch: v.string(),
 	currencyCode: vCurrencyCode,
+	price: v.optional(v.float64()),
 	createdById: v.id('users'),
 	updatedById: v.id('users'),
 	updatedAt: v.number(),

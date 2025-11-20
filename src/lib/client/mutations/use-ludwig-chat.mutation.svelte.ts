@@ -14,7 +14,7 @@ import { Chat } from '@ai-sdk/svelte';
 import { goto } from '$app/navigation';
 import type { ChatUser } from '$lib/types.js';
 import autoScroll from '$lib/dom-actions/auto-scroll.js';
-import { onDestroy } from 'svelte';
+import { onDestroy, onMount } from 'svelte';
 
 const toolLoadingLabels: Record<string, string> = {
 	getProductCategoriesForDesign: 'Generating product categories...',
@@ -86,6 +86,10 @@ export function useLudwigChatMutation() {
 		if (state.currentInputToolName !== 'generateDesignFurnitureRecommendation') return false;
 
 		return true;
+	});
+
+	onMount(() => {
+		if (!page.data.authToken) window.location.reload();
 	});
 
 	$effect(() => {

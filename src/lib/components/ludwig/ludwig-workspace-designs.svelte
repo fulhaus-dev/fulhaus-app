@@ -26,6 +26,7 @@
 	import DesignTagButton from '$lib/components/design/design-tag-button.svelte';
 	import Checkbox from '$lib/components/checkbox.svelte';
 	import DesignSharePopover from '$lib/components/design/design-share-popover.svelte';
+	import number from '$lib/utils/number';
 
 	type WorkspaceDesignsView = 'grid' | 'list';
 
@@ -43,6 +44,8 @@
 	let openAddDesignTag = $state<Id<'designs'>>();
 
 	let selectedDesignIds = $state<Id<'designs'>[]>([]);
+
+	let activeSharePopoverDesignId = $state<Id<'designs'>>();
 
 	const workspaceUniqueDesignSpaces = $derived.by(
 		() => uniqueDesignSpacesForWorkspaceQuery.uniqueSpaces
@@ -258,32 +261,21 @@
 
 {#snippet WorkspaceDesignsGrid()}
 	<div
-		class="grid min-h-[calc(100vh-12rem)] grid-cols-1 gap-8 bg-color-background px-2 pt-2 pb-80 text-sm lg:grid-cols-3 lg:px-8 lg:pb-20 2xl:grid-cols-5"
+		class="grid min-h-[calc(100vh-12rem)] grid-cols-1 gap-4 bg-color-background px-2 pt-2 pb-80 text-sm lg:grid-cols-5 lg:px-8 lg:pb-20 2xl:grid-cols-9"
 	>
 		{#each workspaceDesigns as workspaceDesign (workspaceDesign.design._id)}
-			<div class="relative flex flex-col gap-y-4 text-start">
+			<div class="relative flex flex-col gap-y-1 text-start">
 				<div class="group relative cursor-pointer">
-					<div class="absolute top-0 right-0 left-0 z-1 flex justify-between overflow-auto p-4">
+					<div class="absolute top-0 right-0 left-0 z-1 flex justify-between overflow-auto p-2">
 						<Checkbox
 							value={workspaceDesign.design._id}
 							checked={selectedDesignIds.includes(workspaceDesign.design._id)}
 							onchange={(e) => onSelectDesign(workspaceDesign.design._id, e.currentTarget.checked)}
 						/>
-
-						<Button
-							class="h-fit w-fit rounded-full px-2 py-1 text-xs"
-							type="button"
-							onclick={() =>
-								goto(
-									`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
-								)}
-						>
-							<span>View Design</span>
-						</Button>
 					</div>
 
 					<button
-						class="h-88 w-full cursor-pointer rounded-md"
+						class="relative h-60 w-full cursor-pointer rounded-md"
 						type="button"
 						onclick={() =>
 							goto(
@@ -298,19 +290,51 @@
 						/>
 					</button>
 
-					<div class="absolute right-2 bottom-2 z-1">
-						<DesignSharePopover designId={workspaceDesign.design._id}>
-							<Tooltip content="Share design">
-								<div class="size-6 rounded-full bg-color-background p-1 text-xs">
-									<Share2Icon class="size-full" />
-								</div>
-							</Tooltip>
-						</DesignSharePopover>
+					<div class="group">
+						<Button
+							class="absolute top-1/2 left-1/2 z-1 hidden h-fit w-fit -translate-x-1/2 -translate-y-1/2 transform rounded-full px-1.5 py-px text-xs group-hover:flex"
+							type="button"
+							onclick={() =>
+								goto(
+									`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
+								)}
+						>
+							<span>View Design</span>
+						</Button>
+
+						<div
+							class={cn(
+								'absolute right-2 bottom-2 z-1 hidden group-hover:block',
+								activeSharePopoverDesignId === workspaceDesign.design._id && 'block'
+							)}
+						>
+							<DesignSharePopover
+								designId={workspaceDesign.design._id}
+								onOpenChange={(open) => {
+									if (open) activeSharePopoverDesignId = workspaceDesign.design._id;
+									else activeSharePopoverDesignId = undefined;
+								}}
+							>
+								<Tooltip content="Share design">
+									<div class="size-6 rounded-full bg-color-background p-1 text-xs">
+										<Share2Icon class="size-full" />
+									</div>
+								</Tooltip>
+							</DesignSharePopover>
+						</div>
 					</div>
 				</div>
 
-				<div class="space-y-2 px-2">
-					<h4 class="text-lg font-medium">{workspaceDesign.design.name}</h4>
+				<div class="space-y-2 px-1">
+					<div>
+						<h4 class="text-sm font-medium">{workspaceDesign.design.name}</h4>
+						<h5 class="text-xs font-medium text-gray-500">
+							{number.toMoney(
+								workspaceDesign.design.price ?? 0,
+								workspaceDesign.design.currencyCode
+							)}
+						</h5>
+					</div>
 					<div
 						role="group"
 						class="flex flex-1 flex-wrap gap-1"
@@ -319,8 +343,8 @@
 						onfocus={() => (hoveredDesignTags = workspaceDesign.design._id)}
 						onblur={() => (hoveredDesignTags = undefined)}
 					>
-						<div class="hidden w-fit flex-wrap gap-2 lg:flex">
-							{#each hoveredDesignTags === workspaceDesign.design._id || openAddDesignTag === workspaceDesign.design._id ? workspaceDesign.designTags : workspaceDesign.designTags.slice(0, 3) as designTag (designTag._id)}
+						<div class="hidden w-fit flex-wrap gap-1 lg:flex">
+							{#each hoveredDesignTags === workspaceDesign.design._id || openAddDesignTag === workspaceDesign.design._id ? workspaceDesign.designTags : workspaceDesign.designTags.slice(0, 2) as designTag (designTag._id)}
 								{@render WorkspaceDesignTag(designTag)}
 							{/each}
 
@@ -377,6 +401,7 @@
 					<th scope="col" class="px-4 py-3"> </th>
 					<th scope="col" class="px-4 py-3"></th>
 					<th scope="col" class="px-4 py-3">Name</th>
+					<th scope="col" class="px-4 py-3">Price</th>
 					<th scope="col" class="px-4 py-3">Tags</th>
 					<th scope="col" class="px-4 py-3"></th>
 					<th scope="col" class="px-4 py-3"></th>
@@ -411,6 +436,14 @@
 									`/${workspaceDesign.design.workspaceId}/design?${QueryParams.LUDWIG_CHAT_ID}=${workspaceDesign.design.chatId}`
 								)}>{workspaceDesign.design.name}</td
 						>
+
+						<td class="px-4 py-1 font-medium">
+							{number.toMoney(
+								workspaceDesign.design.price ?? 0,
+								workspaceDesign.design.currencyCode
+							)}</td
+						>
+
 						<td class="max-w-[24%] px-4 py-1">
 							<div class="flex flex-wrap gap-1">
 								{#each workspaceDesign.designTags as designTag (designTag._id)}

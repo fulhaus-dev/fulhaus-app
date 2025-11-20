@@ -37,7 +37,7 @@
 				(userUiMessage.parts.some((part) => part.type === 'file') && 'items-start')
 		)}
 	>
-		<Avatar class="size-8" src={user.imageUrl} fullName={user.fullName} />
+		<Avatar class="size-8" src={user?.imageUrl} fullName={user?.fullName} />
 
 		<div>
 			{#each userUiMessage.parts as part, partIndex (`${partIndex}-${userUiMessage.role}-${userUiMessage.id}`)}
