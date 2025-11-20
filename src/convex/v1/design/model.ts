@@ -8,6 +8,7 @@ import { UniqueSpace } from './type';
 import { CurrencyCode } from '../../type';
 import designUtil from './util';
 import designLogModel from './log/model';
+import { internal } from '../../_generated/api';
 
 async function createDesign(
 	ctx: MutationCtx,
@@ -79,6 +80,18 @@ async function updateDesignById(
 			createdById: userId
 		})
 	]);
+
+	await ctx.scheduler.runAfter(0, internal.v1.design.internal.mutation.updateDesignPrice, {
+		userId,
+		currencyCode: design.currencyCode,
+		designId
+	});
+}
+
+async function updateDesignPrice(ctx: MutationCtx, designId: Id<'designs'>, price: number) {
+	await ctx.db.patch(designId, {
+		price
+	});
 }
 
 async function getDesignProducts(
@@ -164,6 +177,7 @@ const designModel = {
 	getDesignByChatId,
 	getDesignsByWorkspaceId,
 	updateDesignById,
+	updateDesignPrice,
 	getDesignProducts,
 	getDesignProductsByChatId,
 	getExistingDesignsWithFloorPlanUrl,

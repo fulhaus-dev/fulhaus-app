@@ -51,6 +51,11 @@ function setAuthTokenCookie(cookies: Cookies, token: string, tokenCookieMaxAge: 
 		...cookieOptions,
 		maxAge: tokenCookieMaxAge
 	});
+
+	cookies.set(AUTH_ACTIVE_SESSION_STATUS_COOKIE_NAME, 'true', {
+		...cookieOptions,
+		maxAge: 60 * 60 // 1 hour
+	});
 }
 
 export function setAuthCookies(cookies: Cookies, setAuthCookieData: SetAuthCookieData) {
@@ -75,10 +80,6 @@ export function setAuthCookies(cookies: Cookies, setAuthCookieData: SetAuthCooki
 	cookies.set(APP_CURRENT_USER_ID_COOKIE_NAME, userId, {
 		...cookieOptions,
 		maxAge: sessionCookieMaxAge
-	});
-
-	cookies.set(AUTH_ACTIVE_SESSION_STATUS_COOKIE_NAME, 'true', {
-		...cookieOptions
 	});
 }
 

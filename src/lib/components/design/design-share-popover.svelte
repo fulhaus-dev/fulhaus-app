@@ -13,9 +13,10 @@
 		designId: Id<'designs'>;
 		children: Snippet;
 		align?: 'start' | 'center' | 'end';
+		onOpenChange?: (open: boolean) => void;
 	};
 
-	let { designId, children, align = 'center' }: DesignSharePopoverProps = $props();
+	let { designId, children, align = 'center', onOpenChange }: DesignSharePopoverProps = $props();
 	let shareLink = $derived(
 		`${PUBLIC_APP_URL}/design/s/${designId}?${QueryParams.DESIGN_CURRENCY_CODE}=${page.data.currencyCode}`
 	);
@@ -28,7 +29,7 @@
 	}
 </script>
 
-<Popover.Root>
+<Popover.Root {onOpenChange}>
 	<Popover.Trigger>{@render children()}</Popover.Trigger>
 	<Popover.Portal>
 		<Popover.Content
