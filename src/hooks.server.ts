@@ -30,7 +30,10 @@ export const handle = async ({ event, resolve }) => {
 
 	if (isAppAdminAccessToken && !appAdminAccessTokenFromCookie) setAppAdminCookie(event.cookies);
 
-	if (!isAppAdminAccessToken) {
+	const isApiRoute = pathname.startsWith('/api');
+	const isPinterestSuccessPage = pathname === '/pinterest/success';
+
+	if (!isAppAdminAccessToken && !isApiRoute && !isPinterestSuccessPage) {
 		if (pathname === '/maintenance' && APP_MAINTENANCE_MODE !== 'true') throw redirect(303, '/');
 
 		if (APP_MAINTENANCE_MODE === 'true' && pathname !== '/maintenance')
