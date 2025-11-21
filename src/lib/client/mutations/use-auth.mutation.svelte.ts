@@ -370,8 +370,6 @@ export function useAuthMutation() {
 			state.loading = false;
 			return;
 		}
-
-		console.log('User migrated successfully', state.oldUserEmail);
 	}
 
 	return {

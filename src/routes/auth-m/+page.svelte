@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import Button from '$lib/components/button.svelte';
 	import ErrorText from '$lib/components/error-text.svelte';
 	import TextInput from '$lib/components/text-input.svelte';
@@ -83,4 +83,4 @@
 	<section class="sticky top-0 hidden h-full flex-1 overflow-y-hidden rounded-lg lg:block">
 		<ImageMasonry images={sampleInspoImages} />
 	</section>
-</main>
+</main> -->
