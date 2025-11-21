@@ -16,7 +16,6 @@ import { CurrencyCode, FloorPlanFile } from '../../../type';
 import { internal } from '../../../_generated/api';
 import { Infer } from 'convex/values';
 import { vChatUiMessage } from '../../chat/validator';
-import { checkCors } from '../../../middleware/cors';
 
 type LudwigChatMetadata = {
 	chatId: Id<'chats'>;
@@ -26,8 +25,6 @@ type LudwigChatMetadata = {
 };
 
 export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
-	const origin = checkCors(request);
-
 	const workspaceId = request.headers.get('X-Workspace-Id') as Id<'workspaces'>;
 	if (!workspaceId || workspaceId === '') throw ServerError.BadRequest('Workspace ID not found.');
 
@@ -133,8 +130,6 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 			}
 		}
 	});
-
-	stream.headers.set('Access-Control-Allow-Origin', origin);
 
 	return stream;
 });

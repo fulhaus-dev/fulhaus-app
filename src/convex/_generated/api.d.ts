@@ -20,7 +20,6 @@ import type * as constant from "../constant.js";
 import type * as email_internal_action from "../email/internal/action.js";
 import type * as http from "../http.js";
 import type * as middleware_authorization from "../middleware/authorization.js";
-import type * as middleware_cors from "../middleware/cors.js";
 import type * as middleware_http_authorization from "../middleware/http/authorization.js";
 import type * as middleware_internal_query from "../middleware/internal/query.js";
 import type * as response_error from "../response/error.js";
@@ -188,7 +187,6 @@ declare const fullApi: ApiFromModules<{
   "email/internal/action": typeof email_internal_action;
   http: typeof http;
   "middleware/authorization": typeof middleware_authorization;
-  "middleware/cors": typeof middleware_cors;
   "middleware/http/authorization": typeof middleware_http_authorization;
   "middleware/internal/query": typeof middleware_internal_query;
   "response/error": typeof response_error;

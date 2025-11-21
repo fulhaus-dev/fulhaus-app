@@ -4,7 +4,6 @@ import { uploadWorkspaceAsset } from './v1/workspace/asset/http/action';
 import { streamLudwigChatResponse } from './v1/ludwig/http/action';
 import { httpAction } from './_generated/server';
 import { getLudwigProductRecommendationsByCategory } from './v1/product/http/action';
-import { checkCors } from './middleware/cors';
 import { internal } from './_generated/api';
 import { PaymentMetadata } from './v1/payment/type';
 
@@ -26,25 +25,6 @@ http.route({
 	path: '/ludwig/stream-chat',
 	method: 'POST',
 	handler: streamLudwigChatResponse
-});
-
-http.route({
-	path: '/ludwig/stream-chat',
-	method: 'OPTIONS',
-	handler: httpAction(async (_, request) => {
-		const origin = checkCors(request);
-
-		const reqHeaders = request.headers.get('Access-Control-Request-Headers') ?? '';
-
-		return new Response(null, {
-			headers: new Headers({
-				'Access-Control-Allow-Origin': origin,
-				'Access-Control-Allow-Methods': 'POST',
-				'Access-Control-Allow-Headers': reqHeaders,
-				'Access-Control-Max-Age': '86400'
-			})
-		});
-	})
 });
 
 http.route({
