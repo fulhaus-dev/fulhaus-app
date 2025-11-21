@@ -12,6 +12,7 @@ const PUBLIC_ROUTES = [
 	'/shop-designs',
 	'/inspiration',
 	'/design',
+	'/payment',
 	'/pinterest',
 	'/maintenance',
 	'/favicon.ico',
