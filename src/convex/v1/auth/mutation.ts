@@ -10,6 +10,7 @@ import authorization from '../../middleware/authorization';
 import { internal } from '../../_generated/api';
 import { SuccessData, SuccessMessage } from '../../response/success';
 import { vCurrencyCode } from '../../validator';
+import workspacePlanModel from '../workspace/plan/model';
 
 export const sendAuthOtp = mutation({
 	args: {
@@ -111,5 +112,49 @@ export const logout = mutation({
 		await authModel.deleteSession(ctx, session._id);
 
 		return SuccessMessage("You've been logged out.");
+	}
+});
+
+export const oldUserMigration = mutation({
+	args: {
+		email: v.string(),
+		fullName: v.string(),
+		currencyCode: vCurrencyCode,
+		credits: v.number()
+	},
+	handler: async (ctx, { email, fullName, currencyCode, credits }) => {
+		const existingUser = await userModel.getUserByEmail(ctx, email);
+		if (existingUser)
+			return SuccessData({
+				userId: existingUser._id
+			});
+
+		const newUserData = await userModel.createUser(ctx, { email, currencyCode });
+
+		const newUserId = newUserData.userId;
+
+		const fullNameSplit = fullName.split(' ');
+
+		const firstName = fullNameSplit[0];
+		const lastName = fullNameSplit[fullNameSplit.length - 1];
+
+		await Promise.all([
+			userModel.updateUserById(ctx, {
+				userId: newUserId,
+				updates: {
+					firstName,
+					lastName,
+					fullName
+				}
+			}),
+			workspacePlanModel.updateWorkspacePlanByWorkspaceId(ctx, newUserData.workspaceId, {
+				plan: 'Free',
+				credit: credits
+			})
+		]);
+
+		return SuccessData({
+			userId: newUserId
+		});
 	}
 });

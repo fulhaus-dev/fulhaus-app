@@ -11,6 +11,7 @@ import { QueryParams } from '$lib/enums.js';
 import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js';
 import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte.js';
 import { onMount } from 'svelte';
+import type { CurrencyCode } from '$lib/types.js';
 
 type AuthStep = 'email' | 'otp' | 'name' | 'reason' | 'find';
 
@@ -43,7 +44,12 @@ export function useAuthMutation() {
 		resentVerificationCode: false,
 		verificationCodeExpiresAt: 45000,
 		verificationCodeElapsedTime: 45000,
-		serverError: undefined as string | undefined
+		serverError: undefined as string | undefined,
+
+		oldUserEmail: undefined as string | undefined,
+		oldUserFullName: undefined as string | undefined,
+		oldUserCurrencyCode: undefined as CurrencyCode | undefined,
+		oldUserCredits: undefined as number | undefined
 	});
 
 	onMount(() => {
@@ -331,6 +337,43 @@ export function useAuthMutation() {
 		window.location.reload();
 	}
 
+	async function onSubmitMigrateOldUser(
+		event: SubmitEvent & {
+			currentTarget: EventTarget & HTMLFormElement;
+		}
+	) {
+		event.preventDefault();
+		state.serverError = undefined;
+
+		if (
+			!state.oldUserEmail ||
+			!state.oldUserFullName ||
+			!state.oldUserCurrencyCode ||
+			!state.oldUserCredits
+		) {
+			state.serverError = 'All fields are required';
+			return;
+		}
+
+		state.loading = true;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.auth.mutation.oldUserMigration, {
+				email: state.oldUserEmail!,
+				fullName: state.oldUserFullName!,
+				currencyCode: state.oldUserCurrencyCode!,
+				credits: Number(`${state.oldUserCredits ?? 0}`)
+			})
+		);
+		if (error) {
+			state.serverError = error.message;
+			state.loading = false;
+			return;
+		}
+
+		console.log('User migrated successfully', state.oldUserEmail);
+	}
+
 	return {
 		auth: state,
 		getInputErrors,
@@ -340,6 +383,7 @@ export function useAuthMutation() {
 		onSubmitNewUserProfile,
 		onSubmitWhatBroughtYouHere,
 		onSubmitHowDidYouFindUs,
-		onLogout
+		onLogout,
+		onSubmitMigrateOldUser
 	};
 }
