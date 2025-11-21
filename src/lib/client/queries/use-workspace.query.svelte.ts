@@ -80,6 +80,12 @@ export function useWorkspacePlanQuery() {
 
 			return query.loading ? true : hasSufficientTokens;
 		},
+		get hasSufficientRenderTokens() {
+			const tokensLeft = (query.response?.credit ?? 0) - (query.response?.used ?? 0);
+			const hasSufficientTokens = tokensLeft >= 100;
+
+			return query.loading ? true : hasSufficientTokens;
+		},
 		get planRedirectQuery() {
 			return `${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`;
 		}

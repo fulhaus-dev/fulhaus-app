@@ -7,7 +7,6 @@ export const productTable = defineTable({
 	embeddingId: v.id('productEmbeddings'),
 	stockDate: v.number(),
 	status: vProductStatus,
-	fullTextSearch: v.string(),
 	updatedAt: v.number()
 })
 	.index('by_sku', ['sku', 'ownerId'])

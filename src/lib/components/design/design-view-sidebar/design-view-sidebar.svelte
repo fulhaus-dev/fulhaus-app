@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { useDesignMutation } from '$lib/client/mutations/use-design.mutation.svelte';
+	import { useWorkspacePlanQuery } from '$lib/client/queries/use-workspace.query.svelte';
 	import Button from '$lib/components/button.svelte';
 	import DesignRenderViewerDialog from '$lib/components/design/design-view-sidebar/design-render-viewer-dialog.svelte';
 	import DesignViewSidebarCartButton from '$lib/components/design/design-view-sidebar/design-view-sidebar-cart-button.svelte';
 	import LudwigLoader from '$lib/components/loaders/ludwig-loader.svelte';
+	import ManageWorkspacePlanNavButton from '$lib/components/workspace/manage-workspace-plan-nav-button.svelte';
 	import type { Design } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
 	import { SparklesIcon } from '@lucide/svelte';
@@ -20,6 +22,9 @@
 	);
 
 	const { regenerateRender } = useDesignMutation();
+
+	const workspacePlanQuery = useWorkspacePlanQuery();
+	const hasSufficientRenderTokens = $derived(workspacePlanQuery.hasSufficientRenderTokens);
 </script>
 
 <div class="h-full space-y-4 overflow-y-auto pb-40">
@@ -62,14 +67,31 @@
 		</DesignRenderViewerDialog>
 
 		{#if !design.renderingImage}
-			<Button
-				class="absolute right-2 bottom-2 z-10 h-fit w-fit bg-color-background/80 py-1 text-sm"
-				variant="outlined"
-				onclick={() => regenerateRender(design._id)}
-			>
-				<SparklesIcon class="size-4" />
-				<span>Regenerate</span>
-			</Button>
+			<div class="absolute right-2 bottom-2 z-10 h-fit w-fit">
+				{#if hasSufficientRenderTokens}
+					<Button
+						class="h-fit w-fit bg-color-background/80 py-1 text-sm"
+						variant="outlined"
+						onclick={() => regenerateRender(design._id)}
+					>
+						<SparklesIcon class="size-4" />
+						<span>Regenerate</span>
+					</Button>
+				{:else}
+					<div class="mx-auto w-full max-w-[16rem] rounded-md bg-color-background p-1.5">
+						<div class="mx-auto w-full space-y-1.5">
+							<p class="rounded-md px-2 text-xs text-color-error-text">
+								You have insufficient credits left to regenerate render.
+							</p>
+
+							<ManageWorkspacePlanNavButton
+								class="h-8 bg-color-background/80 text-sm"
+								variant="outlined"
+							/>
+						</div>
+					</div>
+				{/if}
+			</div>
 		{/if}
 	</div>
 

@@ -170,7 +170,7 @@ export const generateDesignFurnitureRecommendation = internalAction({
 
 		await ctx.runMutation(internal.v1.workspace.plan.internal.mutation.updateWorkspaceCreditsUsed, {
 			workspaceId: design.workspaceId,
-			creditsUsed: 200
+			creditsUsed: 100
 		});
 
 		const totalPrice = ludwigRecommendedProducts.reduce((acc, product) => {
@@ -236,33 +236,6 @@ export const generateDesignRender = internalAction({
 				}
 			});
 
-		// const availableDesignProductsWithNoMainImageNoBgUrl = availableDesignProducts.filter(
-		// 	(availableDesignProduct) => !availableDesignProduct.mainImageNoBgUrl
-		// );
-
-		// if (availableDesignProductsWithNoMainImageNoBgUrl.length > 0) {
-		// 	await ctx.runAction(internal.v1.product.internal.sharp.updateProductMainImageNoBgUrls, {
-		// 		productsImageMetadata: availableDesignProductsWithNoMainImageNoBgUrl.map(
-		// 			(availableDesignProduct) => ({
-		// 				productId: availableDesignProduct._id,
-		// 				imageUrl: availableDesignProduct.mainImageUrl
-		// 			})
-		// 		)
-		// 	});
-
-		// 	const newAvailableDesignProducts = await Promise.all(
-		// 		availableDesignProducts.map((availableDesignProduct) =>
-		// 			ctx.runQuery(internal.v1.product.internal.query.getProductById, {
-		// 				productId: availableDesignProduct._id
-		// 			})
-		// 		)
-		// 	);
-
-		// 	availableDesignProducts = newAvailableDesignProducts.filter(
-		// 		(newAvailableDesignProduct) => !!newAvailableDesignProduct
-		// 	);
-		// }
-
 		const products = availableDesignProducts.map((designProduct) => ({
 			category: designProduct.category,
 			url: designProduct.mainImageNoBgUrl ?? designProduct.mainImageUrl,
@@ -298,7 +271,12 @@ export const generateDesignRender = internalAction({
 				}
 			});
 
-		const fileName = `rendered-design-${design._id.toString()}`;
+		await ctx.runMutation(internal.v1.workspace.plan.internal.mutation.updateWorkspaceCreditsUsed, {
+			workspaceId: design.workspaceId,
+			creditsUsed: 100
+		});
+
+		const fileName = `rendered-design-${date.now()}-${design._id.toString()}`;
 		const fileBlob = file.base64ToBlob(renderedImageBase64);
 
 		const { data: uploadData } = await r2.upload({
@@ -309,7 +287,7 @@ export const generateDesignRender = internalAction({
 			bucketUrl: process.env.R2_USER_RENDERED_DESIGN_IMG_BUCKET_URL!
 		});
 
-		const renderedImageUrl = uploadData?.url ? `${uploadData.url}?t=${date.now()}` : undefined;
+		const renderedImageUrl = uploadData?.url;
 
 		if (renderedImageUrl)
 			await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignStyles, {

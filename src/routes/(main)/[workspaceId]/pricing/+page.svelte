@@ -7,12 +7,13 @@
 	import PricingPlanFeature from '$lib/components/pricing/pricing-plan-feature.svelte';
 	import type { AppSubscriptionPlan } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
-	import { BadgeCheckIcon } from '@lucide/svelte';
 
 	type PricingPlan = {
 		name: AppSubscriptionPlan;
+		description: string;
 		priceUSD: number;
 		tokensIncluded: number;
+		monthlyFreeTokens?: number;
 		approximateRoomValue: number;
 		additionalTokensPrice: number;
 		recommended: boolean;
@@ -20,9 +21,10 @@
 
 	const freePlan: PricingPlan = {
 		name: 'Free',
+		description: 'Get a feel of Fulhaus designer',
 		priceUSD: 0,
-		tokensIncluded: 400,
-		approximateRoomValue: 2,
+		tokensIncluded: 1000,
+		approximateRoomValue: 5,
 		additionalTokensPrice: 0.025,
 		recommended: false
 	};
@@ -30,6 +32,7 @@
 	const pricingPlans: PricingPlan[] = [
 		{
 			name: 'Creator',
+			description: 'For creators making premium designs',
 			priceUSD: 25,
 			tokensIncluded: 2000,
 			approximateRoomValue: 10,
@@ -38,6 +41,7 @@
 		},
 		{
 			name: 'Professional',
+			description: 'For designers & businesses with large projects',
 			priceUSD: 50,
 			tokensIncluded: 5000,
 			approximateRoomValue: 25,
@@ -137,11 +141,16 @@
 		{onclick}
 	>
 		<div class="space-y-8 text-center">
-			<h3>{pricingPlan.name}</h3>
+			<div>
+				<h3>{pricingPlan.name}</h3>
+				<p class="text-xs text-color-text-muted">{pricingPlan.description}</p>
+			</div>
+
 			<p class="text-4xl leading-none">
 				${pricingPlan.priceUSD}<sup class={cn('text-xs', pricingPlan.name === 'Free' && 'hidden')}
 					>/month</sup
 				>
+
 				<span class="mt-1 block text-sm font-normal text-color-text-muted"
 					>Then <span class="font-medium text-color-text">${pricingPlan.additionalTokensPrice}</span
 					> per credit</span
@@ -159,34 +168,42 @@
 			<PricingPlanFeature label="Unlimited users" />
 		</div>
 
-		{#if pricingPlan.name === workspacePlan?.plan}
-			<div
-				class={cn(
-					'flex w-full flex-col items-center justify-center rounded-md border border-color-border p-2 text-center font-medium',
-					pricingPlan.name !== 'Free' && 'opacity-50'
-				)}
-			>
-				{#if pricingPlan.name === 'Free'}
-					<p>Your Current Plan</p>
-					<small class="opacity-80">
-						Buy additional credits ({`${pricingPlan.additionalTokensPrice} per credit`})
-					</small>
-				{:else}
-					<p>Your Current Plan</p>
-				{/if}
-			</div>
-		{/if}
+		<div>
+			{#if pricingPlan.name === workspacePlan?.plan}
+				<div
+					class={cn(
+						'flex w-full flex-col items-center justify-center rounded-md border border-color-border p-2 text-center font-medium',
+						pricingPlan.name !== 'Free' && 'opacity-50'
+					)}
+				>
+					{#if pricingPlan.name === 'Free'}
+						<p>Your Current Plan</p>
+						<small class="opacity-80">
+							Buy additional credits ({`${pricingPlan.additionalTokensPrice} per credit`})
+						</small>
+					{:else}
+						<p>Your Current Plan</p>
+					{/if}
+				</div>
+			{/if}
 
-		{#if pricingPlan.name !== workspacePlan?.plan}
-			<div
-				class="flex w-full items-center justify-center rounded-md bg-color-action-background p-2 font-medium text-color-action-text"
-			>
-				{#if pricingPlanClass[pricingPlan.name] > pricingPlanClass[workspacePlan?.plan || 'Free']}
-					<p>Upgrade</p>
-				{:else}
-					<p>Downgrade</p>
-				{/if}
-			</div>
-		{/if}
+			{#if pricingPlan.name !== workspacePlan?.plan}
+				<div
+					class="flex w-full items-center justify-center rounded-md bg-color-action-background p-2 font-medium text-color-action-text"
+				>
+					{#if pricingPlanClass[pricingPlan.name] > pricingPlanClass[workspacePlan?.plan || 'Free']}
+						<p>Upgrade</p>
+					{:else}
+						<p>Downgrade</p>
+					{/if}
+				</div>
+			{/if}
+
+			{#if pricingPlan.monthlyFreeTokens}
+				<p class="mt-1 text-center text-xs text-color-text-muted">
+					Free {pricingPlan.monthlyFreeTokens} credits monthly
+				</p>
+			{/if}
+		</div>
 	</button>
 {/snippet}

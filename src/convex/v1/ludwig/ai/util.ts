@@ -156,7 +156,7 @@ You are a interior/exterior space design visualization expert for this design:
 **Design Name**: ${args.designName}
 **Design Description**:${args.designDescription}
 
-Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images. All product images must appear in the visualization. Do not replace the provided product images with a different product image, however you can add other items to complement the space as long as the provided product images are in the visualization.
+Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images and description ${args.designDescription}. All product images must appear in the visualization. Do not replace the provided product images with a different product image, however you can add other items to complement the space as long as the provided product images are in the visualization.
 `;
 
 	const systemPromptForSwapRender = `
@@ -166,7 +166,7 @@ You are a interior/exterior space design visualization expert for this design:
 **Design Name**: ${args.designName}
 **Design Description**:${args.designDescription}
 
-Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images, by replacing the only equivalent items in the current space render with provided product images without changing the space layout or design.
+Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images, by replacing the only equivalent items in the current space render with provided product images without changing the space layout or design and ensuring the visualization  captures the space and design description.
 `;
 
 	const designProductCategoriesImagePart = args.productImages.flatMap((product) => [
@@ -195,7 +195,7 @@ Your task is to generate a photorealistic visualization of a ${args.spaceType} s
 							type: 'text',
 							text: args.currentRenderedImageUrl
 								? 'This image is the current space render'
-								: 'This image is the inspiration image. It should be used to guide your decision on space layout only.'
+								: 'This image is the inspiration image. It should be used as a style reference and optionally to guide your decision on space layout only.'
 						},
 						{
 							type: 'image',

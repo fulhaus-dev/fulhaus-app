@@ -1084,7 +1084,6 @@ export const spaceTypeProductCategories: Record<
 		],
 		recommended: [
 			'Dresser',
-
 			'Rack',
 			'Shelving Unit',
 			'Standing Mirror',

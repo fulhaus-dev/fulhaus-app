@@ -20,7 +20,8 @@ const toolLoadingLabels: Record<string, string> = {
 	getProductCategoriesForDesign: 'Generating product categories...',
 	createDesign: 'Creating design...',
 	updateDesign: 'Updating design...',
-	generateDesignFurnitureRecommendation: 'Generating design furniture recommendation...'
+	generateDesignFurnitureRecommendation:
+		'Generating design furniture recommendation... This might take a minute.'
 };
 
 export function useLudwigChatMutation() {

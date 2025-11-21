@@ -90,7 +90,7 @@
 
 			<div
 				class={cn(
-					'fixed right-0 bottom-0 left-0 w-screen border-t  border-color-border bg-color-background lg:relative lg:flex-1 lg:border-0',
+					'fixed right-0 bottom-0 left-0 w-screen overflow-x-hidden border-t border-color-border bg-color-background lg:relative lg:w-full lg:border-0',
 					searchIsActive && 'opacity-0 lg:opacity-10',
 					selectedDesignIds.length > 0 && 'opacity-0 lg:opacity-100'
 				)}
@@ -112,12 +112,12 @@
 
 				{#if designTagsForWorkspace.length > 0}
 					<div class="flex w-full items-center gap-x-2 px-2 pt-2 pb-4 lg:justify-center lg:px-0">
-						<div class="hidden items-center text-color-text-placeholder lg:flex">
+						<div class="hidden w-fit items-center text-color-text-placeholder lg:flex">
 							<TagsIcon class="size-4" />
 							<p class="text-sm font-medium">Tags:</p>
 						</div>
 
-						<div class="flex items-center gap-x-2 px-2 py-1">
+						<div class="flex max-w-full items-center gap-x-2 overflow-x-auto px-2 py-1">
 							{@render WorkspaceDesignsTagFilterButton('All')}
 
 							<div

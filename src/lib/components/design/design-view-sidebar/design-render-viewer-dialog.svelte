@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { useDesignMutation } from '$lib/client/mutations/use-design.mutation.svelte';
 	import { XIcon } from '@lucide/svelte';
 	import { Dialog } from 'bits-ui';
 	import type { Snippet } from 'svelte';
@@ -11,8 +10,6 @@
 	};
 
 	const { class: className = '', renderImage, children }: DesignRenderViewerDialogProps = $props();
-
-	const { regenerateRender } = useDesignMutation();
 </script>
 
 <Dialog.Root>

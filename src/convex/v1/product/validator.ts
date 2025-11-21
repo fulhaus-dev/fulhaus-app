@@ -59,7 +59,8 @@ export const vCreateProductFields = {
 	stockQtyUSD: v.number(),
 	stockQtyCAD: v.number(),
 	restockDateUSD: v.optional(v.number()),
-	restockDateCAD: v.optional(v.number())
+	restockDateCAD: v.optional(v.number()),
+	fullTextSearch: v.string()
 };
 
 export const vCreateProduct = v.object(vCreateProductFields);
@@ -89,7 +90,8 @@ export const vClientProduct = v.object({
 	materials: v.array(v.string()),
 	styles: v.array(vProductStyle),
 	category: vProductCategory,
-	stockDate: v.number()
+	stockDate: v.number(),
+	fullTextSearch: v.string()
 });
 
 export const vUpdateProduct = v.object({
