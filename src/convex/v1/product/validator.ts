@@ -157,3 +157,25 @@ export const vProductRecommendationFilter = v.object({
 	minDepth: v.optional(v.number()),
 	maxDepth: v.optional(v.number())
 });
+
+export const vOrderProduct = v.object({
+	productId: v.id('products'),
+	vendorId: v.id('productVendors'),
+	vendorName: v.string(),
+	location: v.optional(v.string()),
+	sku: v.string(),
+	itemId: v.optional(v.string()),
+	gtin: v.optional(v.string()),
+	mpn: v.optional(v.string()),
+	brand: v.optional(v.string()),
+	name: v.string(),
+	description: v.string(),
+	pdpLink: v.optional(v.string()),
+	unitPerBox: v.number(),
+	imageUrls: v.array(v.string()),
+	mainImageUrl: v.string(),
+	dimension: v.optional(v.string()),
+	weight: v.optional(v.number()),
+	weightUnit: v.literal('lb'),
+	category: vProductCategory
+});

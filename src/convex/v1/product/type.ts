@@ -6,7 +6,8 @@ import {
 	vProductStyle,
 	vProductSortOptions,
 	vProductPaginationOptions,
-	vProductRecommendationFilter
+	vProductRecommendationFilter,
+	vOrderProduct
 } from './validator';
 import { Doc, Id } from '../../_generated/dataModel';
 
@@ -28,3 +29,5 @@ export type LudwigRecommendation = {
 	retailPrice: number;
 	currencyCode: string;
 };
+
+export type OrderProduct = Infer<typeof vOrderProduct>;

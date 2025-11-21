@@ -8,6 +8,7 @@ import { spaceTypeProductCategories } from '../design/constant';
 import { filterClientProducts, productsToClientProducts } from './util';
 import {
 	ClientProduct,
+	OrderProduct,
 	Product,
 	ProductCategory,
 	ProductFilter,
@@ -20,6 +21,7 @@ import type { PaginationResult } from 'convex/server';
 import { CurrencyCode } from '../../type';
 import { productCategories } from './constant';
 import productEmbeddingModel from './embedding/model';
+import productVendorModel from './vendor/model';
 
 async function createProduct(
 	ctx: MutationCtx,
@@ -326,6 +328,38 @@ async function getClientProductsByFullTextSearch(
 	return clientProducts;
 }
 
+async function getOrderProduct(ctx: QueryCtx, productId: Id<'products'>) {
+	const product = await ctx.db.get(productId);
+	if (!product) return null;
+
+	const productVendor = await productVendorModel.getProductVendor(ctx, product.vendorId);
+	if (!productVendor) return null;
+
+	const orderProduct: OrderProduct = {
+		productId: product._id,
+		vendorId: product.vendorId,
+		vendorName: productVendor.name,
+		location: product.location,
+		sku: product.sku,
+		itemId: product.itemId,
+		gtin: product.gtin,
+		mpn: product.mpn,
+		brand: product.brand,
+		name: product.name,
+		description: product.description,
+		pdpLink: product.pdpLink,
+		unitPerBox: product.unitPerBox,
+		imageUrls: product.imageUrls,
+		mainImageUrl: product.mainImageUrl,
+		dimension: product.dimension,
+		weight: product.weight,
+		weightUnit: product.weightUnit,
+		category: product.category
+	};
+
+	return orderProduct;
+}
+
 const productModel = {
 	createProduct,
 	getProductById,
@@ -340,7 +374,8 @@ const productModel = {
 	getClientProductsByCategoryWithFilters,
 	getProductBrands,
 	getProductByEmbeddingId,
-	getClientProductsByFullTextSearch
+	getClientProductsByFullTextSearch,
+	getOrderProduct
 };
 
 export default productModel;
