@@ -42,7 +42,8 @@ async function updateWorkspacePlanByWorkspaceId(
 		used: isNewCredit ? 0 : workspacePlan.used
 	};
 
-	if (args.plan === 'Free') update.stripeSubscriptionId = undefined;
+	if (args.plan === 'Free' && workspacePlan.stripeSubscriptionId)
+		update.stripeSubscriptionId = undefined;
 
 	await ctx.db.patch(workspacePlan._id, update);
 

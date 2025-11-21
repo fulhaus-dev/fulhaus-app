@@ -9,6 +9,7 @@ import geoip from 'fast-geoip';
 const PUBLIC_ROUTES = [
 	'/',
 	'/auth',
+	'/auth-m',
 	'/shop-designs',
 	'/inspiration',
 	'/design',
