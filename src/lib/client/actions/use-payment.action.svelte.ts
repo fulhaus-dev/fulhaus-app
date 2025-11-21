@@ -30,7 +30,8 @@ export function usePaymentAction() {
 			convexClient.action(api.v1.payment.action.getCartPaymentCheckoutUrl, {
 				workspaceId: currentWorkspaceId,
 				currencyCode,
-				successUrl: `${window.location.origin}/payment/success`
+				successUrl: `${window.location.origin}/payment/success`,
+				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`
 			})
 		);
 
@@ -53,7 +54,8 @@ export function usePaymentAction() {
 			convexClient.action(api.v1.payment.action.getCreditSubscriptionPaymentCheckoutUrl, {
 				workspaceId: currentWorkspaceId,
 				plan: subscriptionPlan,
-				successUrl: `${window.location.origin}/payment/success${paymentSuccessRedirectUrl ? `?${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(paymentSuccessRedirectUrl)}` : ''}`
+				successUrl: `${window.location.origin}/payment/success${paymentSuccessRedirectUrl ? `?${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(paymentSuccessRedirectUrl)}` : ''}`,
+				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`
 			})
 		);
 
@@ -76,7 +78,8 @@ export function usePaymentAction() {
 			convexClient.action(api.v1.payment.action.getCreditOneOffPaymentCheckoutUrl, {
 				workspaceId: currentWorkspaceId,
 				price,
-				successUrl: `${window.location.origin}/payment/success${paymentSuccessRedirectUrl ? `?${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(paymentSuccessRedirectUrl)}` : ''}`
+				successUrl: `${window.location.origin}/payment/success${paymentSuccessRedirectUrl ? `?${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(paymentSuccessRedirectUrl)}` : ''}`,
+				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`
 			})
 		);
 

@@ -19,6 +19,7 @@ async function getCartPaymentCheckoutUrl(
 		userId: Id<'users'>;
 		currencyCode: CurrencyCode;
 		successUrl: string;
+		cancelUrl: string;
 	}
 ) {
 	const [stripeCustomerIdResponse, cart] = await Promise.all([
@@ -66,6 +67,7 @@ async function getCartPaymentCheckoutUrl(
 				})),
 			mode: 'payment',
 			success_url: args.successUrl,
+			cancel_url: args.cancelUrl,
 			billing_address_collection: 'required',
 			shipping_address_collection: {
 				allowed_countries: [args.currencyCode === 'USD' ? 'US' : 'CA']
@@ -138,6 +140,7 @@ async function getCreditSubscriptionPaymentCheckoutUrl(
 		userId: Id<'users'>;
 		plan: WorkspacePlan;
 		successUrl: string;
+		cancelUrl: string;
 	}
 ) {
 	const stripeCustomerIdResponse = await stripeModel.createStripeCustomer(ctx, args.userId, 'USD');
@@ -165,6 +168,7 @@ async function getCreditSubscriptionPaymentCheckoutUrl(
 				}
 			],
 			success_url: args.successUrl,
+			cancel_url: args.cancelUrl,
 			customer_update: {
 				shipping: 'auto'
 			},
@@ -201,6 +205,7 @@ async function getCreditOneOffPaymentCheckoutUrl(
 		userId: Id<'users'>;
 		price: number;
 		successUrl: string;
+		cancelUrl: string;
 	}
 ) {
 	const isValidPrice = args.price > 1 && args.price % 5 === 0;
@@ -238,6 +243,7 @@ async function getCreditOneOffPaymentCheckoutUrl(
 				}
 			],
 			success_url: args.successUrl,
+			cancel_url: args.cancelUrl,
 			customer_update: {
 				shipping: 'auto'
 			},
