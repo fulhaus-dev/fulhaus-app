@@ -12,7 +12,7 @@ import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js'
 import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte.js';
 import { onMount } from 'svelte';
 
-type AuthStep = 'email' | 'otp' | 'name';
+type AuthStep = 'email' | 'otp' | 'name' | 'reason' | 'find';
 
 const OTP_LENGTH = 6;
 
@@ -33,6 +33,10 @@ export function useAuthMutation() {
 		firstName: undefined as string | undefined,
 		lastName: undefined as string | undefined,
 		phone: undefined as string | undefined,
+		whatBroughtYouHere: undefined as string | undefined,
+		whatBroughtYouHereOther: undefined as string | undefined,
+		howDidYouFindUs: undefined as string | undefined,
+		howDidYouFindUsOther: undefined as string | undefined,
 		userId: undefined as Id<'users'> | undefined,
 		loading: false,
 		loggingOut: false,
@@ -217,6 +221,95 @@ export function useAuthMutation() {
 			return;
 		}
 
+		state.step = 'reason';
+		state.loading = false;
+		updateRouteQuery({ queryString: `${QueryParams.AUTH_STEP}=reason` });
+
+		setTimeout(() => {
+			window.location.reload();
+		}, 100);
+	}
+
+	async function onSubmitWhatBroughtYouHere(
+		event: SubmitEvent & {
+			currentTarget: EventTarget & HTMLFormElement;
+		}
+	) {
+		event.preventDefault();
+		state.serverError = undefined;
+
+		let whatBroughtYouHere = state.whatBroughtYouHere;
+
+		if (whatBroughtYouHere === 'Other') whatBroughtYouHere = undefined;
+
+		if (!whatBroughtYouHere)
+			whatBroughtYouHere =
+				state.whatBroughtYouHereOther === '' ? undefined : state.whatBroughtYouHereOther;
+
+		if (!whatBroughtYouHere) {
+			state.serverError = 'What brought you here is required';
+			return;
+		}
+
+		state.loading = true;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.user.mutation.updateUserById, {
+				updates: {
+					whatBroughtYouHere
+				}
+			})
+		);
+		if (error) {
+			state.serverError = error.message;
+			state.loading = false;
+			return;
+		}
+
+		state.step = 'find';
+		state.loading = false;
+		updateRouteQuery({ queryString: `${QueryParams.AUTH_STEP}=find` });
+
+		setTimeout(() => {
+			window.location.reload();
+		}, 100);
+	}
+
+	async function onSubmitHowDidYouFindUs(
+		event: SubmitEvent & {
+			currentTarget: EventTarget & HTMLFormElement;
+		}
+	) {
+		event.preventDefault();
+		state.serverError = undefined;
+
+		let howDidYouFindUs = state.howDidYouFindUs;
+
+		if (howDidYouFindUs === 'Other') howDidYouFindUs = undefined;
+
+		if (!howDidYouFindUs)
+			howDidYouFindUs = state.howDidYouFindUsOther === '' ? undefined : state.howDidYouFindUsOther;
+
+		if (!howDidYouFindUs) {
+			state.serverError = 'How did you find us is required';
+			return;
+		}
+
+		state.loading = true;
+
+		const { error } = await asyncTryCatch(() =>
+			convexClient.mutation(api.v1.user.mutation.updateUserById, {
+				updates: {
+					howDidYouFindUs
+				}
+			})
+		);
+		if (error) {
+			state.serverError = error.message;
+			state.loading = false;
+			return;
+		}
+
 		await redirectAfterAuth(redirectUrl);
 	}
 
@@ -245,6 +338,8 @@ export function useAuthMutation() {
 		resendVerificationCode,
 		onSubmitSignInWithOtp,
 		onSubmitNewUserProfile,
+		onSubmitWhatBroughtYouHere,
+		onSubmitHowDidYouFindUs,
 		onLogout
 	};
 }

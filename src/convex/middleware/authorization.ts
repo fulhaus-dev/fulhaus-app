@@ -79,12 +79,25 @@ async function hasRoomCredits(ctx: AuthorizationCtx, workspaceId: Id<'workspaces
 	return workspacePlan;
 }
 
+async function hasRenderCredits(ctx: AuthorizationCtx, workspaceId: Id<'workspaces'>) {
+	const workspacePlan = await workspacePlanModel.getWorkspacePlan(ctx, workspaceId);
+	if (!workspacePlan)
+		throw ServerError.Unauthorized('You have no more credits to perform this action.');
+
+	const availableCredits = workspacePlan.credit - workspacePlan.used;
+	if (availableCredits < 100)
+		throw ServerError.Unauthorized('You have no more credits to perform this action.');
+
+	return workspacePlan;
+}
+
 const authorization = {
 	userIsAuthenticated,
 	userIsWorkspaceMember,
 	workspaceMemberIsAuthorizedToPerformFunction,
 	isWorkspaceChat,
 	authorizeProductOnboarding,
-	hasRoomCredits
+	hasRoomCredits,
+	hasRenderCredits
 };
 export default authorization;

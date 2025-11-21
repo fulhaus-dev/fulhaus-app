@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { useWorkspacePlanQuery } from '$lib/client/queries/use-workspace.query.svelte';
 	import Button from '$lib/components/button.svelte';
 	import TextArea from '$lib/components/text-area.svelte';
@@ -62,9 +60,7 @@
 {#if !hasSufficientRoomTokens}
 	<div class="mx-auto w-full rounded-md bg-color-error-background p-4">
 		<div class="mx-auto w-fit space-y-4">
-			<p class="rounded-md p-4 text-lg text-color-error-text">
-				You have no sufficient credits left.
-			</p>
+			<p class="rounded-md text-color-error-text">You have no sufficient credits left.</p>
 
 			<ManageWorkspacePlanNavButton />
 		</div>

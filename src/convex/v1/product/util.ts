@@ -37,7 +37,8 @@ export function productsToClientProducts(products: (Product | null)[], currencyC
 			materials: product.materials,
 			styles: product.styles,
 			category: product.category,
-			stockDate: product.stockDate
+			stockDate: product.stockDate,
+			fullTextSearch: product.fullTextSearch
 		};
 	});
 
@@ -59,7 +60,7 @@ export function filterClientProducts(
 
 	if (productFilter.desc)
 		filteredClientProducts = filteredClientProducts.filter((product) =>
-			product.description.toLowerCase().includes((productFilter.desc ?? '').toLowerCase())
+			product.fullTextSearch.toLowerCase().includes((productFilter.desc ?? '').toLowerCase())
 		);
 
 	if (productFilter.availability === 'In Stock')

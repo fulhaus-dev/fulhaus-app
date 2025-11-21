@@ -10,6 +10,27 @@
 	import { page } from '$app/state';
 	import { cn } from '$lib/utils/cn';
 	import CircularProgressBar from '$lib/components/circular-progress-bar.svelte';
+	import Checkbox from '$lib/components/checkbox.svelte';
+	import TextArea from '$lib/components/text-area.svelte';
+
+	const whatBroughtYouHereOptions = [
+		'Interior Designer',
+		'Furnishing my home',
+		'Furnishing business or rental property',
+		'Retailer',
+		'Manufacturer',
+		'Design Enthusiast',
+		'Other'
+	];
+
+	const howDidYouFindUsOptions = [
+		'Google search',
+		'Social Media',
+		'Referral',
+		'Email',
+		'Event',
+		'Other'
+	];
 
 	const sampleInspoImages = page.data.sampleInspoImages;
 
@@ -19,7 +40,9 @@
 		onSubmitSendVerificationCode,
 		resendVerificationCode,
 		onSubmitSignInWithOtp,
-		onSubmitNewUserProfile
+		onSubmitNewUserProfile,
+		onSubmitHowDidYouFindUs,
+		onSubmitWhatBroughtYouHere
 	} = useAuthMutation();
 
 	const { emailError, otpError, firstNameError, lastNameError } = $derived(getInputErrors());
@@ -29,7 +52,7 @@
 	);
 </script>
 
-<main class="flex h-screen w-screen">
+<main class="relative flex h-screen w-screen overflow-y-auto">
 	<section class="h-full flex-1 pt-20 lg:max-w-[40%] lg:pt-40">
 		<div class="mx-auto w-full space-y-16 px-4 lg:max-w-[24rem] lg:px-0">
 			<div class="space-y-4">
@@ -160,6 +183,93 @@
 					</form>
 				{/if}
 
+				{#if auth.step === 'reason'}
+					<form class="space-y-8 pb-96" onsubmit={onSubmitWhatBroughtYouHere}>
+						<div class="space-y-8">
+							<div>
+								<h1 class="text-3xl">What brought you here?</h1>
+								<p class="text-color-text-muted">Select all that apply</p>
+							</div>
+
+							<div class="space-y-4">
+								{#each whatBroughtYouHereOptions as whatBroughtYouHereOption (whatBroughtYouHereOption)}
+									{@render OnboardingQuestion({
+										id: whatBroughtYouHereOption,
+										label: whatBroughtYouHereOption,
+										checked: auth.whatBroughtYouHere === whatBroughtYouHereOption,
+										onchange: (checked) => {
+											if (checked) auth.whatBroughtYouHere = whatBroughtYouHereOption;
+											if (!checked) auth.whatBroughtYouHere = undefined;
+										}
+									})}
+								{/each}
+
+								{#if auth.whatBroughtYouHere === 'Other'}
+									<TextArea
+										id="whatBroughtYouHere"
+										class="bg-transparent"
+										name="whatBroughtYouHere"
+										placeholder="You're Unique! Tell us more"
+										bind:value={auth.whatBroughtYouHereOther}
+									/>
+								{/if}
+							</div>
+						</div>
+
+						<Button
+							type="submit"
+							disabled={!auth.whatBroughtYouHereOther &&
+								(!auth.whatBroughtYouHere || auth.whatBroughtYouHere === 'Other')}
+						>
+							Submit
+						</Button>
+					</form>
+				{/if}
+
+				{#if auth.step === 'find'}
+					<form class="space-y-8 pb-96" onsubmit={onSubmitHowDidYouFindUs}>
+						<div class="space-y-8">
+							<div>
+								<h1 class="text-3xl">How did you find us</h1>
+								<p class="text-color-text-muted">Select all that apply</p>
+							</div>
+
+							<div class="space-y-4">
+								{#each howDidYouFindUsOptions as howDidYouFindUsOption (howDidYouFindUsOption)}
+									{@render OnboardingQuestion({
+										id: howDidYouFindUsOption,
+										label: howDidYouFindUsOption,
+										checked: auth.howDidYouFindUs === howDidYouFindUsOption,
+										onchange: (checked) => {
+											if (checked) auth.howDidYouFindUs = howDidYouFindUsOption;
+											if (!checked) auth.howDidYouFindUs = undefined;
+										}
+									})}
+								{/each}
+
+								{#if auth.howDidYouFindUs === 'Other'}
+									<TextArea
+										id="howDidYouFindUs"
+										class="bg-transparent"
+										name="howDidYouFindUs"
+										label="Other"
+										placeholder="How did you hear about us"
+										bind:value={auth.howDidYouFindUsOther}
+									/>
+								{/if}
+							</div>
+						</div>
+
+						<Button
+							type="submit"
+							disabled={!auth.howDidYouFindUsOther &&
+								(!auth.howDidYouFindUs || auth.howDidYouFindUs === 'Other')}
+						>
+							Submit
+						</Button>
+					</form>
+				{/if}
+
 				{#if !!auth.serverError}
 					<ErrorText class="ml-2" error={auth.serverError} />
 				{/if}
@@ -167,7 +277,32 @@
 		</div>
 	</section>
 
-	<section class="hidden h-full flex-1 overflow-y-hidden rounded-lg lg:block">
+	<section class="sticky top-0 hidden h-full flex-1 overflow-y-hidden rounded-lg lg:block">
 		<ImageMasonry images={sampleInspoImages} />
 	</section>
 </main>
+
+{#snippet OnboardingQuestion({
+	id,
+	label,
+	checked,
+	onchange
+}: {
+	id: string;
+	label: string;
+	checked: boolean;
+	onchange: (checked: boolean) => void;
+})}
+	<div class="flex items-center gap-x-2">
+		<Checkbox
+			{id}
+			{checked}
+			onchange={(event) => {
+				const checked = event.currentTarget.checked;
+
+				onchange(checked);
+			}}
+		/>
+		<label for={id} class="text-lg">{label}</label>
+	</div>
+{/snippet}

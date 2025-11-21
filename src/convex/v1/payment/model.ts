@@ -41,6 +41,12 @@ async function getCartPaymentCheckoutUrl(
 		type: 'cart'
 	};
 
+	const totalPrice = cart.items.reduce((acc, cartItem) => {
+		return acc + cartItem.product.retailPrice * (cartItem.quantity ?? 1);
+	}, 0);
+
+	const shippingAmount = Number((totalPrice * 0.05).toFixed(2));
+
 	const { data: session, error } = await asyncTryCatch(() =>
 		stripe.checkout.sessions.create({
 			customer: stripeCustomerId,
@@ -87,7 +93,29 @@ async function getCartPaymentCheckoutUrl(
 			},
 			automatic_tax: {
 				enabled: true
-			}
+			},
+			shipping_options: [
+				{
+					shipping_rate_data: {
+						type: 'fixed_amount',
+						fixed_amount: {
+							amount: shippingAmount * 100,
+							currency: args.currencyCode.toLowerCase()
+						},
+						display_name: 'Shipping',
+						delivery_estimate: {
+							minimum: {
+								unit: 'business_day',
+								value: 5
+							},
+							maximum: {
+								unit: 'business_day',
+								value: 7
+							}
+						}
+					}
+				}
+			]
 		})
 	);
 
@@ -146,6 +174,9 @@ async function getCreditSubscriptionPaymentCheckoutUrl(
 			},
 			metadata: paymentMetadata,
 			adaptive_pricing: {
+				enabled: true
+			},
+			automatic_tax: {
 				enabled: true
 			}
 		})
@@ -232,6 +263,9 @@ async function getCreditOneOffPaymentCheckoutUrl(
 				submit: {
 					message: `Total credits: ${args.price / 0.025}`
 				}
+			},
+			automatic_tax: {
+				enabled: true
 			}
 		})
 	);

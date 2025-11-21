@@ -1,7 +1,7 @@
 import { WorkspacePlan } from './type';
 
 export const planCredits: Record<WorkspacePlan, number> = {
-	Free: 400,
+	Free: 1000,
 	Creator: 2000,
 	Professional: 5000,
 	Teams: 10000,

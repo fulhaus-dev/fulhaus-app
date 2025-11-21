@@ -13,6 +13,7 @@ import type { Cookies } from '@sveltejs/kit';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 import { asyncTryCatch } from '$lib/utils/try-catch';
+import { PUBLIC_AUTH_TOKEN_EXP_IN_MINUTES } from '$env/static/public';
 
 export const cookieOptions: {
 	path: string;
@@ -54,7 +55,7 @@ function setAuthTokenCookie(cookies: Cookies, token: string, tokenCookieMaxAge: 
 
 	cookies.set(AUTH_ACTIVE_SESSION_STATUS_COOKIE_NAME, 'true', {
 		...cookieOptions,
-		maxAge: 60 * 60 // 1 hour
+		maxAge: Number(PUBLIC_AUTH_TOKEN_EXP_IN_MINUTES) * 60
 	});
 }
 

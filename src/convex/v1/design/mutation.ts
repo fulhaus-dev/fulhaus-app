@@ -136,6 +136,8 @@ export const regenerateRender = mutation({
 			'createDesign'
 		);
 
+		await authorization.hasRenderCredits(ctx, args.workspaceId);
+
 		await ctx.scheduler.runAfter(0, internal.v1.design.internal.action.generateDesignRender, {
 			designId: args.designId,
 			userId

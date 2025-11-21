@@ -10,6 +10,10 @@ export const productCategories = [
 	'Ornament',
 	'Bathtub',
 	'Bed',
+	'King Bed',
+	'Queen Bed',
+	'Twin Bed',
+	'Double Bed',
 	'Bedding',
 	'Bedroom Vanity',
 	'Bench',
@@ -42,7 +46,12 @@ export const productCategories = [
 	'Floor Lamp',
 	'Kettle',
 	'King Mattress',
+	'Double Mattress',
+	'Twin Mattress',
 	'Kitchen Accessory',
+	'Cutlery',
+	'Bakeware',
+	'Kitchen Appliance',
 	'LED Light',
 	'Loveseat',
 	'Nightstand',
@@ -55,6 +64,7 @@ export const productCategories = [
 	'Queen Mattress',
 	'Rack',
 	'Rug',
+	'Runner',
 	'Sconce',
 	'Sculpture',
 	'Sectional',
@@ -96,7 +106,14 @@ export const productCategories = [
 	'Outdoor Table',
 	'Outdoor Table Lamp',
 	'Outdoor LED Light',
-	'Outdoor Ceiling Lamp'
+	'Outdoor Ceiling Lamp',
+	'Tile',
+	'Tabletop Decor',
+	'Vase',
+	'Bookends',
+	'Wall Art',
+	'Wallpaper',
+	'Seasonal Decor'
 ] as const;
 
 export const productStyles = [

@@ -11,6 +11,8 @@ export const userTable = defineTable({
 	phone: v.optional(v.string()),
 	phoneVerifiedAt: v.optional(v.number()),
 	currentWorkspaceId: v.optional(v.id('workspaces')),
+	whatBroughtYouHere: v.optional(v.string()),
+	howDidYouFindUs: v.optional(v.string()),
 	lastLoginAt: v.number(),
 	updatedAt: v.number(),
 	deletedAt: v.optional(v.number())

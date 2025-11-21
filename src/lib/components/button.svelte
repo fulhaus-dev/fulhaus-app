@@ -2,7 +2,8 @@
 	import RingLoader from '$lib/components/loaders/ring-loader.svelte';
 	import { cn } from '$lib/utils/cn';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
-	type ButtonVariant = 'filled' | 'outlined' | 'text';
+
+	export type ButtonVariant = 'filled' | 'outlined' | 'text';
 
 	let {
 		children,
