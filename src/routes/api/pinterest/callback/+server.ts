@@ -1,7 +1,11 @@
 import { error, redirect } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
-import { APP_ENVIRONMENT, PINTEREST_USER_TOKEN_COOKIE_NAME } from '$env/static/private';
+import {
+	APP_ENVIRONMENT,
+	PINTEREST_USER_TOKEN_COOKIE_DELIMITER,
+	PINTEREST_USER_TOKEN_COOKIE_NAME
+} from '$env/static/private';
 import { tryCatch } from '$lib/utils/try-catch.js';
 import { QueryParams } from '$lib/enums.js';
 
@@ -39,13 +43,17 @@ export async function GET({ url, cookies }) {
 	});
 	const tokenData = await tokenResponse.json();
 
-	cookies.set(PINTEREST_USER_TOKEN_COOKIE_NAME, tokenData.access_token, {
-		path: '/',
-		secure: APP_ENVIRONMENT === 'production',
-		httpOnly: true,
-		sameSite: 'strict',
-		maxAge: tokenData.expires_in
-	});
+	cookies.set(
+		PINTEREST_USER_TOKEN_COOKIE_NAME,
+		`${state?.userId}${PINTEREST_USER_TOKEN_COOKIE_DELIMITER}${tokenData.access_token}`,
+		{
+			path: '/',
+			secure: APP_ENVIRONMENT === 'production',
+			httpOnly: true,
+			sameSite: 'strict',
+			maxAge: tokenData.expires_in
+		}
+	);
 
 	redirect(
 		302,
