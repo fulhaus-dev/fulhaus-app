@@ -95,6 +95,9 @@ importers:
       sharp:
         specifier: ^0.34.4
         version: 0.34.4
+      shortid:
+        specifier: ^2.2.17
+        version: 2.2.17
       stripe:
         specifier: ^19.1.0
         version: 19.1.0(@types/node@24.8.1)
@@ -144,6 +147,9 @@ importers:
       '@types/node':
         specifier: ^24.3.1
         version: 24.8.1
+      '@types/shortid':
+        specifier: ^2.2.0
+        version: 2.2.0
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -1669,6 +1675,9 @@ packages:
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
+  '@types/shortid@2.2.0':
+    resolution: {integrity: sha512-jBG2FgBxcaSf0h662YloTGA32M8UtNbnTPekUr/eCmWXq0JWQXgNEQ/P5Gf05Cv66QZtE1Ttr83I1AJBPdzCBg==}
+
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
@@ -2994,6 +3003,9 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
+
+  shortid@2.2.17:
+    resolution: {integrity: sha512-GpbM3gLF1UUXZvQw6MCyulHkWbRseNO4cyBEZresZRorwl1+SLu1ZdqgVtuwqz8mB6RpwPkm541mYSqrKyJSaA==}
 
   side-channel-list@1.0.0:
     resolution: {integrity: sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==}
@@ -5108,6 +5120,8 @@ snapshots:
 
   '@types/resolve@1.20.2': {}
 
+  '@types/shortid@2.2.0': {}
+
   '@types/trusted-types@2.0.7':
     optional: true
 
@@ -6328,6 +6342,10 @@ snapshots:
       shebang-regex: 3.0.0
 
   shebang-regex@3.0.0: {}
+
+  shortid@2.2.17:
+    dependencies:
+      nanoid: 3.3.11
 
   side-channel-list@1.0.0:
     dependencies:

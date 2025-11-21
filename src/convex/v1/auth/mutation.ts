@@ -25,7 +25,7 @@ export const sendAuthOtp = mutation({
 
 		const headerText = `Your ${isSignUp ? 'sign up' : 'log in'} code`;
 
-		await ctx.scheduler.runAfter(0, internal.email.internal.action.sendEmail, {
+		await ctx.scheduler.runAfter(0, internal.email.internal.action.sendHtmlEmail, {
 			from: `Fülhaus <${process.env.AUTH_OTP_SENDER_EMAIL}>`,
 			to: email,
 			subject: `[Action required] ${headerText}`,

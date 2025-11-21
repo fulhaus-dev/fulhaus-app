@@ -17,6 +17,7 @@ import { productErrorLogTable } from './v1/product/error/table';
 import { productCategoryStatisticTable } from './v1/product/statistics/table';
 import { workspacePlanTable } from './v1/workspace/plan/table';
 import { designLogTable } from './v1/design/log/table';
+import { orderItemTable } from './v1/order/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -39,5 +40,6 @@ export default defineSchema({
 	productEmbeddings: productEmbeddingTable,
 	productErrorLogs: productErrorLogTable,
 	productCategoryStatistics: productCategoryStatisticTable,
-	cartItems: cartItemTable
+	cartItems: cartItemTable,
+	orderItems: orderItemTable
 });
