@@ -59,8 +59,7 @@ export const vCreateProductFields = {
 	stockQtyUSD: v.number(),
 	stockQtyCAD: v.number(),
 	restockDateUSD: v.optional(v.number()),
-	restockDateCAD: v.optional(v.number()),
-	fullTextSearch: v.string()
+	restockDateCAD: v.optional(v.number())
 };
 
 export const vCreateProduct = v.object(vCreateProductFields);

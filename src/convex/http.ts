@@ -34,11 +34,13 @@ http.route({
 	handler: httpAction(async (_, request) => {
 		const origin = checkCors(request);
 
+		const reqHeaders = request.headers.get('Access-Control-Request-Headers') ?? '';
+
 		return new Response(null, {
 			headers: new Headers({
 				'Access-Control-Allow-Origin': origin,
 				'Access-Control-Allow-Methods': 'POST',
-				'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Workspace-Id',
+				'Access-Control-Allow-Headers': reqHeaders,
 				'Access-Control-Max-Age': '86400'
 			})
 		});
