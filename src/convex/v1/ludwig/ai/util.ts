@@ -218,3 +218,55 @@ Your task is to generate a photorealistic visualization of a ${args.spaceType} s
 		data: result.files
 	};
 }
+
+export async function getUserProductCategories(args: {
+	spaceType: SpaceType;
+	spaceProductCategories: ProductCategory[];
+	userProductCategories: string[];
+}) {
+	const outputSchema = z.object({
+		productCategoriesInSpace: z
+			.array(z.string())
+			.nullable()
+			.describe(
+				`The list of equivalent product categories based on the user provided product categories.`
+			)
+	});
+
+	const systemPrompt = `
+You are an expert in getting the equivalent product categories from a standard product category list that matches or equivalent to the user provided product categories. 
+
+Your task is to get the equivalent product categories from a standard product category list based on the user provided product categories.
+
+Standard Product Category List: 
+${args.spaceProductCategories.join('\n')}
+`;
+
+	const { data, error } = await asyncTryCatch(() =>
+		generateObject({
+			model: googleGenerativeAIGemini2_5Flash,
+			system: systemPrompt,
+			schema: outputSchema,
+			messages: [
+				{
+					role: 'user',
+					content: [
+						{
+							type: 'text',
+							text: `Provide the equivalent list of product categories from the standard product category list that matches or equivalent to these - "${args.userProductCategories.join(', ')}".`
+						}
+					]
+				}
+			]
+		})
+	);
+
+	if (error)
+		return {
+			error
+		};
+
+	return {
+		data: data.object.productCategoriesInSpace as ProductCategory[]
+	};
+}

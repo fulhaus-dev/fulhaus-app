@@ -86,6 +86,7 @@ async function getCartPaymentCheckoutUrl(
 				metadata: paymentMetadata
 			},
 			customer_update: {
+				address: 'auto',
 				shipping: 'auto'
 			},
 			submit_type: 'pay',
@@ -169,8 +170,10 @@ async function getCreditSubscriptionPaymentCheckoutUrl(
 			],
 			success_url: args.successUrl,
 			cancel_url: args.cancelUrl,
+			billing_address_collection: 'required',
 			customer_update: {
-				shipping: 'auto'
+				address: 'auto'
+				// shipping: 'auto'
 			},
 			submit_type: 'subscribe',
 			subscription_data: {
@@ -244,8 +247,10 @@ async function getCreditOneOffPaymentCheckoutUrl(
 			],
 			success_url: args.successUrl,
 			cancel_url: args.cancelUrl,
+			billing_address_collection: 'required',
 			customer_update: {
-				shipping: 'auto'
+				address: 'auto'
+				// shipping: 'auto'
 			},
 			submit_type: 'pay',
 			payment_intent_data: {
