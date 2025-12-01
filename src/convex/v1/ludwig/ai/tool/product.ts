@@ -3,14 +3,17 @@ import { AiToolCtxParams } from '../../../../type';
 import { spaceTypeProductCategories, spaceTypes } from '../../../design/constant';
 import { internal } from '../../../../_generated/api';
 import z from 'zod';
-import { getSpaceProductCategoriesInFloorPlan } from '../util';
+import { getSpaceProductCategoriesInFloorPlan, getUserProductCategories } from '../util';
 
 export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams) {
 	return tool({
 		description: 'Provides the product categories for the space to design',
 		inputSchema: z
 			.object({
-				spaceType: z.enum(spaceTypes).describe('The space type to been designed.')
+				spaceType: z.enum(spaceTypes).describe('The space type to been designed.'),
+				userProvidedCategories: z
+					.optional(z.array(z.string()))
+					.describe('The user provided product categories.')
 			})
 			.strip(),
 		execute: async (input) => {
@@ -37,6 +40,16 @@ export function getProductCategoriesForDesignTool(toolCtxParams: AiToolCtxParams
 
 				if (spaceProductCategoriesFromFloorPlan)
 					spaceProductCategories = spaceProductCategoriesFromFloorPlan;
+			}
+
+			if (input.userProvidedCategories) {
+				const { data: userProductCategories } = await getUserProductCategories({
+					spaceType: input.spaceType,
+					spaceProductCategories,
+					userProductCategories: input.userProvidedCategories
+				});
+
+				if (userProductCategories) spaceProductCategories = userProductCategories;
 			}
 
 			return {
