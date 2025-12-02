@@ -90,7 +90,8 @@ export const vClientProduct = v.object({
 	styles: v.array(vProductStyle),
 	category: vProductCategory,
 	stockDate: v.number(),
-	fullTextSearch: v.string()
+	fullTextSearch: v.string(),
+	status: vProductStatus
 });
 
 export const vUpdateProduct = v.object({
