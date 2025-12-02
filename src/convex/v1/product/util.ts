@@ -38,7 +38,8 @@ export function productsToClientProducts(products: (Product | null)[], currencyC
 			styles: product.styles,
 			category: product.category,
 			stockDate: product.stockDate,
-			fullTextSearch: product.fullTextSearch
+			fullTextSearch: product.fullTextSearch,
+			status: product.status
 		};
 	});
 
@@ -142,7 +143,9 @@ export function filterClientProducts(
 ) {
 	if (!productFilter) return clientProducts;
 
-	let filteredClientProducts = clientProducts.filter((product) => (product.retailPrice ?? 0) > 0);
+	let filteredClientProducts = clientProducts.filter(
+		(product) => (product.retailPrice ?? 0) > 0 && product.status === 'Active'
+	);
 
 	if (productFilter.category)
 		filteredClientProducts = filteredClientProducts.filter(

@@ -169,8 +169,13 @@ async function getClientProductsByCategory(
 	if (!sortOptions)
 		page = await paginator(ctx.db, schema)
 			.query('products')
-			.withIndex('by_category', (q) => q.eq('category', category))
-			.filterWith(async (doc) => doc.status === 'Active')
+			.withIndex('by_category', (q) =>
+				q
+					.eq('category', category)
+					.eq('hasCAD', currencyCode === 'CAD')
+					.eq('hasUSD', currencyCode === 'USD')
+			)
+			// .filterWith(async (doc) => doc.status === 'Active')
 			.paginate({
 				cursor: cursor ?? null,
 				numItems
@@ -179,9 +184,14 @@ async function getClientProductsByCategory(
 	if (sortOptions)
 		page = await paginator(ctx.db, schema)
 			.query('products')
-			.withIndex(sortOptions.index, (q) => q.eq('category', category))
+			.withIndex(sortOptions.index, (q) =>
+				q
+					.eq('category', category)
+					.eq('hasCAD', currencyCode === 'CAD')
+					.eq('hasUSD', currencyCode === 'USD')
+			)
 			.order(sortOptions.order)
-			.filterWith(async (doc) => doc.status === 'Active')
+			// .filterWith(async (doc) => doc.status === 'Active')
 			.paginate({
 				cursor: cursor ?? null,
 				numItems

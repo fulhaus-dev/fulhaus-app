@@ -7,7 +7,7 @@ function toMoney(amount: number, currencyCode: CurrencyCode) {
 
 	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
-		currency: currencyCode,
+		currency: currencyCode ?? 'USD',
 		minimumFractionDigits: fractionDigits,
 		maximumFractionDigits: fractionDigits
 	}).format(amount);
