@@ -45,11 +45,104 @@ export function productsToClientProducts(products: (Product | null)[], currencyC
 	return designProducts.filter((product) => product !== null);
 }
 
+// export function filterClientProducts(
+// 	clientProducts: ClientProduct[],
+// 	productFilter?: ProductFilter
+// ) {
+// 	if (!productFilter) return clientProducts;
+
+// 	console.log({ productFilter });
+
+// 	let filteredClientProducts = clientProducts.filter((product) => (product.retailPrice ?? 0) > 0);
+
+// 	if (productFilter.category)
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.category === productFilter.category
+// 		);
+
+// 	if (productFilter.desc)
+// 		filteredClientProducts = filteredClientProducts.filter((product) =>
+// 			product.fullTextSearch.toLowerCase().includes((productFilter.desc ?? '').toLowerCase())
+// 		);
+
+// 	console.log(filteredClientProducts);
+
+// 	if (productFilter.availability === 'In Stock')
+// 		filteredClientProducts = filteredClientProducts.filter((product) => product.stockQty >= 1);
+
+// 	if (productFilter.availability === 'Low Stock')
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.stockQty >= 1 && product.stockQty <= 10
+// 		);
+
+// 	if (productFilter.availability === 'Out of Stock')
+// 		filteredClientProducts = filteredClientProducts.filter((product) => product.stockQty <= 0);
+
+// 	if (number.isNumber(productFilter.minPrice))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.retailPrice >= productFilter.minPrice!
+// 		);
+
+// 	if (number.isNumber(productFilter.maxPrice))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.retailPrice <= productFilter.maxPrice!
+// 		);
+
+// 	if (number.isNumber(productFilter.maxWidth))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.width ?? 0 <= productFilter.maxWidth!
+// 		);
+
+// 	if (number.isNumber(productFilter.minWidth))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.width && product.width >= productFilter.minWidth!
+// 		);
+
+// 	if (number.isNumber(productFilter.minHeight))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.height && product.height >= productFilter.minHeight!
+// 		);
+
+// 	if (number.isNumber(productFilter.maxHeight))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.height && product.height <= productFilter.maxHeight!
+// 		);
+
+// 	if (number.isNumber(productFilter.minDepth))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.depth && product.depth >= productFilter.minDepth!
+// 		);
+
+// 	if (number.isNumber(productFilter.maxDepth))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.depth && product.depth <= productFilter.maxDepth!
+// 		);
+
+// 	if (number.isNumber(productFilter.minWeight))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.weight && product.weight >= productFilter.minWeight!
+// 		);
+
+// 	if (number.isNumber(productFilter.maxWeight))
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.weight && product.weight <= productFilter.maxWeight!
+// 		);
+
+// 	if (productFilter.brand)
+// 		filteredClientProducts = filteredClientProducts.filter(
+// 			(product) => product.brand === decodeURIComponent(productFilter.brand!)
+// 		);
+
+// 	return filteredClientProducts;
+// }
+
 export function filterClientProducts(
 	clientProducts: ClientProduct[],
 	productFilter?: ProductFilter
 ) {
 	if (!productFilter) return clientProducts;
+
+	console.log({ productFilter });
 
 	let filteredClientProducts = clientProducts.filter((product) => (product.retailPrice ?? 0) > 0);
 
@@ -58,10 +151,23 @@ export function filterClientProducts(
 			(product) => product.category === productFilter.category
 		);
 
-	if (productFilter.desc)
+	// if (productFilter.desc) {
+	// 	const searchWords = productFilter.desc.toLowerCase().trim().split(/\s+/);
+	// 	filteredClientProducts = filteredClientProducts.filter((product) => {
+	// 		const text = product.fullTextSearch.toLowerCase();
+	// 		return searchWords.every((word) => text.includes(word));
+	// 	});
+	// }
+
+	if (productFilter.desc) {
+		const searchWords = productFilter.desc.toLowerCase().trim().split(/\s+/);
+		const regexes = searchWords.map((word) => new RegExp(`\\b${word}\\b`, 'i'));
 		filteredClientProducts = filteredClientProducts.filter((product) =>
-			product.fullTextSearch.toLowerCase().includes((productFilter.desc ?? '').toLowerCase())
+			regexes.every((regex) => regex.test(product.fullTextSearch))
 		);
+	}
+
+	console.log(filteredClientProducts);
 
 	if (productFilter.availability === 'In Stock')
 		filteredClientProducts = filteredClientProducts.filter((product) => product.stockQty >= 1);

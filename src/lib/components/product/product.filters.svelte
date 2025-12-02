@@ -205,11 +205,11 @@
 	}
 </script>
 
-<div class="space-y-1">
-	<div class="relative">
+<div class="flex items-center space-y-1 gap-x-4">
+	<div class="relative flex-1">
 		<SearchIcon class="absolute top-1/2 left-2 size-4 -translate-y-1/2 text-color-text-muted" />
 		<TextInput
-			class="h-10 bg-color-background pl-8"
+			class="h-10 w-full bg-color-background pl-8"
 			type="search"
 			placeholder={'Search...'}
 			defaultValue={isFullTextSearchView ? productFullTextSearchValue : parsedProductFilters.desc}
@@ -243,12 +243,13 @@
 		/>
 	</div>
 
-	{#if isFullTextSearchView}
+	<!-- {#if isFullTextSearchView}
 		<p class="pt-4 pl-2 text-sm text-color-text-placeholder">Search results (100)</p>
-	{/if}
+	{/if} -->
 
 	{#if !isFullTextSearchView}
-		<div class="flex w-full items-center justify-between">
+		{@render SortFilter()}
+		<!-- <div class="flex w-full items-center justify-between">
 			<div class="flex w-full flex-wrap items-center gap-x-1">
 				{@render AvailabilityFilter()}
 				{@render PriceFilter()}
@@ -270,7 +271,7 @@
 			</div>
 
 			{@render SortFilter()}
-		</div>
+		</div> -->
 	{/if}
 </div>
 
