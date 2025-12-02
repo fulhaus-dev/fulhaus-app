@@ -142,22 +142,12 @@ export function filterClientProducts(
 ) {
 	if (!productFilter) return clientProducts;
 
-	console.log({ productFilter });
-
 	let filteredClientProducts = clientProducts.filter((product) => (product.retailPrice ?? 0) > 0);
 
 	if (productFilter.category)
 		filteredClientProducts = filteredClientProducts.filter(
 			(product) => product.category === productFilter.category
 		);
-
-	// if (productFilter.desc) {
-	// 	const searchWords = productFilter.desc.toLowerCase().trim().split(/\s+/);
-	// 	filteredClientProducts = filteredClientProducts.filter((product) => {
-	// 		const text = product.fullTextSearch.toLowerCase();
-	// 		return searchWords.every((word) => text.includes(word));
-	// 	});
-	// }
 
 	if (productFilter.desc) {
 		const searchWords = productFilter.desc.toLowerCase().trim().split(/\s+/);
@@ -166,8 +156,6 @@ export function filterClientProducts(
 			regexes.every((regex) => regex.test(product.fullTextSearch))
 		);
 	}
-
-	console.log(filteredClientProducts);
 
 	if (productFilter.availability === 'In Stock')
 		filteredClientProducts = filteredClientProducts.filter((product) => product.stockQty >= 1);
