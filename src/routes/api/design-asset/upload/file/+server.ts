@@ -3,6 +3,10 @@ import { CONVEX_HTTP_REQ_API_KEY, CONVEX_HTTP_URL } from '$env/static/private';
 import asyncFetch from '$lib/utils/async-fetch';
 import { getAuthParams } from '$lib/server/authenticate';
 
+export const config = {
+    bodySizeLimit: '10mb'
+};
+
 export const POST = async ({ cookies, request }) => {
 	const { authToken, activeWorkspaceId } = getAuthParams(cookies);
 
