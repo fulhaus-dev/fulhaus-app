@@ -10,7 +10,9 @@ const config = {
 	// for more information about preprocessors
 	preprocess: vitePreprocess(),
 	kit: {
-		adapter: adapterNode(),
+		adapter: adapterNode({
+			 bodySize: '10mb'
+		}),
 		paths: {
 			relative: false // Required for PostHog session replay to work correctly
 		}
