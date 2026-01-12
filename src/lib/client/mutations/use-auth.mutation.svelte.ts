@@ -325,8 +325,6 @@ export function useAuthMutation() {
 	async function onLogout() {
 		state.loggingOut = true;
 
-		await asyncTryCatch(() => convexClient.mutation(api.v1.user.mutation.migrateUsersToStripe, {}));
-
 		await Promise.all([
 			asyncFetch.post('/api/auth/cookies/clear', {
 				headers: { 'Content-Type': 'application/json' }
