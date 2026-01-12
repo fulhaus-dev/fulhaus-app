@@ -9,6 +9,7 @@ import userPermissionModel from './permission/model';
 import { CurrencyCode } from '../../type';
 import { internal } from '../../_generated/api';
 import workspacePlanModel from '../workspace/plan/model';
+import array from '../../util/array';
 
 async function createUser(ctx: MutationCtx, args: { email: string; currencyCode: CurrencyCode }) {
 	const userId = await ctx.db.insert('users', {
@@ -95,59 +96,77 @@ async function migrateUsersToStripe(ctx: MutationCtx) {
 	const newUsers = users.filter((user) => !stripeUserIds.has(user._id));
 
 	if (newUsers.length > 0) {
-		const createStripeCustomerPromises = newUsers
+		const newUsersBatches = array.batch(newUsers, 3);
+
+		for (const [index, newUsersBatch] of newUsersBatches.entries()) {
+			const createStripeCustomerPromises = newUsersBatch
+				.map((user) => {
+					const currencyCodes = workspaces.find((workspace) => workspace.createdById === user._id)
+						?.currencyCodes ?? ['USD'];
+
+					return currencyCodes.map((currencyCode) =>
+						ctx.scheduler.runAfter(
+							1000 * (index + 1),
+							internal.v1.payment.internal.action.createStripeCustomer,
+							{
+								userId: user._id,
+								currencyCode
+							}
+						)
+					);
+				})
+				.flat();
+
+			await Promise.all(createStripeCustomerPromises);
+		}
+	}
+
+	const usersBatches = array.batch(users, 3);
+
+	for (const [index, usersBatch] of usersBatches.entries()) {
+		const updateStripeCustomerPromises = usersBatch
 			.map((user) => {
 				const currencyCodes = workspaces.find((workspace) => workspace.createdById === user._id)
 					?.currencyCodes ?? ['USD'];
 
 				return currencyCodes.map((currencyCode) =>
-					ctx.scheduler.runAfter(0, internal.v1.payment.internal.action.createStripeCustomer, {
+					ctx.scheduler.runAfter(
+						11000 * (index + 1),
+						internal.v1.payment.internal.action.updateStripeCustomer,
+						{
+							userId: user._id,
+							currencyCode,
+							updates: {
+								name: user.fullName,
+								phone: user.phone,
+								metadata: {
+									whatBroughtYouHere: user.whatBroughtYouHere,
+									howDidYouFindUs: user.howDidYouFindUs
+								}
+							}
+						}
+					)
+				);
+			})
+			.flat();
+		await Promise.all(updateStripeCustomerPromises);
+
+		const updateStripeCustomerWorkspacePlanPromises = usersBatch
+			.map((user) => {
+				const ownerWorkspace = workspaces.find((workspace) => workspace.createdById === user._id);
+
+				return ownerWorkspace!.currencyCodes.map((currencyCode) =>
+					workspacePlanModel.updateStripeUserWorkspacePlan(ctx, {
 						userId: user._id,
-						currencyCode
+						currencyCode,
+						workspaceId: ownerWorkspace!._id,
+						delayMultiplier: index + 1
 					})
 				);
 			})
 			.flat();
-		await Promise.all(createStripeCustomerPromises);
+		await Promise.all(updateStripeCustomerWorkspacePlanPromises);
 	}
-
-	const updateStripeCustomerPromises = users
-		.map((user) => {
-			const currencyCodes = workspaces.find((workspace) => workspace.createdById === user._id)
-				?.currencyCodes ?? ['USD'];
-
-			return currencyCodes.map((currencyCode) =>
-				ctx.scheduler.runAfter(0, internal.v1.payment.internal.action.updateStripeCustomer, {
-					userId: user._id,
-					currencyCode,
-					updates: {
-						name: user.fullName,
-						phone: user.phone,
-						metadata: {
-							whatBroughtYouHere: user.whatBroughtYouHere,
-							howDidYouFindUs: user.howDidYouFindUs
-						}
-					}
-				})
-			);
-		})
-		.flat();
-	await Promise.all(updateStripeCustomerPromises);
-
-	const updateStripeCustomerWorkspacePlanPromises = users
-		.map((user) => {
-			const ownerWorkspace = workspaces.find((workspace) => workspace.createdById === user._id);
-
-			return ownerWorkspace!.currencyCodes.map((currencyCode) =>
-				workspacePlanModel.updateStripeUserWorkspacePlan(ctx, {
-					userId: user._id,
-					currencyCode,
-					workspaceId: ownerWorkspace!._id
-				})
-			);
-		})
-		.flat();
-	await Promise.all(updateStripeCustomerWorkspacePlanPromises);
 }
 
 const userModel = {
