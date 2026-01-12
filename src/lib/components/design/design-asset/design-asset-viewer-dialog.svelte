@@ -24,16 +24,19 @@
 	onMount(() => {
 		if (activeDesignAssetTab) open = true;
 	});
+
+	function handleCloseUrlUpdate() {
+		updateRouteQuery({
+			queryKeysToRemove: [QueryParams.ACTIVE_DESIGN_ASSET_TAB],
+			options: { keepFocus: true }
+		});
+	}
 </script>
 
 <Dialog.Root
 	bind:open
 	onOpenChange={(isOpen) => {
-		if (!isOpen)
-			updateRouteQuery({
-				queryKeysToRemove: [QueryParams.ACTIVE_DESIGN_ASSET_TAB],
-				options: { keepFocus: true }
-			});
+		if (!isOpen) handleCloseUrlUpdate();
 	}}
 >
 	<Dialog.Trigger class={className}>
@@ -57,6 +60,7 @@
 				onSelect={(url) => {
 					onSelect?.(url);
 					open = false;
+					handleCloseUrlUpdate();
 				}}
 			/>
 		</Dialog.Content>

@@ -20,7 +20,11 @@ async function createWorkspace(
 		updatedAt: date.now()
 	});
 
-	await workspacePlanModel.createWorkspacePlan(ctx, workspaceId);
+	await workspacePlanModel.createWorkspacePlan(ctx, {
+		workspaceId,
+		userId: args.userId,
+		currencyCode: args.currencyCode
+	});
 
 	return workspaceId;
 }

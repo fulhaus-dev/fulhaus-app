@@ -7,6 +7,6 @@ export const getWorkspacePlan = internalQuery({
 		workspaceId: v.id('workspaces')
 	},
 	handler: async (ctx, { workspaceId }) => {
-		return await workspacePlanModel.getWorkspacePlan(ctx, workspaceId);
+		return await workspacePlanModel.getWorkspacePlanByWorkspaceId(ctx, workspaceId);
 	}
 });

@@ -218,7 +218,8 @@ export function useAuthMutation() {
 					lastName: state.lastName,
 					fullName: `${state.firstName} ${state.lastName}`,
 					phone: state.phone
-				}
+				},
+				currencyCode
 			})
 		);
 		if (error) {
@@ -263,7 +264,8 @@ export function useAuthMutation() {
 			convexClient.mutation(api.v1.user.mutation.updateUserById, {
 				updates: {
 					whatBroughtYouHere
-				}
+				},
+				currencyCode
 			})
 		);
 		if (error) {
@@ -307,7 +309,8 @@ export function useAuthMutation() {
 			convexClient.mutation(api.v1.user.mutation.updateUserById, {
 				updates: {
 					howDidYouFindUs
-				}
+				},
+				currencyCode
 			})
 		);
 		if (error) {
@@ -321,6 +324,8 @@ export function useAuthMutation() {
 
 	async function onLogout() {
 		state.loggingOut = true;
+
+		await asyncTryCatch(() => convexClient.mutation(api.v1.user.mutation.migrateUsersToStripe, {}));
 
 		await Promise.all([
 			asyncFetch.post('/api/auth/cookies/clear', {

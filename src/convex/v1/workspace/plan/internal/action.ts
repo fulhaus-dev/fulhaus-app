@@ -12,8 +12,8 @@ export const updatePlan = internalAction({
 		stripeSubscriptionId: v.optional(v.string())
 	},
 	handler: async (ctx, args) => {
-		const workspaceId = args.paymentMetadata.workspaceId;
-		if (!workspaceId) return;
+		const { workspaceId, userId, currencyCode } = args.paymentMetadata;
+		if (!workspaceId || !userId || !currencyCode) return;
 		if (args.paymentMetadata.type !== 'credits') return;
 
 		const update: UpdateWorkspacePlan = {
@@ -28,6 +28,8 @@ export const updatePlan = internalAction({
 			internal.v1.workspace.plan.internal.mutation.updateWorkspacePlanByWorkspaceId,
 			{
 				workspaceId,
+				userId,
+				currencyCode,
 				update
 			}
 		);

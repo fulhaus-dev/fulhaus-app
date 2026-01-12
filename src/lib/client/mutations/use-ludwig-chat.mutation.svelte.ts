@@ -171,6 +171,7 @@ export function useLudwigChatMutation() {
 			url: string;
 		};
 	}) {
+		state.error = undefined;
 		chat.clearError();
 		autoscroll?.start();
 		let timeoutMs = 0;
@@ -190,6 +191,10 @@ export function useLudwigChatMutation() {
 			if (file) {
 				const fileUiPart = await getChatFileUiPart(file.url);
 				if (!fileUiPart) return;
+				if (!fileUiPart.mediaType.includes('image/')) {
+					state.error = `File type - ${fileUiPart.mediaType} is not supported.`;
+					return;
+				}
 
 				files = [fileUiPart];
 			}
@@ -220,7 +225,6 @@ export function useLudwigChatMutation() {
 				workspaceId: currentWorkspaceId
 			})
 		);
-
 		if (error) state.error = error.message;
 
 		return response?.chatId;

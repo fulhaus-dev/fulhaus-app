@@ -108,6 +108,8 @@
 							</p>
 						</div>
 
+						<p class="text-xs font-medium text-orange-500">Fulfilled by Wayfair</p>
+
 						<h5 class="text-3xl">
 							{number.toMoney(designProduct.retailPrice, designProduct.currencyCode)}
 						</h5>
@@ -122,7 +124,7 @@
 						>
 							<Button class="h-10" variant="outlined">
 								<RefreshCwIcon />
-								<span>Swap</span>
+								<span>Change</span>
 							</Button>
 						</DesignProductSwapDialog>
 
