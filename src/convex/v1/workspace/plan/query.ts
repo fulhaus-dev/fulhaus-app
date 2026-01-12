@@ -10,7 +10,7 @@ export const getWorkspacePlan = query({
 	handler: async (ctx, { workspaceId }) => {
 		await authorization.userIsWorkspaceMember(ctx, workspaceId);
 
-		const workspacePlan = await workspacePlanModel.getWorkspacePlan(ctx, workspaceId);
+		const workspacePlan = await workspacePlanModel.getWorkspacePlanByWorkspaceId(ctx, workspaceId);
 		if (!workspacePlan) throw ServerError.NotFound('Workspace plan does not exist.');
 
 		return SuccessData(workspacePlan);

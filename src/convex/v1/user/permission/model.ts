@@ -55,18 +55,23 @@ async function userIsAuthorizedToPerformFunction(
 }
 
 async function getUserWorkspaceIds(ctx: QueryCtx, userId: Id<'users'>) {
-	const permissions = await ctx.db
+	const permissions = await getUserPermissions(ctx, userId);
+
+	return permissions.map((permission) => permission.workspaceId);
+}
+
+async function getUserPermissions(ctx: QueryCtx, userId: Id<'users'>) {
+	return await ctx.db
 		.query('userPermissions')
 		.withIndex('user_Id', (q) => q.eq('userId', userId))
 		.collect();
-
-	return permissions.map((permission) => permission.workspaceId);
 }
 
 const userPermissionModel = {
 	create: createUserPermissions,
 	isMemberOfWorkspace: userIsMemberOfWorkspace,
 	isAuthorizedToPerformFunction: userIsAuthorizedToPerformFunction,
+	getUserPermissions,
 	getUserWorkspaceIds
 };
 

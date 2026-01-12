@@ -42,6 +42,20 @@
 	const chatHasMessages = $derived(chat.messages.length > 0);
 
 	const currentUiTool = $derived.by(() => {
+		const lastMessage = chat.lastMessage;
+		if (lastMessage?.role !== 'assistant') return;
+
+		if (lastMessage?.parts?.length < 1) {
+			const assistantMessages = chat.messages
+				.toReversed()
+				.filter((message) => message.parts.length > 0 && message.role === 'assistant');
+
+			const lastTool = assistantMessages[0]?.parts?.find((part: any) =>
+				part.output?.toolName?.includes('UI')
+			) as any;
+			if (lastTool) return lastTool.output?.toolName as string;
+		}
+
 		const tool = chat.lastMessage?.parts.find((part: any) =>
 			part.output?.toolName?.includes('UI')
 		) as any;
@@ -108,6 +122,10 @@
 					{/if}
 				{/each}
 
+				{#if chatErrorMessage && !chatIsStreaming}
+					<ErrorText error={chatErrorMessage} />
+				{/if}
+
 				<div class={cn('mt-4 block', chatIsStreaming && 'hidden')}>
 					{#if currentUiTool === 'provideInspirationImageUI'}
 						{@render LudwigChatUiToolInput({ type: 'inspo' })}
@@ -116,10 +134,6 @@
 						{@render LudwigChatUiToolInput({ type: 'floorplan' })}
 					{/if}
 				</div>
-
-				{#if chatErrorMessage && !chatIsStreaming}
-					<ErrorText error={chatErrorMessage} />
-				{/if}
 
 				{#if chatIsStreaming}
 					<LudwigChatLoader class="mt-2 ml-2" label={chatMutationState.activeToolLoadingLabel} />

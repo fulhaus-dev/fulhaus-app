@@ -12,3 +12,14 @@ export const vPaymentMetadata = v.object({
 	credit: v.optional(v.string()),
 	type: vPaymentType
 });
+
+export const vStripeCustomerUpdateParams = v.object({
+	balance: v.optional(v.number()),
+	business_name: v.optional(v.string()),
+	default_source: v.optional(v.string()),
+	description: v.optional(v.string()),
+	email: v.optional(v.string()),
+	name: v.optional(v.string()),
+	phone: v.optional(v.string()),
+	metadata: v.optional(v.any())
+});

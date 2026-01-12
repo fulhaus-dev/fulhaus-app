@@ -107,6 +107,8 @@ export const productCategories = [
 	'Outdoor Table Lamp',
 	'Outdoor LED Light',
 	'Outdoor Ceiling Lamp',
+	'Outdoor Lamp',
+	'Door',
 	'Tile',
 	'Tabletop Decor',
 	'Vase',
