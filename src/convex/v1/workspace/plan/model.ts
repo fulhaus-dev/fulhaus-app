@@ -1,4 +1,3 @@
-import { Infer } from 'convex/values';
 import { internal } from '../../../_generated/api';
 import { Id } from '../../../_generated/dataModel';
 import { MutationCtx, QueryCtx } from '../../../_generated/server';
@@ -6,7 +5,6 @@ import { CurrencyCode } from '../../../type';
 import userPermissionModel from '../../user/permission/model';
 import { planCredits } from './constant';
 import { UpdateWorkspacePlan } from './type';
-import { vWorkspacePlan } from './validator';
 
 async function createWorkspacePlan(
 	ctx: MutationCtx,
@@ -26,9 +24,14 @@ async function createWorkspacePlan(
 
 async function updateStripeUserWorkspacePlan(
 	ctx: MutationCtx,
-	args: { userId: Id<'users'>; currencyCode: CurrencyCode; workspaceId: Id<'workspaces'> }
+	args: {
+		userId: Id<'users'>;
+		currencyCode: CurrencyCode;
+		workspaceId: Id<'workspaces'>;
+		delayMultiplier?: number;
+	}
 ) {
-	const { userId, currencyCode } = args;
+	const { userId, currencyCode, delayMultiplier = 1 } = args;
 
 	const userPermissions = await userPermissionModel.getUserPermissions(ctx, userId);
 	const ownerWorkspaceIds = userPermissions
@@ -39,25 +42,25 @@ async function updateStripeUserWorkspacePlan(
 		ownerWorkspaceIds.map((workspaceId) => getWorkspacePlanByWorkspaceId(ctx, workspaceId))
 	);
 
-	const ownerWorkspacePlanMetadata = ownerWorkspacePlans.reduce(
-		(metadata, ownerWorkspacePlan) => {
-			if (ownerWorkspacePlan?.plan)
-				metadata[`plan-${ownerWorkspacePlan?.workspaceId}`] = ownerWorkspacePlan?.plan;
-
-			return metadata;
-		},
-		{} as Record<string, Infer<typeof vWorkspacePlan>>
-	);
-
-	await ctx.scheduler.runAfter(0, internal.v1.payment.internal.action.updateStripeCustomer, {
-		userId,
-		currencyCode,
-		updates: {
-			metadata: {
-				...ownerWorkspacePlanMetadata
+	await ctx.scheduler.runAfter(
+		21000 * delayMultiplier,
+		internal.v1.payment.internal.action.updateStripeCustomer,
+		{
+			userId,
+			currencyCode,
+			updates: {
+				metadata: {
+					plan: ownerWorkspacePlans
+						.filter((plan) => !!plan)
+						.map(
+							(ownerWorkspacePlan) =>
+								`${ownerWorkspacePlan.workspaceId}:${ownerWorkspacePlan.plan} - ${ownerWorkspacePlan.used}/${ownerWorkspacePlan.credit}`
+						)
+						.join(', ')
+				}
 			}
 		}
-	});
+	);
 }
 
 async function getWorkspacePlanById(ctx: QueryCtx, workspacePlanId: Id<'workspacePlans'>) {

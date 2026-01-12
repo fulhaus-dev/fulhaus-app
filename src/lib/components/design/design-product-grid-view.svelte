@@ -108,7 +108,7 @@
 							</p>
 						</div>
 
-						<p class="text-xs font-medium text-orange-500">Fulfilled by Wayfair</p>
+						<p class="text-xs">Fulfilled by <span class="font-semibold">Wayfair</span></p>
 
 						<h5 class="text-3xl">
 							{number.toMoney(designProduct.retailPrice, designProduct.currencyCode)}

@@ -25,7 +25,8 @@ export const spaceTypes = [
 	'Office',
 	'Outdoor Space',
 	'Spa',
-	'Walk-in Closet'
+	'Walk-in Closet',
+	'Garage'
 ] as const;
 
 export const spaceTypeProductCategories: Record<
@@ -1090,6 +1091,45 @@ export const spaceTypeProductCategories: Record<
 			'Bench',
 			'Rug',
 			'Ceiling Lamp'
+		]
+	},
+	Garage: {
+		all: [
+			'Cabinet',
+			'Storage Cabinet',
+			'Shelf',
+			'Shelving Unit',
+			'Rack',
+			'Stands',
+
+			'Bench',
+
+			'Ceiling Lamp',
+			'LED Light',
+			'Pendant Light',
+			'Sconce',
+
+			'Runner',
+			'Rug',
+
+			'Waste basket',
+
+			'Wall Mirror',
+
+			'Door',
+			'Tile',
+
+			'Tabletop Decor',
+			'Seasonal Decor'
+		],
+		recommended: [
+			'Storage Cabinet',
+			'Shelving Unit',
+			'Rack',
+			'Bench',
+			'LED Light',
+			'Ceiling Lamp',
+			'Runner'
 		]
 	}
 } as const;

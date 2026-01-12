@@ -6,8 +6,20 @@ function getUniqueList<T>(array: T[]) {
 	return [...new Set(array)];
 }
 
+function batch<T>(array: T[], chunkSize: number) {
+	const batches = [];
+
+	for (let i = 0; i < array.length; i += chunkSize) {
+		const chunk = array.slice(i, i + chunkSize);
+		batches.push(chunk);
+	}
+
+	return batches;
+}
+
 const array = {
 	getUniqueListBy,
-	getUniqueList
+	getUniqueList,
+	batch
 };
 export default array;
