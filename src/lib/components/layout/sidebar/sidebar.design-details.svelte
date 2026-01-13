@@ -53,7 +53,8 @@
 				productCategories: design.productCategories,
 				inspirationImageUrl: design.inspirationImageUrl,
 				floorPlanFileUrl: design.floorPlanFile?.url,
-				floorPlanFile: design.floorPlanFile
+				floorPlanFile: design.floorPlanFile,
+				spaceImageUrl: design.spaceImageUrl
 			};
 	});
 </script>
@@ -171,6 +172,28 @@
 								class="h-auto w-full rounded-md object-cover"
 								src={design?.inspirationImageUrl}
 								alt="Inspiration"
+							/>
+						</div>
+					{/if}
+
+					<!-- Space Image -->
+					{#if !!design?.spaceImageUrl}
+						<div class="space-y-1">
+							<div class="flex items-center gap-x-2">
+								<h5 class="font-medium">Space Image</h5>
+
+								{@render DownloadFileUrlButton({
+									label: 'Download space image',
+									fileUrl: design.spaceImageUrl,
+									mediaType: 'image/png',
+									fileName: `${design.name} space`
+								})}
+							</div>
+
+							<img
+								class="h-auto w-full rounded-md object-cover"
+								src={design?.spaceImageUrl}
+								alt="space"
 							/>
 						</div>
 					{/if}

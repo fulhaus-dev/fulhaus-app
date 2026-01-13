@@ -17,6 +17,8 @@
 	import type { Id } from '../../../../convex/_generated/dataModel';
 	import { SofaIcon } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
+	import type { DesignAssetFileType } from '$lib/types';
+	import stringUtil from '$lib/utils/string';
 
 	const ludwigChatId = $derived.by(
 		() =>
@@ -53,7 +55,10 @@
 			const lastTool = assistantMessages[0]?.parts?.find((part: any) =>
 				part.output?.toolName?.includes('UI')
 			) as any;
-			if (lastTool) return lastTool.output?.toolName as string;
+			if (lastTool)
+				return {
+					name: lastTool.output?.toolName as string
+				};
 		}
 
 		const tool = chat.lastMessage?.parts.find((part: any) =>
@@ -61,7 +66,10 @@
 		) as any;
 		if (!tool) return;
 
-		return tool.output?.toolName as string;
+		return {
+			name: tool.output?.toolName as string,
+			spaceName: tool.output?.spaceName as string
+		};
 	});
 
 	const chatErrorMessage = $derived(chatMutationState.error ?? chat.error?.message);
@@ -127,11 +135,14 @@
 				{/if}
 
 				<div class={cn('mt-4 block', chatIsStreaming && 'hidden')}>
-					{#if currentUiTool === 'provideInspirationImageUI'}
+					{#if currentUiTool?.name === 'provideInspirationImageUI'}
 						{@render LudwigChatUiToolInput({ type: 'inspo' })}
 					{/if}
-					{#if currentUiTool === 'provideFloorPlanUI'}
+					{#if currentUiTool?.name === 'provideFloorPlanUI'}
 						{@render LudwigChatUiToolInput({ type: 'floorplan' })}
+					{/if}
+					{#if currentUiTool?.name === 'provideSpaceImageUI'}
+						{@render LudwigChatUiToolInput({ type: 'spaceImage' })}
 					{/if}
 				</div>
 
@@ -184,7 +195,7 @@
 	{/if}
 </section>
 
-{#snippet LudwigChatUiToolInput({ type }: { type: 'inspo' | 'floorplan' })}
+{#snippet LudwigChatUiToolInput({ type }: { type: DesignAssetFileType })}
 	<div class="w-4/5 pl-4 lg:w-2/5">
 		{#if type === 'inspo'}
 			<LudwigChatFileInputDialog
@@ -206,6 +217,19 @@
 					sendLudwigChatMessage({
 						message: 'Floor Plan',
 						file: { type: 'floorplan', url: fileUrl }
+					})}
+			/>
+		{/if}
+
+		{#if type === 'spaceImage'}
+			<LudwigChatFileInputDialog
+				{type}
+				label={`Click to provide an image of the ${currentUiTool?.spaceName ?? 'space'}`}
+				spaceName={currentUiTool?.spaceName}
+				onSelect={(imageUrl) =>
+					sendLudwigChatMessage({
+						message: `${stringUtil.capitalizeEachWord(currentUiTool?.spaceName ?? 'Space')} Image`,
+						file: { type: 'spaceImage', url: imageUrl }
 					})}
 			/>
 		{/if}

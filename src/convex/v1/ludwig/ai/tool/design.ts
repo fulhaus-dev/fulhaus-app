@@ -22,6 +22,9 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 				floorPlanUrl: z
 					.optional(z.url())
 					.describe('The floor plan url provided by the user. If any'),
+				spaceImageUrl: z
+					.optional(z.url())
+					.describe('The image url of the space to be designed provided by the user. If any'),
 				productCategories: z
 					.array(z.object({ category: z.enum(productCategories) }))
 					.describe('The array of furniture product categories for the space to be designed.'),
@@ -33,7 +36,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 		execute: async (input) => {
 			const { ctx, userId, workspaceId, chatId, currencyCode } = toolCtxParams;
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { floorPlanUrl, inspirationImageUrl: _, styles, ...otherInput } = input;
+			const { floorPlanUrl, spaceImageUrl: providedSpaceImageUrl, styles, ...otherInput } = input;
 
 			const ludwigChatTempAsset = await ctx.runQuery(
 				internal.v1.ludwig.internal.query.getLudwigChatTempAssetsByChatId,
@@ -42,6 +45,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 
 			const inspirationImageUrl = ludwigChatTempAsset?.inspoImageUrl;
 			const floorPlanFile = ludwigChatTempAsset?.floorPlanFile;
+			const spaceImageUrl = ludwigChatTempAsset?.spaceImageUrl;
 
 			if (!inspirationImageUrl)
 				return {
@@ -57,6 +61,13 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
 				};
 
+			if (providedSpaceImageUrl && !spaceImageUrl)
+				return {
+					success: false,
+					error:
+						'The space image url was not provided by the user appears to be invalid. Does the user have a space image? Did you forget to request for the space image (if the user has a space image) by calling the appropriate UI tool? If the user does not have a space image, do not pass a value for spaceImageUrl.'
+				};
+
 			const newDesignId = await ctx.runMutation(
 				internal.v1.ludwig.ai.tool.internal.mutation.aiCreateDesign,
 				{
@@ -68,6 +79,7 @@ export function createDesignTool(toolCtxParams: AiToolCtxParams) {
 						chatId,
 						inspirationImageUrl,
 						floorPlanFile,
+						spaceImageUrl,
 						currencyCode
 					},
 					styles
@@ -120,6 +132,9 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 						floorPlanUrl: z
 							.optional(z.url())
 							.describe('The new floor plan url provided by the user.'),
+						spaceImageUrl: z
+							.optional(z.url())
+							.describe('The new image url of the space to be designed provided by the user.'),
 						productCategories: z
 							.optional(z.array(z.object({ category: z.enum(productCategories) })))
 							.describe('New array of furniture product categories for the space to be designed.'),
@@ -136,6 +151,7 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 			const {
 				floorPlanUrl,
 				inspirationImageUrl: providedInspirationImageUrl,
+				spaceImageUrl: providedSpaceImageUrl,
 				styles,
 				...otherDesignDataToUpdate
 			} = update;
@@ -147,6 +163,7 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 
 			const inspirationImageUrl = ludwigChatTempAsset?.inspoImageUrl;
 			const floorPlanFile = ludwigChatTempAsset?.floorPlanFile;
+			const spaceImageUrl = ludwigChatTempAsset?.spaceImageUrl;
 
 			if (providedInspirationImageUrl && !inspirationImageUrl)
 				return {
@@ -162,6 +179,13 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 						'Floor plan url was not provided by the user. Did you forget to request for the floor plan by calling the appropriate UI tool?'
 				};
 
+			if (providedSpaceImageUrl && !spaceImageUrl)
+				return {
+					success: false,
+					error:
+						'The space image url was not provided by the user appears to be invalid. Does the user have a space image? Did you forget to request for the space image (if the user has a space image) by calling the appropriate UI tool? If the user does not have a space image, do not pass a value for spaceImageUrl.'
+				};
+
 			await ctx.runMutation(internal.v1.ludwig.ai.tool.internal.mutation.aiUpdateDesignById, {
 				workspaceId,
 				userId,
@@ -169,7 +193,8 @@ export function updateDesignTool(toolCtxParams: AiToolCtxParams) {
 				update: {
 					...otherDesignDataToUpdate,
 					inspirationImageUrl,
-					floorPlanFile
+					floorPlanFile,
+					spaceImageUrl
 				},
 				styles
 			});

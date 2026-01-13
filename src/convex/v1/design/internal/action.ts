@@ -258,6 +258,7 @@ export const generateDesignRender = internalAction({
 			designDescription: design.description,
 			productImages: isSwapRender ? productsToSwap : products,
 			originalInspirationImageUrl: design.inspirationImageUrl,
+			spaceImageUrl: design.spaceImageUrl,
 			currentRenderedImageUrl: isSwapRender ? design.renderedImageUrl : undefined
 		});
 		const renderedImageBase64 = renderedImageFiles?.[0]?.base64;

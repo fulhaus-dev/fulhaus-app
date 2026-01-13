@@ -100,6 +100,17 @@
 			</div>
 		{/if}
 
+		{#if log.spaceImageUrl}
+			<div>
+				{@render LogBodyLabel(`${prefix} Inspiration image:`)}
+				<img
+					class="h-auto w-full rounded-md object-contain"
+					src={log.spaceImageUrl}
+					alt={`${prefix} inspiration image`}
+				/>
+			</div>
+		{/if}
+
 		{#if log.productIds}
 			<div>
 				{@render LogBodyLabel(`${prefix} Product${log.productIds.length > 1 ? 's' : ''}:`)}
@@ -125,7 +136,7 @@
 				{#if log.floorPlanFile.mediaType.startsWith('image/')}
 					<img
 						class="h-auto w-full rounded-md object-contain"
-						src={log.inspirationImageUrl}
+						src={log.floorPlanFile.url}
 						alt={`${prefix} inspiration image`}
 					/>
 				{:else}

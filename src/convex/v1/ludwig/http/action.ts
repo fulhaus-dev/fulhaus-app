@@ -21,6 +21,7 @@ type LudwigChatMetadata = {
 	chatId: Id<'chats'>;
 	inspoImageUrl?: string;
 	floorPlanFile?: FloorPlanFile;
+	spaceImageUrl?: string;
 	currencyCode: CurrencyCode;
 };
 
@@ -38,8 +39,8 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 
 	const { message }: { message: UIMessage } = await request.json();
 
-	const { chatId, inspoImageUrl, floorPlanFile, currencyCode } = (message?.metadata ??
-		{}) as LudwigChatMetadata;
+	const { chatId, inspoImageUrl, floorPlanFile, spaceImageUrl, currencyCode } =
+		(message?.metadata ?? {}) as LudwigChatMetadata;
 	if (!chatId || chatId === '') throw ServerError.BadRequest('Chat ID not found');
 
 	if (inspoImageUrl)
@@ -52,6 +53,12 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 		await ctx.runMutation(internal.v1.ludwig.internal.mutation.setLudwigChatTempAssetByChatId, {
 			chatId,
 			assets: { floorPlanFile }
+		});
+
+	if (spaceImageUrl)
+		await ctx.runMutation(internal.v1.ludwig.internal.mutation.setLudwigChatTempAssetByChatId, {
+			chatId,
+			assets: { spaceImageUrl }
 		});
 
 	await httpAuthorization.isWorkspaceChat(ctx, workspaceId, chatId);
