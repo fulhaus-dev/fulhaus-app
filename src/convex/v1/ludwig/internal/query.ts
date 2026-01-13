@@ -51,6 +51,9 @@ export const getLudwigDesignChatContext = internalQuery({
 			}
 		}
 
+		if (currentChatDesign?.spaceImageUrl)
+			contextParts.push(`**Current Space Image URL:** ${currentChatDesign.spaceImageUrl}\n`);
+
 		const ludwigDesignChatContext = contextParts.join('');
 
 		return ludwigDesignChatContext !== '' ? ludwigDesignChatContext : undefined;

@@ -7,6 +7,7 @@ export const vDesignLog = v.object({
 	description: v.optional(v.string()),
 	spaceType: v.optional(vSpaceType),
 	inspirationImageUrl: v.optional(v.string()),
+	spaceImageUrl: v.optional(v.string()),
 	floorPlanFile: v.optional(vFloorPlanFile),
 	productCategories: v.optional(v.array(vDesignProductCategory)),
 	productIds: v.optional(v.array(v.id('products'))),

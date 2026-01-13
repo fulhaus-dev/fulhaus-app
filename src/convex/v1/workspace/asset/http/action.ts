@@ -11,12 +11,14 @@ type AssetType = Infer<typeof vWorkspaceAssetType>;
 
 const assetBucketName: Record<AssetType, string> = {
 	inspo: process.env.R2_USER_INSPIRATION_IMAGE_BUCKET_NAME!,
-	floorplan: process.env.R2_USER_FLOOR_PLAN_IMAGE_BUCKET_NAME!
+	floorplan: process.env.R2_USER_FLOOR_PLAN_IMAGE_BUCKET_NAME!,
+	spaceImage: process.env.R2_USER_SPACE_IMAGE_BUCKET_NAME!
 };
 
 const assetBucketUrl: Record<AssetType, string> = {
 	inspo: process.env.R2_USER_INSPIRATION_IMAGE_BUCKET_URL!,
-	floorplan: process.env.R2_USER_FLOOR_PLAN_IMAGE_BUCKET_URL!
+	floorplan: process.env.R2_USER_FLOOR_PLAN_IMAGE_BUCKET_URL!,
+	spaceImage: process.env.R2_USER_SPACE_IMAGE_BUCKET_URL!
 };
 
 export const uploadWorkspaceAsset = httpAction(async (ctx, request) => {

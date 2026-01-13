@@ -11,7 +11,7 @@ import { useUserQuery } from '$lib/client/queries/use-user.query.svelte.js';
 import { QueryParams } from '$lib/enums.js';
 import { Chat } from '@ai-sdk/svelte';
 import { goto } from '$app/navigation';
-import type { ChatUser } from '$lib/types.js';
+import type { ChatUser, DesignAssetFileType } from '$lib/types.js';
 import autoScroll from '$lib/dom-actions/auto-scroll.js';
 import { onDestroy } from 'svelte';
 
@@ -167,7 +167,7 @@ export function useLudwigChatMutation() {
 	}: {
 		message: string;
 		file?: {
-			type: 'inspo' | 'floorplan';
+			type: DesignAssetFileType;
 			url: string;
 		};
 	}) {
@@ -210,7 +210,8 @@ export function useLudwigChatMutation() {
 					floorPlanFile:
 						file?.type === 'floorplan'
 							? { url: file.url, mediaType: files?.[0]?.mediaType }
-							: undefined
+							: undefined,
+					spaceImageUrl: file?.type === 'spaceImage' ? file.url : undefined
 				}
 			});
 			state.userPrompt = undefined;

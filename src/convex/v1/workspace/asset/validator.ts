@@ -21,4 +21,8 @@ export const vAssetMetadata = v.union(
 	})
 );
 
-export const vWorkspaceAssetType = v.union(v.literal('inspo'), v.literal('floorplan'));
+export const vWorkspaceAssetType = v.union(
+	v.literal('inspo'),
+	v.literal('floorplan'),
+	v.literal('spaceImage')
+);

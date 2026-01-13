@@ -21,8 +21,25 @@ function parseMarkdown(markdown: string) {
 	return DOMPurify.sanitize(parsedMarkdown);
 }
 
+function capitalizeFirstLetter(string: string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function capitalizeEachWord(sentence: string) {
+	const words = sentence.split(' ');
+
+	const capitalizedWords = words.map((word) => {
+		if (!word) return ''; // Handle potential extra spaces
+		return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+	});
+
+	return capitalizedWords.join(' ');
+}
+
 const stringUtil = {
 	getFirstTwoInitials,
-	parseMarkdown
+	parseMarkdown,
+	capitalizeFirstLetter,
+	capitalizeEachWord
 };
 export default stringUtil;

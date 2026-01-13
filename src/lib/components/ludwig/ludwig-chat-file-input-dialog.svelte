@@ -3,12 +3,15 @@
 	import DesignAssetViewerDialog from '$lib/components/design/design-asset/design-asset-viewer-dialog.svelte';
 	import PromptInspoImage from '$lib/assets/images/prompt-inspo.png';
 	import PromptFloorPlanImage from '$lib/assets/images/prompt-floorplan.png';
+	import PromptSpaceImage from '$lib/assets/images/prompt-space-image.png';
 	import { cn } from '$lib/utils/cn';
+	import type { DesignAssetFileType } from '$lib/types';
 
 	type LudwigChatFileInputDialogProps = {
 		class?: string;
-		type: 'inspo' | 'floorplan';
+		type: DesignAssetFileType;
 		label: string;
+		spaceName?: string;
 		description?: string;
 		onSelect: (fileUrl: string) => void;
 	};
@@ -17,6 +20,7 @@
 		class: className = '',
 		type,
 		label,
+		spaceName = 'space',
 		description,
 		onSelect
 	}: LudwigChatFileInputDialogProps = $props();
@@ -46,6 +50,23 @@
 			description: description,
 			imageSrc: PromptFloorPlanImage,
 			imageAlt: 'Floor plan'
+		})}
+	</DesignAssetUploadDialog>
+{/if}
+
+{#if type === 'spaceImage'}
+	<DesignAssetUploadDialog
+		class={cn('w-full', className)}
+		type="spaceImage"
+		title={`Upload the ${spaceName} image`}
+		accept=".jpg, .jpeg, .png"
+		onUpload={onSelect}
+	>
+		{@render FilePromptButton({
+			label: label,
+			description: description,
+			imageSrc: PromptSpaceImage,
+			imageAlt: 'Space image'
 		})}
 	</DesignAssetUploadDialog>
 {/if}

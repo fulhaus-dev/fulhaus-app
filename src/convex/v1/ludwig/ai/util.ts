@@ -147,6 +147,7 @@ export async function getDesignRenderedImage(args: {
 	designDescription: string;
 	productImages: { category: string; url: string; name: string }[];
 	originalInspirationImageUrl: string;
+	spaceImageUrl?: string;
 	currentRenderedImageUrl?: string;
 }) {
 	const systemPromptForCompleteRender = `
@@ -195,13 +196,17 @@ Your task is to generate a photorealistic visualization of a ${args.spaceType} s
 							type: 'text',
 							text: args.currentRenderedImageUrl
 								? 'This image is the current space render'
-								: 'This image is the inspiration image. It should be used as a style reference and optionally to guide your decision on space layout only.'
+								: args.spaceImageUrl
+									? 'This image is the space to visualize with the product images provided.'
+									: 'This image is the inspiration image. It should be used as a style reference and optionally to guide your decision on space layout only.'
 						},
 						{
 							type: 'image',
 							image: args.currentRenderedImageUrl
 								? args.currentRenderedImageUrl
-								: args.originalInspirationImageUrl
+								: args.spaceImageUrl
+									? args.spaceImageUrl
+									: args.originalInspirationImageUrl
 						}
 					]
 				}

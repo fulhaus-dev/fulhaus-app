@@ -1,6 +1,10 @@
 import type { ProductCategory } from '$lib/types';
 
-export const LUDWIG_UI_TOOL_NAMES = ['provideInspirationImageUI', 'provideFloorPlanUI'] as const;
+export const LUDWIG_UI_TOOL_NAMES = [
+	'provideInspirationImageUI',
+	'provideFloorPlanUI',
+	'provideSpaceImageUI'
+] as const;
 
 export const productCategories = [
 	'Arm Chair',
@@ -235,5 +239,23 @@ export const productCategoryIcons: Record<ProductCategory, string> = {
 	'Outdoor Table': 'icon-[mdi--table-picnic]',
 	'Outdoor Table Lamp': 'icon-[mdi--lamp-outline]',
 	'Outdoor LED Light': 'icon-[mdi--led-strip]',
-	'Outdoor Ceiling Lamp': 'icon-[mdi--ceiling-light-outline]'
+	'Outdoor Ceiling Lamp': 'icon-[mdi--ceiling-light-outline]',
+	'King Bed': 'icon-[mdi--bed-king-outline]',
+	'Queen Bed': 'icon-[mdi--bed-queen-outline]',
+	'Twin Bed': 'icon-[mdi--bed-single-outline]',
+	'Double Bed': 'icon-[mdi--bed-double-outline]',
+	'Double Mattress': 'icon-[mdi--bed-double]',
+	Cutlery: 'icon-[[mdi--cutlery-fork-knife]',
+	Bakeware: 'icon-[mdi--pot-steam-outline]',
+	'Kitchen Appliance': 'icon-[mdi--kitchen-counter-outline]',
+	'Outdoor Lamp': 'icon-[mdi--post-lamp]',
+	Door: 'icon-[mdi--door]',
+	Tile: 'icon-[mdi--floor-plan]',
+	'Tabletop Decor': 'icon-[mdi--decagram]',
+	Vase: 'icon-[mdi--cup-outline]',
+	Bookends: 'icon-[mdi--book-open-page-variant-outline]',
+	'Wall Art': 'icon-[mdi--chart-bubble]',
+	Wallpaper: 'icon-[mdi--wallpaper]',
+	'Seasonal Decor': 'icon-[mdi--snowflake]',
+	Runner: 'icon-[mdi--rug]'
 };

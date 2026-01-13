@@ -49,6 +49,7 @@ export type LudwigDesignDetails = {
 	spaceType: Doc<'designs'>['spaceType'];
 	inspirationImageUrl: string;
 	floorPlanFile?: FloorPlanFile;
+	spaceImageUrl?: string;
 	productCategories: Doc<'designs'>['productCategories'];
 	publishedAt?: number;
 	hasProducts: boolean;
@@ -72,6 +73,7 @@ export type UpdateDesign = {
 	inspirationImageUrl?: string;
 	floorPlanFileUrl?: string;
 	floorPlanFile?: FloorPlanFile;
+	spaceImageUrl?: string;
 	productCategories?: DesignProductCategory[];
 	productIds?: Id<'products'>[];
 };

@@ -5,7 +5,11 @@ import ludwigModel from '../model';
 export const setLudwigChatTempAssetByChatId = internalMutation({
 	args: {
 		chatId: v.id('chats'),
-		assets: v.object({ inspoImageUrl: v.optional(v.string()), floorPlanFile: v.optional(v.any()) })
+		assets: v.object({
+			inspoImageUrl: v.optional(v.string()),
+			floorPlanFile: v.optional(v.any()),
+			spaceImageUrl: v.optional(v.string())
+		})
 	},
 	handler: async (ctx, args) => {
 		return await ludwigModel.setChatTempAssetByChatId(ctx, args.chatId, args.assets);

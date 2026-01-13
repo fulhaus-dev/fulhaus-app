@@ -5,7 +5,7 @@ import { FloorPlanFile } from '../../type';
 async function createChatTempAsset(
 	ctx: MutationCtx,
 	chatId: Id<'chats'>,
-	assets: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile }
+	assets: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile; spaceImage?: string }
 ) {
 	return await ctx.db.insert('ludwigChatTempAssets', {
 		chatId,
@@ -23,7 +23,7 @@ async function getChatTempAssetsByChatId(ctx: QueryCtx, chatId: Id<'chats'>) {
 async function updateChatTempAssetsByChatId(
 	ctx: MutationCtx,
 	ludwigChatTempAssetsId: Id<'ludwigChatTempAssets'>,
-	update: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile }
+	update: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile; spaceImage?: string }
 ) {
 	return await ctx.db.patch(ludwigChatTempAssetsId, update);
 }
@@ -31,7 +31,7 @@ async function updateChatTempAssetsByChatId(
 async function setChatTempAssetByChatId(
 	ctx: MutationCtx,
 	chatId: Id<'chats'>,
-	assets: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile }
+	assets: { inspoImageUrl?: string; floorPlanFile?: FloorPlanFile; spaceImage?: string }
 ) {
 	const ludwigChatTempAsset = await getChatTempAssetsByChatId(ctx, chatId);
 

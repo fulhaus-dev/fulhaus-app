@@ -13,6 +13,7 @@ function getDesignLog(previous: Doc<'designs'>, update: Infer<typeof vUpdateDesi
 		'description',
 		'spaceType',
 		'inspirationImageUrl',
+		'spaceImageUrl',
 		'floorPlanFile',
 		'productCategories',
 		'productIds',
