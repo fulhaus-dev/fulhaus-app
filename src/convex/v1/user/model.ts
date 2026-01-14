@@ -65,7 +65,7 @@ async function updateUserById(
 
 	const { email, fullName, phone, whatBroughtYouHere, howDidYouFindUs } = updates;
 
-	await ctx.scheduler.runAfter(0, internal.v1.payment.internal.action.updateStripeCustomer, {
+	await ctx.scheduler.runAfter(11000, internal.v1.payment.internal.action.updateStripeCustomer, {
 		userId,
 		currencyCode,
 		updates: {

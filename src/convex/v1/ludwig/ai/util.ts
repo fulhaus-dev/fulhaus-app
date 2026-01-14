@@ -6,7 +6,8 @@ import { asyncTryCatch } from '../../../util/async';
 import { generateObject, generateText } from 'ai';
 import {
 	googleGenerativeAIGemini2_5FlashImagePreview,
-	googleGenerativeAIGemini2_5Flash
+	googleGenerativeAIGemini2_5Flash,
+	googleGenerativeAIGemini3ProImagePreview
 } from '../../../config/google';
 import { productStyles } from '../../product/constant';
 
@@ -151,13 +152,23 @@ export async function getDesignRenderedImage(args: {
 	currentRenderedImageUrl?: string;
 }) {
 	const systemPromptForCompleteRender = `
+	You are a interior/exterior space design visualization expert for this design:
+
+	**Space Type**: ${args.spaceType}
+	**Design Name**: ${args.designName}
+	**Design Description**:${args.designDescription}
+
+	Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images and description ${args.designDescription}. All product images must appear in the visualization. Do not replace the provided product images with a different product image, however you can add other items to complement the space as long as the provided product images are in the visualization.
+	`;
+
+	const systemPromptForSpaceImageRender = `
 You are a interior/exterior space design visualization expert for this design:
 
 **Space Type**: ${args.spaceType}
 **Design Name**: ${args.designName}
 **Design Description**:${args.designDescription}
 
-Your task is to generate a photorealistic visualization of a ${args.spaceType} space based on the provided product images and description ${args.designDescription}. All product images must appear in the visualization. Do not replace the provided product images with a different product image, however you can add other items to complement the space as long as the provided product images are in the visualization.
+Your task is to generate a photorealistic render of the provided product images for ${args.spaceType} space in the provided image of the space to render into. All product images must appear in the visualization. Do not replace the provided product images with a different product image or make up a new product image.
 `;
 
 	const systemPromptForSwapRender = `
@@ -183,10 +194,13 @@ Your task is to generate a photorealistic visualization of a ${args.spaceType} s
 
 	const { data: result, error } = await asyncTryCatch(() =>
 		generateText({
-			model: googleGenerativeAIGemini2_5FlashImagePreview,
+			// model: googleGenerativeAIGemini2_5FlashImagePreview,
+			model: googleGenerativeAIGemini3ProImagePreview,
 			system: args.currentRenderedImageUrl
 				? systemPromptForSwapRender
-				: systemPromptForCompleteRender,
+				: args.spaceImageUrl
+					? systemPromptForSpaceImageRender
+					: systemPromptForCompleteRender,
 			messages: [
 				{
 					role: 'user',
@@ -197,7 +211,7 @@ Your task is to generate a photorealistic visualization of a ${args.spaceType} s
 							text: args.currentRenderedImageUrl
 								? 'This image is the current space render'
 								: args.spaceImageUrl
-									? 'This image is the space to visualize with the product images provided.'
+									? 'This image is the space to render the product images provided into. Please keep the aspect ratio of the rendered image same as this image.'
 									: 'This image is the inspiration image. It should be used as a style reference and optionally to guide your decision on space layout only.'
 						},
 						{

@@ -62,7 +62,7 @@ export const signInWithOtp = mutation({
 			userId = newUserData.userId;
 			currentWorkspaceId = newUserData.workspaceId;
 
-			await ctx.scheduler.runAfter(0, internal.v1.payment.internal.action.createStripeCustomer, {
+			await ctx.scheduler.runAfter(1000, internal.v1.payment.internal.action.createStripeCustomer, {
 				userId,
 				currencyCode
 			});
