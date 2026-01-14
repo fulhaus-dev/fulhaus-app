@@ -10,3 +10,7 @@ export const googleGenerativeAIGemini2_5Flash = googleGenerativeAI('gemini-2.5-f
 
 export const googleGenerativeAIGemini2_5FlashImagePreview =
 	googleGenerativeAI('gemini-2.5-flash-image');
+
+export const googleGenerativeAIGemini3ProImagePreview = googleGenerativeAI(
+	'gemini-3-pro-image-preview'
+);
