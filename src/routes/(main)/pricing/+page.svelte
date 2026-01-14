@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { useWorkspacePlanQuery } from '$lib/client/queries/use-workspace.query.svelte';
 	import Link from '$lib/components/link.svelte';
-	import PricingFreePlanBundlePaymentDialog from '$lib/components/pricing/pricing-free-plan-bundle-payment-dialog.svelte';
 	import PricingPlanFeature from '$lib/components/pricing/pricing-plan-feature.svelte';
 	import type { AppSubscriptionPlan } from '$lib/types';
 	import { cn } from '$lib/utils/cn';
@@ -87,11 +86,9 @@
 		</div>
 
 		<div class="grod-cols-1 grid gap-16 lg:grid-cols-3">
-			<PricingFreePlanBundlePaymentDialog>
-				{@render PricingPlanCard({
-					pricingPlan: freePlan
-				})}
-			</PricingFreePlanBundlePaymentDialog>
+			{@render PricingPlanCard({
+				pricingPlan: freePlan
+			})}
 
 			{#each pricingPlans as pricingPlan (pricingPlan.name)}
 				{@render PricingPlanCard({

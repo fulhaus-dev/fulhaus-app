@@ -14,7 +14,8 @@ export const getCartPaymentCheckoutUrl = action({
 		workspaceId: v.id('workspaces'),
 		currencyCode: vCurrencyCode,
 		successUrl: v.string(),
-		cancelUrl: v.string()
+		cancelUrl: v.string(),
+		referral: v.optional(v.string())
 	},
 	handler: async (ctx, args): Promise<{ checkoutUrl: string }> => {
 		const userId = await authorization.userIsAuthenticated(ctx);
@@ -34,7 +35,8 @@ export const getCreditSubscriptionPaymentCheckoutUrl = action({
 		workspaceId: v.id('workspaces'),
 		plan: vWorkspacePlan,
 		successUrl: v.string(),
-		cancelUrl: v.string()
+		cancelUrl: v.string(),
+		referral: v.optional(v.string())
 	},
 	handler: async (ctx, args): Promise<{ checkoutUrl: string }> => {
 		const userId = await authorization.userIsAuthenticated(ctx);
@@ -57,7 +59,8 @@ export const getCreditOneOffPaymentCheckoutUrl = action({
 		workspaceId: v.id('workspaces'),
 		price: v.number(),
 		successUrl: v.string(),
-		cancelUrl: v.string()
+		cancelUrl: v.string(),
+		referral: v.optional(v.string())
 	},
 	handler: async (ctx, args): Promise<{ checkoutUrl: string }> => {
 		const userId = await authorization.userIsAuthenticated(ctx);
