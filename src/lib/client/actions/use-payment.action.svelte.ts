@@ -20,6 +20,12 @@ export function usePaymentAction() {
 		QueryParams.PAYMENT_SUCCESS_REDIRECT_URL
 	);
 
+	function getRewardfulReferral() {
+		if (typeof window === 'undefined') return undefined;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		return ((window as any).Rewardful?.referral as string) || undefined;
+	}
+
 	async function handleCartCheckout() {
 		if (!currentWorkspaceId) return;
 
@@ -31,7 +37,8 @@ export function usePaymentAction() {
 				workspaceId: currentWorkspaceId,
 				currencyCode,
 				successUrl: `${window.location.origin}/payment/success`,
-				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`
+				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`,
+				referral: getRewardfulReferral()
 			})
 		);
 
@@ -55,7 +62,8 @@ export function usePaymentAction() {
 				workspaceId: currentWorkspaceId,
 				plan: subscriptionPlan,
 				successUrl: `${window.location.origin}/payment/success${paymentSuccessRedirectUrl ? `?${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(paymentSuccessRedirectUrl)}` : ''}`,
-				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`
+				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`,
+				referral: getRewardfulReferral()
 			})
 		);
 
@@ -79,7 +87,8 @@ export function usePaymentAction() {
 				workspaceId: currentWorkspaceId,
 				price,
 				successUrl: `${window.location.origin}/payment/success${paymentSuccessRedirectUrl ? `?${QueryParams.PAYMENT_SUCCESS_REDIRECT_URL}=${encodeURIComponent(paymentSuccessRedirectUrl)}` : ''}`,
-				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`
+				cancelUrl: `${window.location.origin}/payment/cancelled?${QueryParams.PAYMENT_CANCELLED_REDIRECT_URL}=${encodeURIComponent(window.location.href)}`,
+				referral: getRewardfulReferral()
 			})
 		);
 

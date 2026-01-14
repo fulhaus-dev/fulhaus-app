@@ -66,6 +66,13 @@ export const signInWithOtp = mutation({
 				userId,
 				currencyCode
 			});
+
+			await workspacePlanModel.updateStripeUserWorkspacePlan(ctx, {
+				userId,
+				currencyCode,
+				workspaceId: currentWorkspaceId,
+				delayMultiplier: 1
+			});
 		}
 
 		if (actualOtp.deleteSchedulerId) await ctx.scheduler.cancel(actualOtp.deleteSchedulerId);
