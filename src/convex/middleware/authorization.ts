@@ -67,8 +67,16 @@ function authorizeProductOnboarding(poApiKey: string) {
 	return poApiKey;
 }
 
-async function hasRoomCredits(ctx: AuthorizationCtx, workspaceId: Id<'workspaces'>) {
-	const workspacePlan = await workspacePlanModel.getWorkspacePlanByWorkspaceId(ctx, workspaceId);
+async function hasRoomCredits(
+	ctx: AuthorizationCtx,
+	args: { workspaceId: Id<'workspaces'>; userId: Id<'users'> }
+) {
+	const { workspaceId, userId } = args;
+	const { workspacePlan, availableCreditPools = [] } =
+		await workspacePlanModel.getWorkspacePlanByWorkspaceId(ctx, { workspaceId, userId });
+
+	if (availableCreditPools.length > 0) return workspaceId;
+
 	if (!workspacePlan)
 		throw ServerError.Unauthorized('You have no more credits to perform this action.');
 
@@ -76,11 +84,19 @@ async function hasRoomCredits(ctx: AuthorizationCtx, workspaceId: Id<'workspaces
 	if (availableCredits < 200)
 		throw ServerError.Unauthorized('You have no more credits to perform this action.');
 
-	return workspacePlan;
+	return workspaceId;
 }
 
-async function hasRenderCredits(ctx: AuthorizationCtx, workspaceId: Id<'workspaces'>) {
-	const workspacePlan = await workspacePlanModel.getWorkspacePlanByWorkspaceId(ctx, workspaceId);
+async function hasRenderCredits(
+	ctx: AuthorizationCtx,
+	args: { workspaceId: Id<'workspaces'>; userId: Id<'users'> }
+) {
+	const { workspaceId, userId } = args;
+
+	const { workspacePlan, availableCreditPools = [] } =
+		await workspacePlanModel.getWorkspacePlanByWorkspaceId(ctx, { workspaceId, userId });
+
+	if (availableCreditPools.length > 0) return workspaceId;
 	if (!workspacePlan)
 		throw ServerError.Unauthorized('You have no more credits to perform this action.');
 
@@ -88,7 +104,7 @@ async function hasRenderCredits(ctx: AuthorizationCtx, workspaceId: Id<'workspac
 	if (availableCredits < 100)
 		throw ServerError.Unauthorized('You have no more credits to perform this action.');
 
-	return workspacePlan;
+	return workspaceId;
 }
 
 const authorization = {

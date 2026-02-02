@@ -71,17 +71,22 @@ export function useWorkspacePlanQuery() {
 		get error() {
 			return query.error;
 		},
+		get availableCreditPools() {
+			return query.response?.availableCreditPools;
+		},
 		get workspacePlan() {
-			return query.response;
+			return query.response?.workspacePlan;
 		},
 		get hasSufficientRoomTokens() {
-			const tokensLeft = (query.response?.credit ?? 0) - (query.response?.used ?? 0);
+			const tokensLeft =
+				(query.response?.workspacePlan?.credit ?? 0) - (query.response?.workspacePlan?.used ?? 0);
 			const hasSufficientTokens = tokensLeft >= 200;
 
 			return query.loading ? true : hasSufficientTokens;
 		},
 		get hasSufficientRenderTokens() {
-			const tokensLeft = (query.response?.credit ?? 0) - (query.response?.used ?? 0);
+			const tokensLeft =
+				(query.response?.workspacePlan?.credit ?? 0) - (query.response?.workspacePlan?.used ?? 0);
 			const hasSufficientTokens = tokensLeft >= 100;
 
 			return query.loading ? true : hasSufficientTokens;

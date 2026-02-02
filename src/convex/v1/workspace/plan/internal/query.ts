@@ -4,9 +4,10 @@ import workspacePlanModel from '../model';
 
 export const getWorkspacePlan = internalQuery({
 	args: {
-		workspaceId: v.id('workspaces')
+		workspaceId: v.id('workspaces'),
+		userId: v.id('users')
 	},
-	handler: async (ctx, { workspaceId }) => {
-		return await workspacePlanModel.getWorkspacePlanByWorkspaceId(ctx, workspaceId);
+	handler: async (ctx, { workspaceId, userId }) => {
+		return await workspacePlanModel.getWorkspacePlanByWorkspaceId(ctx, { workspaceId, userId });
 	}
 });

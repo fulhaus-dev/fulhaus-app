@@ -18,6 +18,9 @@ import { productCategoryStatisticTable } from './v1/product/statistics/table';
 import { workspacePlanTable } from './v1/workspace/plan/table';
 import { designLogTable } from './v1/design/log/table';
 import { orderItemTable } from './v1/order/table';
+import { creditPoolTable } from './v1/credit/pool/table';
+import { creditPoolMemberTable } from './v1/credit/pool/member/table';
+import { creditPoolMemberUsageTable } from './v1/credit/pool/member/usage/table';
 
 export default defineSchema({
 	otps: otpTable,
@@ -41,5 +44,8 @@ export default defineSchema({
 	productErrorLogs: productErrorLogTable,
 	productCategoryStatistics: productCategoryStatisticTable,
 	cartItems: cartItemTable,
-	orderItems: orderItemTable
+	orderItems: orderItemTable,
+	creditPools: creditPoolTable,
+	creditPoolMembers: creditPoolMemberTable,
+	creditPoolMemberUsages: creditPoolMemberUsageTable
 });

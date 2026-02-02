@@ -35,7 +35,7 @@ export const streamLudwigChatResponse = httpAction(async (ctx, request) => {
 		'createDesign'
 	);
 
-	await httpAuthorization.hasRoomCredits(ctx, workspaceId);
+	await httpAuthorization.hasRoomCredits(ctx, { workspaceId, userId });
 
 	const { message }: { message: UIMessage } = await request.json();
 

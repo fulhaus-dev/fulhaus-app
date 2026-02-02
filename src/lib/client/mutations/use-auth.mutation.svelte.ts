@@ -12,6 +12,7 @@ import { useConvexClient } from '$lib/client/convex/use-convex-client.svelte.js'
 import { useRouteMutation } from '$lib/client/mutations/use-route.mutation.svelte.js';
 import { onMount } from 'svelte';
 import type { CurrencyCode } from '$lib/types.js';
+import { browser } from '$app/environment';
 
 type AuthStep = 'email' | 'otp' | 'name' | 'reason' | 'find';
 
@@ -25,6 +26,23 @@ export function useAuthMutation() {
 
 	const redirectUrl = page.url.searchParams.get(QueryParams.AUTH_REDIRECT_URL) ?? '/';
 	const authStep = (page.url.searchParams.get(QueryParams.AUTH_STEP) ?? 'email') as AuthStep;
+
+	const creditPoolId = $derived.by(() => {
+		const creditPoolIdFromUrl = page.url.searchParams.get(QueryParams.CREDIT_POOL_ID) as
+			| Id<'creditPools'>
+			| undefined;
+
+		if (!browser) return creditPoolIdFromUrl;
+
+		const creditPoolIdFromLocalStorage = sessionStorage.getItem(QueryParams.CREDIT_POOL_ID) as
+			| Id<'creditPools'>
+			| undefined;
+
+		if (creditPoolIdFromUrl)
+			sessionStorage.setItem(QueryParams.CREDIT_POOL_ID, creditPoolIdFromUrl);
+
+		return creditPoolIdFromUrl ?? creditPoolIdFromLocalStorage;
+	});
 
 	const state = $state({
 		isSignUp: false,
@@ -161,7 +179,8 @@ export function useAuthMutation() {
 			convexClient.mutation(api.v1.auth.mutation.signInWithOtp, {
 				email: userEmail,
 				otp: otpValue,
-				currencyCode
+				currencyCode,
+				creditPoolId
 			})
 		);
 		if (error) {

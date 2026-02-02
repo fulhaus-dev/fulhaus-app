@@ -2,6 +2,8 @@ import { internal } from '../../../_generated/api';
 import { Id } from '../../../_generated/dataModel';
 import { MutationCtx, QueryCtx } from '../../../_generated/server';
 import { CurrencyCode } from '../../../type';
+import creditPoolMemberUsageModel from '../../credit/pool/member/usage/model';
+import creditPoolModel from '../../credit/pool/model';
 import userPermissionModel from '../../user/permission/model';
 import { planCredits } from './constant';
 import { UpdateWorkspacePlan } from './type';
@@ -39,7 +41,9 @@ async function updateStripeUserWorkspacePlan(
 		.map((permission) => permission.workspaceId);
 
 	const ownerWorkspacePlans = await Promise.all(
-		ownerWorkspaceIds.map((workspaceId) => getWorkspacePlanByWorkspaceId(ctx, workspaceId))
+		ownerWorkspaceIds.map((workspaceId) =>
+			getWorkspacePlanByWorkspaceId(ctx, { workspaceId, userId })
+		)
 	);
 
 	await ctx.scheduler.runAfter(
@@ -51,10 +55,10 @@ async function updateStripeUserWorkspacePlan(
 			updates: {
 				metadata: {
 					plan: ownerWorkspacePlans
-						.filter((plan) => !!plan)
+						.filter((plan) => !!plan.workspacePlan)
 						.map(
 							(ownerWorkspacePlan) =>
-								`${ownerWorkspacePlan.workspaceId}:${ownerWorkspacePlan.plan} - ${ownerWorkspacePlan.used}/${ownerWorkspacePlan.credit}`
+								`${ownerWorkspacePlan.workspacePlan!.workspaceId}:${ownerWorkspacePlan.workspacePlan!.plan} - ${ownerWorkspacePlan.workspacePlan!.used}/${ownerWorkspacePlan.workspacePlan!.credit}`
 						)
 						.join(', ')
 				}
@@ -67,11 +71,24 @@ async function getWorkspacePlanById(ctx: QueryCtx, workspacePlanId: Id<'workspac
 	return await ctx.db.get(workspacePlanId);
 }
 
-async function getWorkspacePlanByWorkspaceId(ctx: QueryCtx, workspaceId: Id<'workspaces'>) {
-	return await ctx.db
+async function getWorkspacePlanByWorkspaceId(
+	ctx: QueryCtx,
+	args: { workspaceId: Id<'workspaces'>; userId: Id<'users'> }
+) {
+	const workspacePlan = await ctx.db
 		.query('workspacePlans')
-		.withIndex('workspace_id', (q) => q.eq('workspaceId', workspaceId))
+		.withIndex('workspace_id', (q) => q.eq('workspaceId', args.workspaceId))
 		.first();
+
+	const availableCreditPools = await creditPoolModel.getAvailableCreditPoolsByUserId(
+		ctx,
+		args.userId
+	);
+
+	return {
+		workspacePlan,
+		availableCreditPools
+	};
 }
 
 async function updateWorkspacePlanByWorkspaceId(
@@ -85,7 +102,7 @@ async function updateWorkspacePlanByWorkspaceId(
 ) {
 	const { workspaceId, userId, currencyCode, update } = args;
 
-	const workspacePlan = await getWorkspacePlanByWorkspaceId(ctx, workspaceId);
+	const { workspacePlan } = await getWorkspacePlanByWorkspaceId(ctx, { workspaceId, userId });
 	if (!workspacePlan) return;
 
 	const isNewCredit = update.credit !== undefined;
@@ -127,11 +144,22 @@ async function updateWorkspacePlanByWorkspaceId(
 
 async function updateWorkspaceCreditsUsed(
 	ctx: MutationCtx,
-	workspaceId: Id<'workspaces'>,
-	creditsUsed: number
+	args: { workspaceId: Id<'workspaces'>; userId: Id<'users'>; creditsUsed: number }
 ) {
-	const workspacePlan = await getWorkspacePlanByWorkspaceId(ctx, workspaceId);
-	if (!workspacePlan) return;
+	const { workspaceId, userId, creditsUsed } = args;
+
+	const { workspacePlan, availableCreditPools = [] } = await getWorkspacePlanByWorkspaceId(ctx, {
+		workspaceId,
+		userId
+	});
+
+	if (availableCreditPools.length > 0)
+		await creditPoolMemberUsageModel.saveCreditPoolMemberUsage(ctx, {
+			userId,
+			usage: creditsUsed
+		});
+
+	if (!workspacePlan || availableCreditPools?.length > 0) return;
 
 	const update = {
 		used: workspacePlan.used + creditsUsed
