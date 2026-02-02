@@ -23,8 +23,8 @@
 		name: 'Free',
 		description: 'Get a feel of Fulhaus designer',
 		priceUSD: 0,
-		tokensIncluded: 1000,
-		approximateRoomValue: 5,
+		tokensIncluded: 500,
+		approximateRoomValue: 2,
 		additionalTokensPrice: 0.025,
 		recommended: false
 	};

@@ -19,6 +19,7 @@
 	import { goto } from '$app/navigation';
 	import type { DesignAssetFileType } from '$lib/types';
 	import stringUtil from '$lib/utils/string';
+	import Button from '$lib/components/button.svelte';
 
 	const ludwigChatId = $derived.by(
 		() =>
@@ -42,8 +43,11 @@
 
 	const chatIsStreaming = $derived(chat.status === 'streaming' || chat.status === 'submitted');
 	const chatHasMessages = $derived(chat.messages.length > 0);
+	let hideUiTool = $state(false);
 
 	const currentUiTool = $derived.by(() => {
+		if (hideUiTool) return;
+
 		const lastMessage = chat.lastMessage;
 		if (lastMessage?.role !== 'assistant') return;
 
@@ -134,7 +138,13 @@
 					<ErrorText error={chatErrorMessage} />
 				{/if}
 
-				<div class={cn('mt-4 block', chatIsStreaming && 'hidden')}>
+				<div
+					class={cn(
+						'mt-4 block w-4/5 space-y-4 pl-4 lg:w-2/5',
+						chatIsStreaming && 'hidden',
+						!currentUiTool && 'hidden'
+					)}
+				>
 					{#if currentUiTool?.name === 'provideInspirationImageUI'}
 						{@render LudwigChatUiToolInput({ type: 'inspo' })}
 					{/if}
@@ -144,6 +154,10 @@
 					{#if currentUiTool?.name === 'provideSpaceImageUI'}
 						{@render LudwigChatUiToolInput({ type: 'spaceImage' })}
 					{/if}
+
+					<p class="mx-auto w-fit">Or</p>
+
+					<Button variant="outlined" onclick={() => (hideUiTool = true)}>Continue Chat</Button>
 				</div>
 
 				{#if chatIsStreaming}
@@ -156,7 +170,7 @@
 			class={cn(
 				'w-full space-y-4 transition-all delay-300 ease-in',
 				chatHasMessages && 'sticky bottom-0 z-1 lg:bg-color-background lg:pb-2',
-				currentUiTool && 'opacity-0'
+				currentUiTool && 'hidden'
 			)}
 		>
 			{#if canViewDesign}
@@ -184,7 +198,10 @@
 					bind:value={chatMutationState.userPrompt}
 					placeholder={chatHasMessages ? 'Reply to Ludwig...' : 'Something else?'}
 					loading={chatIsStreaming}
-					onsubmit={onSubmitLudwigChatMessage}
+					onsubmit={(e) => {
+						onSubmitLudwigChatMessage(e);
+						hideUiTool = false;
+					}}
 				/>
 			</div>
 		</div>
@@ -196,7 +213,7 @@
 </section>
 
 {#snippet LudwigChatUiToolInput({ type }: { type: DesignAssetFileType })}
-	<div class="w-4/5 pl-4 lg:w-2/5">
+	<div class="w-full">
 		{#if type === 'inspo'}
 			<LudwigChatFileInputDialog
 				{type}
