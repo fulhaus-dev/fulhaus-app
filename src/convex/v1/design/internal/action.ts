@@ -170,6 +170,7 @@ export const generateDesignFurnitureRecommendation = internalAction({
 
 		await ctx.runMutation(internal.v1.workspace.plan.internal.mutation.updateWorkspaceCreditsUsed, {
 			workspaceId: design.workspaceId,
+			userId,
 			creditsUsed: 100
 		});
 
@@ -274,6 +275,7 @@ export const generateDesignRender = internalAction({
 
 		await ctx.runMutation(internal.v1.workspace.plan.internal.mutation.updateWorkspaceCreditsUsed, {
 			workspaceId: design.workspaceId,
+			userId,
 			creditsUsed: 100
 		});
 

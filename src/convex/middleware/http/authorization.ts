@@ -46,13 +46,21 @@ function authorizeLudwig(ludwigApiKey: string) {
 	return ludwigApiKey;
 }
 
-async function hasRoomCredits(ctx: ActionCtx, workspaceId: Id<'workspaces'>) {
-	const workspacePlan = await ctx.runQuery(
+async function hasRoomCredits(
+	ctx: ActionCtx,
+	args: { workspaceId: Id<'workspaces'>; userId: Id<'users'> }
+) {
+	const { workspaceId, userId } = args;
+
+	const { workspacePlan, availableCreditPools = [] } = await ctx.runQuery(
 		internal.v1.workspace.plan.internal.query.getWorkspacePlan,
 		{
-			workspaceId
+			workspaceId,
+			userId
 		}
 	);
+
+	if (availableCreditPools.length > 0) return workspaceId;
 	if (!workspacePlan)
 		throw ServerError.Unauthorized('You have no more credits to perform this action.');
 
@@ -60,7 +68,7 @@ async function hasRoomCredits(ctx: ActionCtx, workspaceId: Id<'workspaces'>) {
 	if (availableCredits < 200)
 		throw ServerError.Unauthorized('You have no more credits to perform this action.');
 
-	return workspacePlan;
+	return workspaceId;
 }
 
 const httpAuthorization = {

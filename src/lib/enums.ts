@@ -1,6 +1,7 @@
 export const enum QueryParams {
 	AUTH_STEP = 'aus',
 	AUTH_REDIRECT_URL = 'aru',
+	CREDIT_POOL_ID = 'cpid',
 	FORCE_REFRESH_TOKEN = 'frt',
 	LUDWIG_PAGE_DESIGN_VIEW = 'lpdv',
 	LUDWIG_CHAT_ID = 'lcid',

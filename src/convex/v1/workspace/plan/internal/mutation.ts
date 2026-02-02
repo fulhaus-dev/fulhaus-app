@@ -19,13 +19,14 @@ export const updateWorkspacePlanByWorkspaceId = internalMutation({
 export const updateWorkspaceCreditsUsed = internalMutation({
 	args: {
 		workspaceId: v.id('workspaces'),
+		userId: v.id('users'),
 		creditsUsed: v.number()
 	},
 	handler: async (ctx, args) => {
-		return await workspacePlanModel.updateWorkspaceCreditsUsed(
-			ctx,
-			args.workspaceId,
-			args.creditsUsed
-		);
+		return await workspacePlanModel.updateWorkspaceCreditsUsed(ctx, {
+			workspaceId: args.workspaceId,
+			userId: args.userId,
+			creditsUsed: args.creditsUsed
+		});
 	}
 });

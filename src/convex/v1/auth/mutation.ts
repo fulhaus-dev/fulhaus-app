@@ -11,6 +11,7 @@ import { internal } from '../../_generated/api';
 import { SuccessData, SuccessMessage } from '../../response/success';
 import { vCurrencyCode } from '../../validator';
 import workspacePlanModel from '../workspace/plan/model';
+import creditPoolMemberModel from '../credit/pool/member/model';
 
 export const sendAuthOtp = mutation({
 	args: {
@@ -45,9 +46,10 @@ export const signInWithOtp = mutation({
 	args: {
 		email: v.string(),
 		otp: v.string(),
-		currencyCode: vCurrencyCode
+		currencyCode: vCurrencyCode,
+		creditPoolId: v.optional(v.id('creditPools'))
 	},
-	handler: async (ctx, { email, otp, currencyCode }) => {
+	handler: async (ctx, { email, otp, currencyCode, creditPoolId }) => {
 		const actualOtp = await authModel.getOtpByEmail(ctx, email);
 		if (!actualOtp) throw ServerError.NotFound('OTP has expired.');
 		if (actualOtp.otp !== otp) throw ServerError.BadRequest('Invalid OTP.');
@@ -82,6 +84,12 @@ export const signInWithOtp = mutation({
 			ctx,
 			userId
 		);
+
+		if (creditPoolId)
+			await creditPoolMemberModel.saveCreditPoolMember(ctx, {
+				userId,
+				poolId: creditPoolId
+			});
 
 		return SuccessData({
 			userId,

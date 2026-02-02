@@ -6,9 +6,14 @@
 	import { DropdownMenu } from 'bits-ui';
 
 	const workspacePlanQuery = useWorkspacePlanQuery();
+	const availableCreditPools = $derived(workspacePlanQuery.availableCreditPools ?? []);
 	const workspacePlan = $derived(workspacePlanQuery.workspacePlan);
 	const workspacePlanCreditPercentage = $derived(
-		workspacePlan ? 100 - (workspacePlan.used / workspacePlan.credit) * 100 : 0
+		availableCreditPools?.length > 0
+			? 100
+			: workspacePlan
+				? 100 - (workspacePlan.used / workspacePlan.credit) * 100
+				: 0
 	);
 
 	let open = $state(false);
@@ -64,7 +69,10 @@
 
 	<DropdownMenu.Portal>
 		<DropdownMenu.Content
-			class="z-50 w-[80vw] min-w-52 rounded-md border border-color-border-muted bg-color-background p-4 text-sm shadow-xs shadow-color-shadow-muted lg:w-96"
+			class={cn(
+				'z-50 w-[80vw] min-w-52 rounded-md border border-color-border-muted bg-color-background p-4 text-sm shadow-xs shadow-color-shadow-muted lg:w-96',
+				availableCreditPools?.length > 0 && 'min-w-32 lg:w-fit'
+			)}
 			align="end"
 			sideOffset={8}
 		>

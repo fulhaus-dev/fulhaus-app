@@ -16,6 +16,7 @@ const PUBLIC_ROUTES = [
 	'/payment',
 	'/pinterest',
 	'/maintenance',
+	'/enterprise-admin',
 	'/favicon.ico',
 	'/api'
 ];
