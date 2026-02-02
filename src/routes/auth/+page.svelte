@@ -29,6 +29,7 @@
 		'Referral',
 		'Email',
 		'Event',
+		'AI / LLMs',
 		'Other'
 	];
 
