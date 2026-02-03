@@ -12,8 +12,6 @@
 
 	const creditPoolMembersQuery = useCreditPoolMembersQuery();
 	const creditPoolMembers = $derived(creditPoolMembersQuery.creditPoolMembers ?? []);
-
-	$inspect(creditPoolMembers[0]);
 </script>
 
 {#if creditPoolQuery.loading}
@@ -48,13 +46,13 @@
 								class="flex items-center gap-x-2 px-6 py-4 font-medium whitespace-nowrap"
 							>
 								<Avatar
-									src={creditPoolMember.user.avatar}
-									alt={creditPoolMember.user.fullName}
-									fullName={creditPoolMember.user.fullName}
+									src={creditPoolMember.user?.imageUrl}
+									alt={creditPoolMember.user?.fullName}
+									fullName={creditPoolMember.user?.fullName}
 								/>
-								<span>{creditPoolMember.user.fullName}</span>
+								<span>{creditPoolMember.user?.fullName}</span>
 							</th>
-							<td class="px-6 py-4">{creditPoolMember.user.email}</td>
+							<td class="px-6 py-4">{creditPoolMember.user?.email}</td>
 							<td class="px-6 py-4">{creditPoolMember.totalUsed}</td>
 							<td
 								class={cn(
