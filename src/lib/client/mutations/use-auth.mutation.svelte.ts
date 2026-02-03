@@ -183,6 +183,7 @@ export function useAuthMutation() {
 				creditPoolId
 			})
 		);
+		sessionStorage.removeItem(QueryParams.CREDIT_POOL_ID);
 		if (error) {
 			state.serverError = error.message;
 			state.loading = false;
@@ -343,6 +344,7 @@ export function useAuthMutation() {
 
 	async function onLogout() {
 		state.loggingOut = true;
+		sessionStorage.removeItem(QueryParams.CREDIT_POOL_ID);
 
 		await Promise.all([
 			asyncFetch.post('/api/auth/cookies/clear', {
