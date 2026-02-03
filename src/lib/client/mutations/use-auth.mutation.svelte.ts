@@ -41,7 +41,7 @@ export function useAuthMutation() {
 		if (creditPoolIdFromUrl)
 			sessionStorage.setItem(QueryParams.CREDIT_POOL_ID, creditPoolIdFromUrl);
 
-		return creditPoolIdFromUrl ?? creditPoolIdFromLocalStorage;
+		return creditPoolIdFromUrl ?? creditPoolIdFromLocalStorage ?? undefined;
 	});
 
 	const state = $state({
