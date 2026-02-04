@@ -4,6 +4,7 @@
 	import type { DesignAssetFileType } from '$lib/types';
 	import UploadingDesignAssetLoader from '$lib/components/design/design-asset/uploading-design-asset-loader.svelte';
 	import { useDesignAssetMutation } from '$lib/client/mutations/use-design-asset.mutation.svelte';
+	import DesignAssetUploadError from '$lib/components/design/design-asset/design-asset-upload-error.svelte';
 
 	type DesignAssetUploadProps = {
 		type: DesignAssetFileType;
@@ -19,6 +20,15 @@
 <div class="relative">
 	{#if designAssetMutationState.uploading}
 		<UploadingDesignAssetLoader />
+	{/if}
+
+	{#if designAssetMutationState.error}
+		<DesignAssetUploadError
+			error={designAssetMutationState.error}
+			onclose={() => {
+				designAssetMutationState.error = undefined;
+			}}
+		/>
 	{/if}
 
 	<FileUpload
