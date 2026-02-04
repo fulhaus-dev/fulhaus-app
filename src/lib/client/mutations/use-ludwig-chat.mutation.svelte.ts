@@ -191,7 +191,7 @@ export function useLudwigChatMutation() {
 			if (file) {
 				const fileUiPart = await getChatFileUiPart(file.url);
 				if (!fileUiPart) return;
-				if (!fileUiPart.mediaType.includes('image/')) {
+				if (!fileUiPart.mediaType.includes('image/') && file.type !== 'floorplan') {
 					state.error = `File type - ${fileUiPart.mediaType} is not supported.`;
 					return;
 				}

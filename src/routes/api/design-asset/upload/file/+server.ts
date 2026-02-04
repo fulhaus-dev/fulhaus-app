@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 import { CONVEX_HTTP_REQ_API_KEY, CONVEX_HTTP_URL } from '$env/static/private';
 import asyncFetch from '$lib/utils/async-fetch';
 import { getAuthParams } from '$lib/server/authenticate';
+import { sanitizeFilename } from '$lib/utils/file';
 
 export const POST = async ({ cookies, request }) => {
 	const { authToken, activeWorkspaceId } = getAuthParams(cookies);
@@ -16,6 +17,8 @@ export const POST = async ({ cookies, request }) => {
 
 	if (!(file instanceof File) || !type) throw error(400, 'File or type missing');
 
+	const sanitizedFilename = sanitizeFilename(file.name);
+
 	const { response, error: uploadError } = await asyncFetch.post(
 		`${CONVEX_HTTP_URL}/workspace/upload-asset`,
 		{
@@ -24,9 +27,9 @@ export const POST = async ({ cookies, request }) => {
 				'x-api-key': CONVEX_HTTP_REQ_API_KEY,
 				'x-api-workspace-id': activeWorkspaceId,
 				'x-asset-type': type,
-				'x-asset-name': file.name,
+				'x-asset-name': sanitizedFilename,
 				'Content-Type': file.type || 'application/octet-stream',
-				'Content-Disposition': `attachment; filename="${encodeURIComponent(file.name)}"`
+				'Content-Disposition': `attachment; filename="${encodeURIComponent(sanitizedFilename)}"`
 			},
 			body: file,
 			ignoreContentType: true

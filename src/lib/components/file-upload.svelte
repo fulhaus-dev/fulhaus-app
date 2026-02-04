@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
+	import ErrorText from '$lib/components/error-text.svelte';
 	import UploadFromDeviceIcon from '$lib/components/svgs/upload-from-device-icon.svelte';
 	import TextInput from '$lib/components/text-input.svelte';
 	import { cn } from '$lib/utils/cn';
