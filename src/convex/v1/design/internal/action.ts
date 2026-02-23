@@ -1,3 +1,5 @@
+'use node';
+
 import { v } from 'convex/values';
 import { ActionCtx, internalAction } from '../../../_generated/server';
 import { internal } from '../../../_generated/api';
